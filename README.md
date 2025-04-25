@@ -1,56 +1,83 @@
+# Data Table Filters
+
+A powerful and flexible data table solution for React applications with advanced filtering capabilities.
+
 ## About The Project
 
-This is a standalone data-table demo that we will be using within the [OpenStatus](https://openstatus.dev) dashboard.
+This is a standalone data-table demo that showcases advanced filtering, sorting, and visualization capabilities. The project demonstrates different approaches to data tables:
+
+- [Data table with simple pagination](https://data-table.openstatus.dev/default) (client-side)
+- [Data table with infinite scroll and click details](https://data-table.openstatus.dev/infinite) (server-side)
+- [OpenStatus Light Viewer](https://data-table.openstatus.dev/light) - A practical implementation example
 
 ![Data Table with Infinite Scroll](https://data-table.openstatus.dev/assets/data-table-infinite.png)
 
-Visit [data-table.openstatus.dev](https://data-table.openstatus.dev) to learn more.
+Visit [data-table.openstatus.dev](https://data-table.openstatus.dev) to see live examples.
 
-To make it not only more accessible for you to use, but also work on PoC/MVP with data-tables, we have started this repository. We will maintain it and add new examples over time.
+## Features
 
-It currently includes two main concepts:
+- **Advanced Filtering**: Powerful filtering capabilities with intuitive UI
+- **Multiple Table Styles**: Support for pagination and infinite scroll
+- **Responsive Design**: Works on various screen sizes
+- **Customizable**: Easily adapt to different use cases
+- **Interactive UI**: Modern interface with hover states and detailed views
 
-- [data-table with simple pagination](https://data-table.openstatus.dev/default) (client-side)
-- [data-table with infinite scroll and click details](https://data-table.openstatus.dev/infinite) (server-side)
+## Tech Stack
 
-The UI is heavily inspired by datadog and vercel log tables.
-
-> [!NOTE]
-> We are working on a [Guide](https://data-table.openstatus.dev/guide) to help you get started and not wild guess anymore.
-
-More Examples:
-
-- [OpenStatus Light Viewer](https://data-table.openstatus.dev/light) (UI for [`vercel-edge-ping`](https://github.com/OpenStatusHQ/vercel-edge-ping))
-
-## Built With
-
-Our stack is:
-
-- [nextjs](https://nextjs.org)
-- [tanstack-query](https://tanstack.com/query/latest)
-- [tanstack-table](https://tanstack.com/table/latest)
-- [shadcn/ui](https://ui.shadcn.com)
-- [cmdk](http://cmdk.paco.me)
-- [nuqs](http://nuqs.47ng.com)
-- [dnd-kit](https://dndkit.com)
-
-We will consider making an example with [vitejs](https://vitejs.dev) for all our raw react lovers. **Contributions are welcome!**
+- [Next.js](https://nextjs.org) - React framework
+- [TanStack Query](https://tanstack.com/query/latest) - Data fetching and caching
+- [TanStack Table](https://tanstack.com/table/latest) - Headless table library
+- [shadcn/ui](https://ui.shadcn.com) - UI components
+- [cmdk](http://cmdk.paco.me) - Command menu component
+- [nuqs](http://nuqs.47ng.com) - URL search params management
+- [dnd-kit](https://dndkit.com) - Drag and drop functionality
 
 ## Getting Started
 
-No environment variable required. Run the development server:
+No environment variables are required to run this project locally.
 
-```bash
-pnpm dev
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Start the development server:
+   ```bash
+   pnpm dev
+   ```
+4. Open [http://localhost:3000](http://localhost:3000) with your browser
+
+## Project Structure
+
+```
+├── src/
+│   ├── app/                # Next.js app router pages
+│   │   ├── default/        # Simple pagination example
+│   │   ├── infinite/       # Infinite scroll example
+│   │   ├── light/          # Light viewer example
+│   │   └── guide/          # Documentation
+│   ├── components/         # Reusable components
+│   ├── hooks/              # Custom React hooks
+│   ├── lib/                # Utility functions
+│   ├── providers/          # React context providers
+│   └── styles/             # Global styles
+└── public/                 # Static assets
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Examples
 
-## Want more?
+### Default Table (Client-side Pagination)
 
-If you are looking for specific use-cases or like what we are building and want to hire us, feel free write us to [hire@openstatus.dev](mailto:hire@openstatus.dev) or book a call via [cal.com](https://cal.com/team/openstatus/30min).
+A simple table implementation with client-side pagination and filtering.
 
-## Credits
+### Infinite Table (Server-side)
 
-- [sadmann17](https://x.com/sadmann17) for the dope `<Sortable />` component around `@dnd-kit` (see [sortable.sadmn.com](https://sortable.sadmn.com))
-- [shelwin\_](https://x.com/shelwin_) for the draggable chart inspiration (see [zoom-chart-demo.vercel.app](https://zoom-chart-demo.vercel.app))
+Advanced table with infinite scrolling, server-side filtering, and detailed view on click.
+
+### Light Viewer
+
+A practical implementation showing how the table can be used in a real-world application.
+
+## Documentation
+
+The [Guide](https://data-table.openstatus.dev/guide) section provides detailed documentation on how to use and customize the data tables for your own projects.
