@@ -2,7 +2,9 @@ import { REGIONS } from "@/constants/region";
 import { TAGS } from "@/constants/tag";
 
 export type ColumnSchema = {
-  name: string;
+  // name: string;
+  firstName: string;
+  lastName: string;
   url: string;
   public: boolean;
   active: boolean;
