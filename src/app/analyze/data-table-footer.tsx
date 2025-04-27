@@ -1,20 +1,12 @@
 "use client";
 
 import { TableCell, TableFooter, TableRow } from "@/components/custom/table";
-import { Calculator, ArrowDownUp, Plus, Percent } from "lucide-react";
 import { Table, flexRender } from "@tanstack/react-table";
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { AggregationType, AggregationConfig } from "../../components/data-table/aggregations";
 
-// Define the available aggregation types
-export type AggregationType = 'count' | 'sum' | 'average' | 'percentage';
 
-// Define the configuration for each aggregation row
-export interface AggregationConfig {
-  type: AggregationType;
-  label: string;
-  icon: React.ReactNode;
-}
 
 // Define props for the DataTableFooter component
 export interface DataTableFooterProps<TData> {
@@ -25,12 +17,7 @@ export interface DataTableFooterProps<TData> {
 
 export function DataTableFooter<TData>({
   table,
-  aggregations = [
-    { type: 'count', label: 'Count', icon: <Calculator className="h-4 w-4 text-muted-foreground" /> },
-    { type: 'average', label: 'Average', icon: <ArrowDownUp className="h-4 w-4 text-muted-foreground" /> },
-    { type: 'sum', label: 'Sum', icon: <Plus className="h-4 w-4 text-muted-foreground" /> },
-    { type: 'percentage', label: 'Percentage', icon: <Percent className="h-4 w-4 text-muted-foreground" /> }
-  ],
+  aggregations = [],
   getColumnAggregation,
 }: DataTableFooterProps<TData>) {
   // Get only the current page rows

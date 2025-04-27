@@ -19,7 +19,8 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DataTableGroupButtons } from "@/components/data-table/data-table-group-buttons";
-import { DataTableFooter, AggregationConfig } from "./data-table-footer";
+import { AggregationConfig } from "../../components/data-table/aggregations";
+import { DataTableFooter } from "./data-table-footer";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type {
   ColumnDef,
@@ -47,6 +48,7 @@ import {
 import { useQueryStates } from "nuqs";
 import * as React from "react";
 import { searchParamsParser } from "./search-params";
+import { DataTableFooterButtons } from "@/components/data-table/data-table-footer-buttons";
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -67,7 +69,7 @@ export function DataTable<TData, TValue>({
   defaultColumnFilters = [],
   defaultGrouping = [],
   filterFields = [],
-  footerAggregations,
+  footerAggregations: defaultFooterAggregations,
   getColumnAggregation,
   showFooter = true,
 }: DataTableProps<TData, TValue>) {
@@ -82,6 +84,8 @@ export function DataTable<TData, TValue>({
   });
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<VisibilityState>("data-table-visibility", {});
+  const [footerAggregations, setFooterAggregations] = 
+    React.useState<AggregationConfig[]>(defaultFooterAggregations || []);
   const [_, setSearch] = useQueryStates(searchParamsParser);
 
   const table = useReactTable({
@@ -151,6 +155,8 @@ export function DataTable<TData, TValue>({
       sorting={sorting}
       pagination={pagination}
       grouping={grouping}
+      footerAggregations={footerAggregations}
+      setFooterAggregations={setFooterAggregations}
     >
       <div className="flex h-full w-full flex-col gap-3 sm:flex-row">
         <div
@@ -164,6 +170,7 @@ export function DataTable<TData, TValue>({
         <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
           <DataTableFilterCommand searchParamsParser={searchParamsParser} />
           <DataTableToolbar />
+          <DataTableFooterButtons />
           <DataTableGroupButtons />
           <div className="rounded-md border">
             <Table>
