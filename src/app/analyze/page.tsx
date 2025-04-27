@@ -14,8 +14,6 @@ export default async function Page({
 }) {
   const search = searchParamsCache.parse(await searchParams);
 
-  console.log(defaultAggregations, 'defaultAggregations')
-  const footerAggregations = (defaultAggregations ?? [])?.slice(0, 3);
   return (
     <React.Suspense fallback={<Skeleton />}>
       <DataTable
@@ -31,7 +29,7 @@ export default async function Page({
             value,
           }))
           .filter(({ value }) => value ?? undefined)}
-        footerAggregations={footerAggregations}
+        footerAggregations={defaultAggregations.slice(1, 3)}
       />
     </React.Suspense>
   );

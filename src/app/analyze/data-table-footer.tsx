@@ -1,28 +1,28 @@
 "use client";
 
 import { TableCell, TableFooter, TableRow } from "@/components/custom/table";
-import { Table, flexRender } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { AggregationType, AggregationConfig } from "../../components/data-table/aggregations";
+import { AggregationType } from "../../components/data-table/aggregations";
+import { useDataTable } from "@/components/data-table/data-table-provider";
 
 
 
 // Define props for the DataTableFooter component
 export interface DataTableFooterProps<TData> {
-  table: Table<TData>;
-  aggregations?: AggregationConfig[];
   getColumnAggregation?: (columnId: string, type: AggregationType, values: any[]) => React.ReactNode;
 }
 
 export function DataTableFooter<TData>({
-  table,
-  aggregations = [],
   getColumnAggregation,
 }: DataTableFooterProps<TData>) {
-  // Get only the current page rows
+  "use no memo";
+  
+  const { footerAggregations = [], table } = useDataTable();
   const pageRows = table.getRowModel().rows;
-  const columns = table.getAllColumns();
+  console.log(pageRows, 'pageRows');
+  const columns = table.getVisibleFlatColumns();
 
 
   // Default implementation for column aggregation
@@ -93,19 +93,18 @@ export function DataTableFooter<TData>({
 
           const sum = numericValues.reduce((acc, val) => acc + val, 0);
           const avg = sum / numericValues.length;
-          const roundedAvg = avg;
 
           // If the column has a cell renderer, try to use it
           if (columnDef.cell && typeof columnDef.cell !== 'string') {
             try {
-              return flexRender(columnDef.cell, createMockContext(roundedAvg));
+              return flexRender(columnDef.cell, createMockContext(avg));
             } catch (e) {
               // Fallback
-              return <span className="font-mono">{roundedAvg.toFixed(2)}</span>;
+              return <span className="font-mono">{avg.toFixed(2)}</span>;
             }
           }
 
-          return <span className="font-mono">{roundedAvg.toFixed(2)}</span>;
+          return <span className="font-mono">{avg.toFixed(2)}</span>;
         }
         return null;
 
@@ -133,7 +132,7 @@ export function DataTableFooter<TData>({
 
   return (
     <TableFooter className="bg-muted/50">
-      {aggregations.map((aggregation, index) => (
+      {footerAggregations.map((aggregation, index) => (
         <TableRow
           key={`${aggregation.type}-row`}
           className={cn(
@@ -146,7 +145,6 @@ export function DataTableFooter<TData>({
 
             // Get values for this column
             const values = pageRows.map(row => row.getValue(columnId));
-            console.log(values, 'values', values.length);
             const content = getAggregation(columnId, aggregation.type, values);
 
             return (

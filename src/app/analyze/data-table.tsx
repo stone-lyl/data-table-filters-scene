@@ -60,7 +60,6 @@ export interface DataTableProps<TData, TValue> {
   // Footer configuration
   footerAggregations?: AggregationConfig[];
   getColumnAggregation?: (columnId: string, type: string, values: any[]) => React.ReactNode;
-  showFooter?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -71,7 +70,6 @@ export function DataTable<TData, TValue>({
   filterFields = [],
   footerAggregations: defaultFooterAggregations,
   getColumnAggregation,
-  showFooter = true,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
@@ -260,13 +258,7 @@ export function DataTable<TData, TValue>({
                   </TableRow>
                 )}
               </TableBody>
-              {showFooter && (
-                <DataTableFooter 
-                  table={table} 
-                  aggregations={footerAggregations}
-                  getColumnAggregation={getColumnAggregation}
-                />
-              )}
+              <DataTableFooter getColumnAggregation={getColumnAggregation} />
             </Table>
           </div>
           <DataTablePagination />
