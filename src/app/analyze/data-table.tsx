@@ -7,6 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableFooter,
 } from "@/components/custom/table";
 import { DataTableFilterCommand } from "@/components/data-table/data-table-filter-command";
 import { DataTableFilterControls } from "@/components/data-table/data-table-filter-controls";
@@ -18,6 +19,7 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DataTableGroupButtons } from "@/components/data-table/data-table-group-buttons";
+import { DataTableFooter, AggregationConfig } from "./data-table-footer";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type {
   ColumnDef,
@@ -53,6 +55,11 @@ export interface DataTableProps<TData, TValue> {
   defaultGrouping?: GroupingState;
   // TODO: add sortingColumnFilters
   filterFields?: DataTableFilterField<TData>[];
+  // Footer configuration
+  footerAggregations?: AggregationConfig[];
+  footerFormatters?: Record<string, (value: any) => React.ReactNode>;
+  getColumnAggregation?: (columnId: string, type: string, values: any[]) => React.ReactNode;
+  showFooter?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -61,6 +68,10 @@ export function DataTable<TData, TValue>({
   defaultColumnFilters = [],
   defaultGrouping = [],
   filterFields = [],
+  footerAggregations,
+  footerFormatters,
+  getColumnAggregation,
+  showFooter = true,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
@@ -244,6 +255,14 @@ export function DataTable<TData, TValue>({
                   </TableRow>
                 )}
               </TableBody>
+              {showFooter && (
+                <DataTableFooter 
+                  table={table} 
+                  aggregations={footerAggregations}
+                  formatters={footerFormatters}
+                  getColumnAggregation={getColumnAggregation}
+                />
+              )}
             </Table>
           </div>
           <DataTablePagination />
