@@ -20,7 +20,7 @@ export default async function Page({
         data={data}
         filterFields={filterFields}
         defaultGrouping={[
-          "firstName"
+          // "firstName"
         ]}
         defaultColumnFilters={Object.entries(search)
           .map(([key, value]) => ({

@@ -6,7 +6,7 @@ import { tagColor } from "@/constants/tag";
 import { isArrayOfDates, isArrayOfNumbers } from "@/lib/is-array";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format, isSameDay } from "date-fns";
-import { Check, Minus } from "lucide-react";
+import { Check, DollarSign, Minus } from "lucide-react";
 import type { ColumnSchema } from "./types";
 
 // Helper function to get unique values from arrays
@@ -200,5 +200,49 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       }
       return false;
     },
+  },
+  {
+    accessorKey: "cost",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Cost (USD)" />
+    ),
+    cell: ({ row }) => {
+      const value = row.getValue("cost");
+      
+      if (typeof value === "undefined") {
+        return <Minus className="h-4 w-4 text-muted-foreground/50" />;
+      }
+
+      // Format as USD currency
+      const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+
+      return (
+        <div className="flex items-center">
+          <DollarSign className="h-4 w-4 mr-1 text-emerald-600" />
+          <span className="font-mono font-medium">
+            {formatter.format(value as number)}
+          </span>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      const rowValue = row.getValue(id) as number;
+      if (typeof value === "number") return value === Number(rowValue);
+      if (Array.isArray(value) && isArrayOfNumbers(value)) {
+        if (value.length === 1) {
+          return value[0] === rowValue;
+        } else {
+          const sorted = value.sort((a, b) => a - b);
+          return sorted[0] <= rowValue && rowValue <= sorted[1];
+        }
+      }
+      return false;
+    },
+    enableGrouping: true,
   },
 ];

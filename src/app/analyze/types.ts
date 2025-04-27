@@ -12,4 +12,5 @@ export type ColumnSchema = {
   tags: (typeof TAGS)[number][];
   date: Date;
   p95?: number | undefined;
+  cost?: number | undefined;
 };

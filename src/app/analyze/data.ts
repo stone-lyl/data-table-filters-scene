@@ -13,6 +13,7 @@ export const data = [
     regions: ["ams", "gru", "syd"],
     tags: ["api", "enterprise"],
     date: subHours(new Date(), 1),
+    cost: 1250.75,
   },
   {
     // name: "Lambda Api",
@@ -25,6 +26,7 @@ export const data = [
     regions: ["ams", "gru", "syd"],
     tags: ["api"],
     date: subHours(new Date(), 10),
+    cost: 875.50,
   },
 
   {
@@ -38,6 +40,7 @@ export const data = [
     regions: ["iad", "fra"],
     tags: ["app"],
     date: subHours(new Date(), 13),
+    cost: 3200.00,
   },
   {
     // name: "Demo",
@@ -50,6 +53,7 @@ export const data = [
     regions: ["iad"],
     tags: ["web", "enterprise"],
     date: subDays(new Date(), 4),
+    cost: 450.25,
   },
   {
     // name: "Documentation",
@@ -62,6 +66,7 @@ export const data = [
     regions: ["ams"],
     tags: ["api", "web"],
     date: subDays(new Date(), 6),
+    cost: 125.99,
   },
   {
     // name: "Boilerplate",
@@ -74,6 +79,7 @@ export const data = [
     regions: ["gru", "fra"],
     tags: ["web"],
     date: subDays(new Date(), 10),
+    cost: 0,
   },
   {
     // name: "Dashboard",
@@ -86,6 +92,7 @@ export const data = [
     regions: ["iad", "fra"],
     tags: ["web"],
     date: subHours(new Date(), 28),
+    cost: 750.49,
   },
   {
     // name: "E2E Testing",
@@ -98,6 +105,7 @@ export const data = [
     regions: ["iad"],
     tags: ["web"],
     date: subDays(new Date(), 12),
+    cost: 1899.99,
   },
   {
     // name: "Web App",
@@ -110,6 +118,7 @@ export const data = [
     regions: ["iad"],
     tags: ["web"],
     date: subDays(new Date(), 15),
+    cost: 2500.00,
   },
   {
     // name: "Admin Panel",
@@ -122,6 +131,7 @@ export const data = [
     regions: ["gru", "syd"],
     tags: ["web"],
     date: subHours(new Date(), 5),
+    cost: 1050.75,
   },
   {
     // name: "API Gateway",
@@ -134,6 +144,7 @@ export const data = [
     regions: ["ams", "hkg"],
     tags: ["api", "enterprise"],
     date: subHours(new Date(), 3),
+    cost: 5250.50,
   },
   {
     // name: "Analytics Service",
@@ -146,6 +157,7 @@ export const data = [
     regions: ["iad", "fra", "hkg"],
     tags: ["app", "enterprise"],
     date: subDays(new Date(), 2),
+    cost: 8750.25,
   },
   {
     // name: "Storybook",
@@ -158,6 +170,7 @@ export const data = [
     regions: ["iad"],
     tags: ["web"],
     date: subMinutes(new Date(), 10),
+    cost: 350.00,
   },
   {
     // name: "Marketing",
@@ -170,6 +183,7 @@ export const data = [
     regions: ["hkg", "fra", "iad"],
     tags: ["web"],
     date: subDays(new Date(), 1),
+    cost: 12500.99,
   },
   {
     // name: "Support Portal",
@@ -182,6 +196,7 @@ export const data = [
     regions: ["gru", "iad"],
     tags: ["web"],
     date: subMinutes(new Date(), 30),
+    cost: 950.25,
   },
   {
     // name: "User Management",
@@ -194,6 +209,7 @@ export const data = [
     regions: ["gru", "syd", "fra"],
     tags: ["app"],
     date: subDays(new Date(), 7),
+    cost: 1850.50,
   },
   {
     // name: "Payment Gateway",
@@ -206,6 +222,7 @@ export const data = [
     regions: ["ams", "hkg", "syd"],
     tags: ["api", "enterprise"],
     date: subHours(new Date(), 8),
+    cost: 7500.00,
   },
   {
     // name: "Notification Service",
@@ -218,6 +235,7 @@ export const data = [
     regions: ["iad"],
     tags: ["api"],
     date: subDays(new Date(), 11),
+    cost: 625.75,
   },
   {
     // name: "File Storage",
@@ -230,6 +248,7 @@ export const data = [
     regions: ["gru", "hkg"],
     tags: ["web", "enterprise"],
     date: subDays(new Date(), 3),
+    cost: 4250.50,
   },
   {
     // name: "CDN",
@@ -242,6 +261,7 @@ export const data = [
     regions: ["ams", "iad", "hkg"],
     tags: ["web"],
     date: subDays(new Date(), 2),
+    cost: 9999.99,
   },
   {
     // name: "Auth Service",
@@ -254,5 +274,6 @@ export const data = [
     regions: ["gru", "syd"],
     tags: ["api"],
     date: subHours(new Date(), 16),
+    cost: 2100.25,
   },
 ] satisfies ColumnSchema[];
