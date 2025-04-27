@@ -145,12 +145,12 @@ export function DataTableFooter<TData>({
   const getAggregation = getColumnAggregation || defaultGetColumnAggregation;
 
   return (
-    <TableFooter className="bg-transparent">
+    <TableFooter className="bg-muted/50">
       {aggregations.map((aggregation, index) => (
         <TableRow
           key={`${aggregation.type}-row`}
           className={cn(
-            "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
+            "hover:bg-transparent border-b transition-colors",
             index === 0 ? 'border-t border-muted' : ''
           )}
         >
@@ -163,12 +163,17 @@ export function DataTableFooter<TData>({
             const content = getAggregation(columnId, aggregation.type, values);
 
             return (
-              <TableCell key={`${aggregation.type}-${columnId}`} className="font-medium">
+              <TableCell 
+                key={`${aggregation.type}-${columnId}`} 
+                className={cn("font-medium")}
+              >
                 <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-1 h-2 text-xs text-black">
-                    {colIndex === 0 ? aggregation.label : ''}
+                  <div className="flex text-xs items-center gap-1 h-4 font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-wider">
+                    {colIndex === 0 && aggregation.label}
                   </div>
-                  {content}
+                  <div className="text-muted-foreground">
+                    {content}
+                  </div>
                 </div>
               </TableCell>
             );
