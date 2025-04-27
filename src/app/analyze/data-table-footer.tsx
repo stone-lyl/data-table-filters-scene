@@ -21,7 +21,6 @@ export function DataTableFooter<TData>({
   
   const { footerAggregations = [], table } = useDataTable();
   const pageRows = table.getRowModel().rows;
-  console.log(pageRows, 'pageRows');
   const columns = table.getVisibleFlatColumns();
 
 
