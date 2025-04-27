@@ -20,7 +20,6 @@ export interface AggregationConfig {
 export interface DataTableFooterProps<TData> {
   table: Table<TData>;
   aggregations?: AggregationConfig[];
-  formatters?: Record<string, (value: any) => React.ReactNode>;
   getColumnAggregation?: (columnId: string, type: AggregationType, values: any[]) => React.ReactNode;
 }
 
@@ -32,27 +31,12 @@ export function DataTableFooter<TData>({
     { type: 'sum', label: 'Sum', icon: <Plus className="h-4 w-4 text-muted-foreground" /> },
     { type: 'percentage', label: 'Percentage', icon: <Percent className="h-4 w-4 text-muted-foreground" /> }
   ],
-  formatters = {},
   getColumnAggregation,
 }: DataTableFooterProps<TData>) {
   // Get only the current page rows
   const pageRows = table.getRowModel().rows;
   const columns = table.getAllColumns();
 
-  // Default formatter for currency values
-  const defaultFormatters = {
-    currency: (value: number) => {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }).format(value);
-    }
-  };
-
-  // Combine default formatters with user-provided ones
-  const allFormatters = { ...defaultFormatters, ...formatters };
 
   // Default implementation for column aggregation
   const defaultGetColumnAggregation = (columnId: string, type: AggregationType, values: any[]): React.ReactNode => {
@@ -66,9 +50,8 @@ export function DataTableFooter<TData>({
     const columnDef = column.columnDef as any;
     
     // Determine column type based on data values
-    const isNumeric = values.some(v => typeof v === 'number') && columnId !== 'active' && columnId !== 'public';
-    const isBoolean = values.some(v => typeof v === 'boolean') || columnId === 'active' || columnId === 'public';
-    const isCurrency = columnId === 'cost';
+    const isNumeric = values.some(v => typeof v === 'number');
+    const isBoolean = values.some(v => typeof v === 'boolean');
 
     // Create a mock row context for rendering cells
     const createMockContext = (value: any) => {
@@ -112,11 +95,6 @@ export function DataTableFooter<TData>({
             }
           }
 
-          // Fallback formatting
-          if (isCurrency && allFormatters.currency) {
-            return <span className="font-mono">{allFormatters.currency(sum)}</span>;
-          }
-
           return <span className="font-mono">{sum}</span>;
         }
         return null;
@@ -138,11 +116,6 @@ export function DataTableFooter<TData>({
               // Fallback
               return <span className="font-mono">{roundedAvg.toFixed(2)}</span>;
             }
-          }
-
-          // Fallback formatting
-          if (isCurrency && allFormatters.currency) {
-            return <span className="font-mono">{allFormatters.currency(avg)}</span>;
           }
 
           return <span className="font-mono">{roundedAvg.toFixed(2)}</span>;

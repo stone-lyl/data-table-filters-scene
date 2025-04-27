@@ -114,12 +114,12 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     ),
     cell: ({ row }) => {
       const value = row.getValue("p95");
-      if (typeof value === "undefined") {
+      if (typeof value === "undefined" || typeof value !== "number") {
         return <Minus className="h-4 w-4 text-muted-foreground/50" />;
       }
       return (
         <div>
-          <span className="font-mono">{`${value}`}</span> ms
+          <span className="font-mono">{`${Math.round(value)}`}</span> ms
         </div>
       );
     },
@@ -230,7 +230,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         </div>
       );
     },
-    aggregationFn: 'sum',
     filterFn: (row, id, value) => {
       const rowValue = row.getValue(id) as number;
       if (typeof value === "number") return value === Number(rowValue);
