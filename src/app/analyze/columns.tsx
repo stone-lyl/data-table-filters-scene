@@ -6,32 +6,8 @@ import { tagColor } from "@/constants/tag";
 import { isArrayOfDates, isArrayOfNumbers } from "@/lib/is-array";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format, isSameDay } from "date-fns";
-import { Check, DollarSign, Minus } from "lucide-react";
+import { Check, Minus } from "lucide-react";
 import type { ColumnSchema } from "./types";
-
-// Helper function to get unique values from arrays
-const getUniqueValues = (values: any[]): string => {
-  // Handle arrays of arrays (like regions, tags)
-  const flatValues = values.flatMap(v => Array.isArray(v) ? v : [v]);
-  const uniqueValues = Array.from(new Set(flatValues));
-  return uniqueValues.join(', ');
-};
-
-// Helper function to count true values
-const countTrueValues = (values: boolean[]): string => {
-  const trueCount = values.filter(Boolean).length;
-  return `${trueCount}/${values.length}`;
-};
-
-// Helper function to calculate average for numeric values
-const calculateAverage = (values: number[]): string => {
-  const validValues = values.filter(v => typeof v === 'number');
-  if (validValues.length === 0) return 'N/A';
-  
-  const sum = validValues.reduce((acc, val) => acc + val, 0);
-  const avg = sum / validValues.length;
-  return `${Math.round(avg)} ms (avg)`;
-};
 
 export const columns: ColumnDef<ColumnSchema>[] = [
   // {
@@ -223,7 +199,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
 
       return (
         <div className="flex items-center">
-          <DollarSign className="h-4 w-4 mr-1 text-emerald-600" />
           <span className="font-mono font-medium">
             {formatter.format(value as number)}
           </span>
