@@ -230,6 +230,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         </div>
       );
     },
+    aggregationFn: 'sum',
     filterFn: (row, id, value) => {
       const rowValue = row.getValue(id) as number;
       if (typeof value === "number") return value === Number(rowValue);

@@ -2,8 +2,9 @@
 
 import { TableCell, TableFooter, TableRow } from "@/components/custom/table";
 import { Calculator, ArrowDownUp, Plus, Percent } from "lucide-react";
-import { Table, ColumnDef } from "@tanstack/react-table";
+import { Table, flexRender } from "@tanstack/react-table";
 import * as React from "react";
+import { cn } from "@/lib/utils";
 
 // Define the available aggregation types
 export type AggregationType = 'count' | 'sum' | 'average' | 'percentage';
@@ -37,7 +38,7 @@ export function DataTableFooter<TData>({
   // Get only the current page rows
   const pageRows = table.getRowModel().rows;
   const columns = table.getAllColumns();
-  
+
   // Default formatter for currency values
   const defaultFormatters = {
     currency: (value: number) => {
@@ -49,93 +50,110 @@ export function DataTableFooter<TData>({
       }).format(value);
     }
   };
-  
+
   // Combine default formatters with user-provided ones
   const allFormatters = { ...defaultFormatters, ...formatters };
-  
+
   // Default implementation for column aggregation
   const defaultGetColumnAggregation = (columnId: string, type: AggregationType, values: any[]): React.ReactNode => {
     // Skip empty values
     if (values.length === 0) return null;
-    
+
     // Get column definition if available
-    const columnDef = table.getColumn(columnId)?.columnDef as any;
-    const meta = columnDef?.meta || {};
+    const column = table.getColumn(columnId);
+    if (!column) return null;
+
+    const columnDef = column.columnDef as any;
     
-    // Identify column types based on data or metadata
-    const isNumeric = meta.isNumeric || 
-      (values.some(v => typeof v === 'number') && columnId !== 'active' && columnId !== 'public');
-    const isBoolean = meta.isBoolean || 
-      (values.some(v => typeof v === 'boolean') || columnId === 'active' || columnId === 'public');
-    const isCurrency = meta.isCurrency || columnId === 'cost';
-    
+    // Determine column type based on data values
+    const isNumeric = values.some(v => typeof v === 'number') && columnId !== 'active' && columnId !== 'public';
+    const isBoolean = values.some(v => typeof v === 'boolean') || columnId === 'active' || columnId === 'public';
+    const isCurrency = columnId === 'cost';
+
+    // Create a mock row context for rendering cells
+    const createMockContext = (value: any) => {
+      return {
+        table,
+        column,
+        row: {
+          getValue: () => value,
+          original: { [columnId]: value },
+          id: 'aggregation-row',
+          index: -1,
+        },
+        cell: {
+          id: `${columnId}-aggregation`,
+          getValue: () => value,
+        },
+        renderValue: () => value,
+      };
+    };
+
     // Format based on aggregation type and column type
     switch (type) {
       case 'count':
-        if (columnId === 'firstName') {
-          return (
-            <div className="flex items-center gap-1">
-              <span className="font-medium">{values.length}</span>
-              <span className="text-xs text-muted-foreground">rows</span>
-            </div>
-          );
-        }
         return values.length > 0 ? values.length : null;
-        
+
       case 'sum':
         if (isNumeric) {
           const numericValues = values.filter(v => typeof v === 'number') as number[];
           if (numericValues.length === 0) return null;
-          
+
           const sum = numericValues.reduce((acc, val) => acc + val, 0);
-          
-          if (isCurrency && allFormatters.currency) {
-            return (
-              <span className="font-mono font-medium">
-                {allFormatters.currency(sum)}
-              </span>
-            );
+
+          // If the column has a cell renderer, use it for consistent formatting
+          if (columnDef.cell && typeof columnDef.cell !== 'string') {
+            try {
+              // Try to use the column's cell renderer for consistent formatting
+              return flexRender(columnDef.cell, createMockContext(sum));
+            } catch (e) {
+              // Fallback to basic formatting if cell renderer fails
+              return <span className="font-mono">{sum}</span>;
+            }
           }
-          
-          return (
-            <div className="flex items-center gap-1">
-              <span className="font-mono font-medium">{sum}</span>
-              {columnId === 'p95' && <span className="text-xs">ms</span>}
-            </div>
-          );
+
+          // Fallback formatting
+          if (isCurrency && allFormatters.currency) {
+            return <span className="font-mono">{allFormatters.currency(sum)}</span>;
+          }
+
+          return <span className="font-mono">{sum}</span>;
         }
         return null;
-        
+
       case 'average':
         if (isNumeric) {
           const numericValues = values.filter(v => typeof v === 'number') as number[];
           if (numericValues.length === 0) return null;
-          
+
           const sum = numericValues.reduce((acc, val) => acc + val, 0);
           const avg = sum / numericValues.length;
-          
-          if (isCurrency && allFormatters.currency) {
-            return (
-              <span className="font-mono font-medium">
-                {allFormatters.currency(avg)}
-              </span>
-            );
+          const roundedAvg = avg;
+
+          // If the column has a cell renderer, try to use it
+          if (columnDef.cell && typeof columnDef.cell !== 'string') {
+            try {
+              return flexRender(columnDef.cell, createMockContext(roundedAvg));
+            } catch (e) {
+              // Fallback
+              return <span className="font-mono">{roundedAvg.toFixed(2)}</span>;
+            }
           }
-          
-          return (
-            <div className="flex items-center gap-1">
-              <span className="font-mono font-medium">{columnId === 'p95' ? Math.round(avg) : avg.toFixed(2)}</span>
-              {columnId === 'p95' && <span className="text-xs">ms</span>}
-            </div>
-          );
+
+          // Fallback formatting
+          if (isCurrency && allFormatters.currency) {
+            return <span className="font-mono">{allFormatters.currency(avg)}</span>;
+          }
+
+          return <span className="font-mono">{roundedAvg.toFixed(2)}</span>;
         }
         return null;
-        
+
       case 'percentage':
         if (isBoolean) {
           const trueCount = values.filter(Boolean).length;
           const percentage = Math.round((trueCount / values.length) * 100);
-          
+
           return (
             <div className="flex items-center gap-1">
               <span className="font-medium">{percentage}%</span>
@@ -144,47 +162,41 @@ export function DataTableFooter<TData>({
           );
         }
         return null;
-        
+
       default:
         return null;
     }
   };
-  
+
   // Use custom or default aggregation function
   const getAggregation = getColumnAggregation || defaultGetColumnAggregation;
-  
+
   return (
-    <TableFooter>
+    <TableFooter className="bg-transparent">
       {aggregations.map((aggregation, index) => (
-        <TableRow 
-          key={`${aggregation.type}-row`} 
-          className={`hover:bg-muted/30 ${index === 0 ? 'border-t-2 border-muted' : ''}`}
+        <TableRow
+          key={`${aggregation.type}-row`}
+          className={cn(
+            "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
+            index === 0 ? 'border-t border-muted' : ''
+          )}
         >
-          {columns.map(column => {
+          {columns.map((column, colIndex) => {
             const columnId = column.id;
-            
-            // First column shows the aggregation type label
-            if (columnId === 'firstName') {
-              return (
-                <TableCell key={`${aggregation.type}-${columnId}`} className="font-medium">
-                  <div className="flex items-center gap-1">
-                    {aggregation.icon}
-                    <span>{aggregation.label}</span>
-                  </div>
-                </TableCell>
-              );
-            }
-            
+
             // Get values for this column
             const values = pageRows.map(row => row.getValue(columnId));
-            
-            // Get the aggregation content
+            console.log(values, 'values', values.length);
             const content = getAggregation(columnId, aggregation.type, values);
-            
-            // Return the cell with content or empty
+
             return (
-              <TableCell key={`${aggregation.type}-${columnId}`}>
-                {content}
+              <TableCell key={`${aggregation.type}-${columnId}`} className="font-medium">
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1 h-2 text-xs text-black">
+                    {colIndex === 0 ? aggregation.label : ''}
+                  </div>
+                  {content}
+                </div>
               </TableCell>
             );
           })}
