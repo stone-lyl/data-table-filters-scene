@@ -1,16 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Table } from "@tanstack/react-table";
 import * as React from "react";
+import { useDataTable } from "./data-table-provider";
 
-interface DataTableGroupButtonsProps<TData> {
-  table: Table<TData>;
-}
+export function DataTableGroupButtons() {
+  const { table, grouping } = useDataTable();
 
-export function DataTableGroupButtons<TData>({
-  table,
-}: DataTableGroupButtonsProps<TData>) {
   return (
     <div className="flex gap-2 mb-2">
       {table.getAllLeafColumns().map(column => {
@@ -20,7 +16,7 @@ export function DataTableGroupButtons<TData>({
         return (
           <Button
             key={column.id}
-            variant={column.getIsGrouped() ? "default" : "outline"}
+            variant={grouping.includes(column.id) ? "default" : "outline"}
             size="sm"
             onClick={() => {
               column.getToggleGroupingHandler()();

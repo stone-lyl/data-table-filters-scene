@@ -42,7 +42,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "firstName",
     header: "First Name",
-    enableGrouping: true,
     cell: ({ row }) => {
       const value = row.getValue("firstName");
       return <div>{`${value}`}</div>;
@@ -51,7 +50,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "lastName",
     header: "Last Name",
-    enableGrouping: true,
     cell: ({ row }) => {
       const value = row.getValue("lastName");
       return <div>{`${value}`}</div>;

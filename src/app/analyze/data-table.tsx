@@ -155,7 +155,7 @@ export function DataTable<TData, TValue>({
         <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
           <DataTableFilterCommand searchParamsParser={searchParamsParser} />
           <DataTableToolbar />
-          <DataTableGroupButtons table={table} />
+          <DataTableGroupButtons />
           <div className="rounded-md border">
             <Table>
               <TableHeader className="bg-muted/50">
@@ -187,7 +187,7 @@ export function DataTable<TData, TValue>({
                       data-state={row.getIsSelected() && "selected"}
                     >
                       {row.getVisibleCells().map((cell) => {
-                        console.log("cell", cell);
+                        // console.log("cell", cell);
                         // Add special rendering for grouped cells
                         if (cell.getIsGrouped()) {
                           return (
