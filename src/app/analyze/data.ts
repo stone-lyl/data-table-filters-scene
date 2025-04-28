@@ -1,5 +1,6 @@
 import { subDays, subHours, subMinutes } from "date-fns";
 import type { ColumnSchema } from "./types";
+import Decimal from "decimal.js-light";
 
 export const data = [
   {
@@ -14,6 +15,8 @@ export const data = [
     tags: ["api", "enterprise"],
     date: subHours(new Date(), 1),
     cost: 1250.75,
+    bigNumber: "9007199254740992", // 2^53 (JS max safe integer + 1)
+    btcAmount: "1.23456789", // 8 decimal places
   },
   {
     // name: "Lambda Api",
@@ -27,6 +30,8 @@ export const data = [
     tags: ["api"],
     date: subHours(new Date(), 10),
     cost: 875.50,
+    bigNumber: "18014398509481984", // 2^54
+    btcAmount: "0.00123456", // 8 decimal places
   },
 
   {
@@ -41,6 +46,8 @@ export const data = [
     tags: ["app"],
     date: subHours(new Date(), 13),
     cost: 3200.00,
+    bigNumber: "36028797018963968", // 2^55
+    btcAmount: "2.50000000", // 8 decimal places
   },
   {
     // name: "Demo",
@@ -54,6 +61,8 @@ export const data = [
     tags: ["web", "enterprise"],
     date: subDays(new Date(), 4),
     cost: 450.25,
+    bigNumber: "72057594037927936", // 2^56
+    btcAmount: "0.10000001", // 8 decimal places
   },
   {
     // name: "Documentation",
@@ -67,6 +76,8 @@ export const data = [
     tags: ["api", "web"],
     date: subDays(new Date(), 6),
     cost: 125.99,
+    bigNumber: "144115188075855872", // 2^57
+    btcAmount: "5.67890123", // 8 decimal places
   },
   {
     // name: "Boilerplate",
@@ -80,6 +91,8 @@ export const data = [
     tags: ["web"],
     date: subDays(new Date(), 10),
     cost: 0,
+    bigNumber: "288230376151711744", // 2^58
+    btcAmount: "0.00000001", // 8 decimal places (smallest unit)
   },
   {
     // name: "Dashboard",
@@ -93,6 +106,8 @@ export const data = [
     tags: ["web"],
     date: subHours(new Date(), 28),
     cost: 750.49,
+    bigNumber: "576460752303423488", // 2^59
+    btcAmount: "10.00000000", // 8 decimal places
   },
   {
     // name: "E2E Testing",
@@ -106,6 +121,8 @@ export const data = [
     tags: ["web"],
     date: subDays(new Date(), 12),
     cost: 1899.99,
+    bigNumber: "1152921504606846976", // 2^60
+    btcAmount: "0.12345678", // 8 decimal places
   },
   {
     // name: "Web App",
@@ -119,6 +136,8 @@ export const data = [
     tags: ["web"],
     date: subDays(new Date(), 15),
     cost: 2500.00,
+    bigNumber: "2305843009213693952", // 2^61
+    btcAmount: "3.14159265", // 8 decimal places (truncated)
   },
   {
     // name: "Admin Panel",
@@ -132,6 +151,8 @@ export const data = [
     tags: ["web"],
     date: subHours(new Date(), 5),
     cost: 1050.75,
+    bigNumber: "4611686018427387904", // 2^62
+    btcAmount: "0.87654321", // 8 decimal places
   },
   {
     // name: "API Gateway",
@@ -145,6 +166,8 @@ export const data = [
     tags: ["api", "enterprise"],
     date: subHours(new Date(), 3),
     cost: 5250.50,
+    bigNumber: "9223372036854775808", // 2^63
+    btcAmount: "21.00000000", // 8 decimal places (max supply)
   },
   {
     // name: "Analytics Service",
@@ -158,6 +181,8 @@ export const data = [
     tags: ["app", "enterprise"],
     date: subDays(new Date(), 2),
     cost: 8750.25,
+    bigNumber: "18446744073709551616", // 2^64
+    btcAmount: "0.00050000", // 8 decimal places
   },
   {
     // name: "Storybook",
@@ -171,6 +196,8 @@ export const data = [
     tags: ["web"],
     date: subMinutes(new Date(), 10),
     cost: 350.00,
+    bigNumber: "36893488147419103232", // 2^65
+    btcAmount: "1.00000000", // 8 decimal places
   },
   {
     // name: "Marketing",
@@ -184,6 +211,8 @@ export const data = [
     tags: ["web"],
     date: subDays(new Date(), 1),
     cost: 12500.99,
+    bigNumber: "73786976294838206464", // 2^66
+    btcAmount: "0.33333333", // 8 decimal places
   },
   {
     // name: "Support Portal",
@@ -197,6 +226,8 @@ export const data = [
     tags: ["web"],
     date: subMinutes(new Date(), 30),
     cost: 950.25,
+    bigNumber: "147573952589676412928", // 2^67
+    btcAmount: "0.05555555", // 8 decimal places
   },
   {
     // name: "User Management",
@@ -210,6 +241,8 @@ export const data = [
     tags: ["app"],
     date: subDays(new Date(), 7),
     cost: 1850.50,
+    bigNumber: "295147905179352825856", // 2^68
+    btcAmount: "0.99999999", // 8 decimal places
   },
   {
     // name: "Payment Gateway",
@@ -223,6 +256,8 @@ export const data = [
     tags: ["api", "enterprise"],
     date: subHours(new Date(), 8),
     cost: 7500.00,
+    bigNumber: "590295810358705651712", // 2^69
+    btcAmount: "0.00000100", // 8 decimal places
   },
   {
     // name: "Notification Service",
@@ -236,6 +271,8 @@ export const data = [
     tags: ["api"],
     date: subDays(new Date(), 11),
     cost: 625.75,
+    bigNumber: "1180591620717411303424", // 2^70
+    btcAmount: "0.01010101", // 8 decimal places
   },
   {
     // name: "File Storage",
@@ -249,6 +286,8 @@ export const data = [
     tags: ["web", "enterprise"],
     date: subDays(new Date(), 3),
     cost: 4250.50,
+    bigNumber: "2361183241434822606848", // 2^71
+    btcAmount: "0.10101010", // 8 decimal places
   },
   {
     // name: "CDN",
@@ -262,6 +301,8 @@ export const data = [
     tags: ["web"],
     date: subDays(new Date(), 2),
     cost: 9999.99,
+    bigNumber: "4722366482869645213696", // 2^72
+    btcAmount: "15.55555555", // 8 decimal places
   },
   {
     // name: "Auth Service",
@@ -275,5 +316,7 @@ export const data = [
     tags: ["api"],
     date: subHours(new Date(), 16),
     cost: 2100.25,
+    bigNumber: "9444732965739290427392", // 2^73
+    btcAmount: "0.00777777", // 8 decimal places
   },
 ] satisfies ColumnSchema[];

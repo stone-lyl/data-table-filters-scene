@@ -8,6 +8,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { format, isSameDay } from "date-fns";
 import { Check, Minus } from "lucide-react";
 import type { ColumnSchema } from "./types";
+import Decimal from "decimal.js-light";
 
 export const columns: ColumnDef<ColumnSchema>[] = [
   // {
@@ -246,6 +247,92 @@ export const columns: ColumnDef<ColumnSchema>[] = [
           return sorted[0] <= rowValue && rowValue <= sorted[1];
         }
       }
+      return false;
+    },
+    enableGrouping: true,
+  },
+  {
+    accessorKey: "bigNumber",
+    meta: {
+      fieldType: 'measure'
+    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Big Number" />
+    ),
+    cell: ({ row }) => {
+      const value = row.getValue("bigNumber");
+      
+      if (typeof value === "undefined") {
+        return <Minus className="h-4 w-4 text-muted-foreground/50" />;
+      }
+
+      try {
+        // Use decimal.js-light for big number calculations
+        const bigNum = new Decimal(value as string);
+        
+        // Calculate double the value to demonstrate decimal.js-light calculations
+        const doubled = bigNum.times(2);
+        
+        return (
+          <div className="flex flex-col">
+            <span className="font-mono text-xs truncate">{value as string}</span>
+            <span className="text-xs text-muted-foreground">Double: {doubled.toString()}</span>
+          </div>
+        );
+      } catch (error) {
+        return <div className="text-destructive">Invalid number</div>;
+      }
+    },
+    filterFn: (row, id, value) => {
+      const rowValue = row.getValue(id) as string;
+      if (typeof value === "string") return rowValue === value;
+      return false;
+    },
+    enableGrouping: true,
+  },
+  {
+    accessorKey: "btcAmount",
+    meta: {
+      fieldType: 'measure'
+    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="BTC Amount" />
+    ),
+    cell: ({ row }) => {
+      const value = row.getValue("btcAmount");
+      
+      if (typeof value === "undefined") {
+        return <Minus className="h-4 w-4 text-muted-foreground/50" />;
+      }
+
+      try {
+        // Use decimal.js-light for precise decimal calculations
+        const btcAmount = new Decimal(value as string);
+        
+        // Format with exactly 8 decimal places
+        const formattedBtc = btcAmount.toFixed(8);
+        
+        // Calculate BTC value in USD at a mock rate of $50,000 per BTC
+        const btcRate = new Decimal(50000);
+        const usdValue = btcAmount.times(btcRate);
+        
+        return (
+          <div className="flex flex-col">
+            <span className="font-mono font-medium">
+              ₿{formattedBtc}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              ≈ ${usdValue.toFixed(2)} USD
+            </span>
+          </div>
+        );
+      } catch (error) {
+        return <div className="text-destructive">Invalid BTC amount</div>;
+      }
+    },
+    filterFn: (row, id, value) => {
+      const rowValue = row.getValue(id) as string;
+      if (typeof value === "string") return rowValue === value;
       return false;
     },
     enableGrouping: true,

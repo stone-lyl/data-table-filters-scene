@@ -13,4 +13,6 @@ export type ColumnSchema = {
   date: Date;
   p95?: number | undefined;
   cost?: number | undefined;
+  bigNumber?: string | undefined;
+  btcAmount?: string | undefined;
 };

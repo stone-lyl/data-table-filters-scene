@@ -6,6 +6,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { AggregationType } from "../../components/data-table/aggregations";
 import { useDataTable } from "@/components/data-table/data-table-provider";
+import Decimal from "decimal.js-light";
 
 
 
@@ -68,7 +69,11 @@ export function DataTableFooter<TData>({
           const numericValues = values.filter(v => typeof v === 'number') as number[];
           if (numericValues.length === 0) return null;
 
-          const sum = numericValues.reduce((acc, val) => acc + val, 0);
+          // Use decimal.js-light for precise calculation
+          const sum = numericValues.reduce((acc, val) => {
+            const decimalAcc = new Decimal(acc);
+            return decimalAcc.plus(new Decimal(val)).toNumber();
+          }, 0);
 
           // If the column has a cell renderer, use it for consistent formatting
           if (columnDef.cell && typeof columnDef.cell !== 'string') {
@@ -90,8 +95,15 @@ export function DataTableFooter<TData>({
           const numericValues = values.filter(v => typeof v === 'number') as number[];
           if (numericValues.length === 0) return null;
 
-          const sum = numericValues.reduce((acc, val) => acc + val, 0);
-          const avg = sum / numericValues.length;
+          // Use decimal.js-light for precise calculation
+          const decimalSum = numericValues.reduce((acc, val) => {
+            const decimalAcc = new Decimal(acc);
+            return decimalAcc.plus(new Decimal(val));
+          }, new Decimal(0));
+          
+          const decimalLength = new Decimal(numericValues.length);
+          const decimalAvg = decimalSum.dividedBy(decimalLength);
+          const avg = decimalAvg.toNumber();
 
           // If the column has a cell renderer, try to use it
           if (columnDef.cell && typeof columnDef.cell !== 'string') {
@@ -99,18 +111,23 @@ export function DataTableFooter<TData>({
               return flexRender(columnDef.cell, createMockContext(avg));
             } catch (e) {
               // Fallback
-              return <span className="font-mono">{avg.toFixed(2)}</span>;
+              return <span className="font-mono">{decimalAvg.toFixed(2)}</span>;
             }
           }
 
-          return <span className="font-mono">{avg.toFixed(2)}</span>;
+          return <span className="font-mono">{decimalAvg.toFixed(2)}</span>;
         }
         return null;
 
       case 'percentage':
         if (isBoolean) {
           const trueCount = values.filter(Boolean).length;
-          const percentage = Math.round((trueCount / values.length) * 100);
+          
+          // Use decimal.js-light for precise percentage calculation
+          const decimalTrueCount = new Decimal(trueCount);
+          const decimalTotal = new Decimal(values.length);
+          const decimalPercentage = decimalTrueCount.dividedBy(decimalTotal).times(100);
+          const percentage = decimalPercentage.toNumber().toFixed(0);
 
           return (
             <div className="flex items-center gap-1">
