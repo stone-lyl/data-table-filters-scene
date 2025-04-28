@@ -1,5 +1,7 @@
 import type { JSX } from "react";
 
+export type FieldType = 'dimension' | 'measure';
+
 export type SearchParams = {
   [key: string]: string | string[] | undefined;
 };

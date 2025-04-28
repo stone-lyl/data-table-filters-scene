@@ -17,6 +17,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   // },
   {
     accessorKey: "firstName",
+    meta: {
+      fieldType: 'dimension'
+    },
     header: "First Name",
     cell: ({ row }) => {
       const value = row.getValue("firstName");
@@ -25,6 +28,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   },
   {
     accessorKey: "lastName",
+    meta: {
+      fieldType: 'dimension'
+    },
     header: "Last Name",
     cell: ({ row }) => {
       const value = row.getValue("lastName");
@@ -33,6 +39,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   },
   {
     accessorKey: "url",
+    meta: {
+      fieldType: 'dimension'
+    },
     header: "URL",
     cell: ({ row }) => {
       const value = row.getValue("url");
@@ -41,6 +50,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   },
   {
     accessorKey: "regions",
+    meta: {
+      fieldType: 'dimension'
+    },
     header: "Regions",
     cell: ({ row }) => {
       const value = row.getValue("regions");
@@ -59,6 +71,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   },
   {
     accessorKey: "tags",
+    meta: {
+      fieldType: 'dimension'
+    },
     header: "Tags",
     cell: ({ row }) => {
       const value = row.getValue("tags") as string | string[];
@@ -85,6 +100,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   },
   {
     accessorKey: "p95",
+    meta: {
+      fieldType: 'measure'
+    },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="P95" />
     ),
@@ -115,6 +133,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   },
   {
     accessorKey: "active",
+    meta: {
+      fieldType: 'dimension'
+    },
     header: "Active",
     cell: ({ row }) => {
       const value = row.getValue("active");
@@ -131,6 +152,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   },
   {
     accessorKey: "public",
+    meta: {
+      fieldType: 'dimension'
+    },
     header: "Public",
     cell: ({ row }) => {
       const value = row.getValue("public");
@@ -147,6 +171,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   },
   {
     accessorKey: "date",
+    meta: {
+      fieldType: 'dimension'
+    },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
     ),
@@ -179,6 +206,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   },
   {
     accessorKey: "cost",
+    meta: {
+      fieldType: 'measure'
+    },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cost (USD)" />
     ),
