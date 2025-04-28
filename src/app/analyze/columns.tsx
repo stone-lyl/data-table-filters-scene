@@ -9,6 +9,7 @@ import { format, isSameDay } from "date-fns";
 import { Check, Minus } from "lucide-react";
 import type { ColumnSchema } from "./types";
 import Decimal from "decimal.js-light";
+import { formatCurrency, formatBtcAmount, formatBigNumber } from "./formatters";
 
 export const columns: ColumnDef<ColumnSchema>[] = [
   // {
@@ -220,23 +221,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         return <Minus className="h-4 w-4 text-muted-foreground/50" />;
       }
 
-      // Format value with k/M suffix for large numbers
-      const formatCurrency = (value: number) => {
-        // Use decimal.js-light for precise calculations
-        const decimalValue = new Decimal(value);
-        
-        if (decimalValue.greaterThanOrEqualTo(1000000)) {
-          // For values >= 1M, show as 1.34M
-          return `$${decimalValue.dividedBy(1000000).toFixed(2)}M`;
-        } else if (decimalValue.greaterThanOrEqualTo(1000)) {
-          // For values >= 1k, show as 1.34k
-          return `$${decimalValue.dividedBy(1000).toFixed(2)}k`;
-        } else {
-          // For smaller values, show regular currency format
-          return `$${decimalValue.toFixed(2)}`;
-        }
-      };
-
       return (
         <div className="flex items-center">
           <span className="font-mono font-medium">
@@ -276,15 +260,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       }
 
       try {
-        // Use decimal.js-light for big number calculations
-        const bigNum = new Decimal(value as string);
-        
-        // Calculate double the value to demonstrate decimal.js-light calculations
-        const doubled = bigNum.times(2);
-        
         return (
           <div className="flex flex-col">
-            <span className="font-mono text-xs truncate">{value as string}</span>
+            <span className="font-mono text-xs truncate">{formatBigNumber(value as string)}</span>
           </div>
         );
       } catch (error) {
@@ -314,11 +292,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       }
 
       try {
-        // Use decimal.js-light for precise decimal calculations
-        const btcAmount = new Decimal(value as string);
-        
-        // Format with exactly 4 decimal places
-        const formattedBtc = btcAmount.toFixed(4);
+        const formattedBtc = formatBtcAmount(value as string);
         
         return (
           <div className="flex flex-col">

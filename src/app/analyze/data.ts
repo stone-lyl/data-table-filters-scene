@@ -1,6 +1,5 @@
 import { subDays, subHours, subMinutes } from "date-fns";
 import type { ColumnSchema } from "./types";
-import Decimal from "decimal.js-light";
 
 export const data = [
   {
