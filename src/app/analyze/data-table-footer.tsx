@@ -127,7 +127,7 @@ export function DataTableFooter<TData>({
           const decimalTrueCount = new Decimal(trueCount);
           const decimalTotal = new Decimal(values.length);
           const decimalPercentage = decimalTrueCount.dividedBy(decimalTotal).times(100);
-          const percentage = decimalPercentage.toNumber().toFixed(0);
+          const percentage = decimalPercentage.toNumber().toFixed(2);
 
           return (
             <div className="flex items-center gap-1">
@@ -169,7 +169,7 @@ export function DataTableFooter<TData>({
                 className={cn("font-medium")}
               >
                 <div className="flex flex-col gap-1">
-                  <div className="flex text-xs items-center gap-1 h-4 font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-wider">
+                  <div className="flex text-xs text-muted-foreground uppercase">
                     {colIndex === 0 && aggregation.label}
                   </div>
                   <div className="text-muted-foreground">

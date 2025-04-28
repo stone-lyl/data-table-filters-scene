@@ -14,7 +14,7 @@ export const data = [
     regions: ["ams", "gru", "syd"],
     tags: ["api", "enterprise"],
     date: subHours(new Date(), 1),
-    cost: 1250.75,
+    cost: 1250.75, // Will display as 1.25k
     bigNumber: "9007199254740992", // 2^53 (JS max safe integer + 1)
     btcAmount: "1.23456789", // 8 decimal places
   },
@@ -29,7 +29,7 @@ export const data = [
     regions: ["ams", "gru", "syd"],
     tags: ["api"],
     date: subHours(new Date(), 10),
-    cost: 875.50,
+    cost: 8750.50, // Will display as 8.75k
     bigNumber: "18014398509481984", // 2^54
     btcAmount: "0.00123456", // 8 decimal places
   },
@@ -45,7 +45,7 @@ export const data = [
     regions: ["iad", "fra"],
     tags: ["app"],
     date: subHours(new Date(), 13),
-    cost: 3200.00,
+    cost: 32000.00, // Will display as 32.00k
     bigNumber: "36028797018963968", // 2^55
     btcAmount: "2.50000000", // 8 decimal places
   },
@@ -60,7 +60,7 @@ export const data = [
     regions: ["iad"],
     tags: ["web", "enterprise"],
     date: subDays(new Date(), 4),
-    cost: 450.25,
+    cost: 450.25, // Will display as regular currency
     bigNumber: "72057594037927936", // 2^56
     btcAmount: "0.10000001", // 8 decimal places
   },
@@ -75,7 +75,7 @@ export const data = [
     regions: ["ams"],
     tags: ["api", "web"],
     date: subDays(new Date(), 6),
-    cost: 125.99,
+    cost: 125.99, // Will display as regular currency
     bigNumber: "144115188075855872", // 2^57
     btcAmount: "5.67890123", // 8 decimal places
   },
@@ -105,7 +105,7 @@ export const data = [
     regions: ["iad", "fra"],
     tags: ["web"],
     date: subHours(new Date(), 28),
-    cost: 750.49,
+    cost: 750000.49, // Will display as 750.00k
     bigNumber: "576460752303423488", // 2^59
     btcAmount: "10.00000000", // 8 decimal places
   },
@@ -120,7 +120,7 @@ export const data = [
     regions: ["iad"],
     tags: ["web"],
     date: subDays(new Date(), 12),
-    cost: 1899.99,
+    cost: 1899999.99, // Will display as 1.90M
     bigNumber: "1152921504606846976", // 2^60
     btcAmount: "0.12345678", // 8 decimal places
   },
@@ -135,7 +135,7 @@ export const data = [
     regions: ["iad"],
     tags: ["web"],
     date: subDays(new Date(), 15),
-    cost: 2500.00,
+    cost: 2500000.00, // Will display as 2.50M
     bigNumber: "2305843009213693952", // 2^61
     btcAmount: "3.14159265", // 8 decimal places (truncated)
   },
@@ -165,7 +165,7 @@ export const data = [
     regions: ["ams", "hkg"],
     tags: ["api", "enterprise"],
     date: subHours(new Date(), 3),
-    cost: 5250.50,
+    cost: 5250500.00, // Will display as 5.25M
     bigNumber: "9223372036854775808", // 2^63
     btcAmount: "21.00000000", // 8 decimal places (max supply)
   },
@@ -180,7 +180,7 @@ export const data = [
     regions: ["iad", "fra", "hkg"],
     tags: ["app", "enterprise"],
     date: subDays(new Date(), 2),
-    cost: 8750.25,
+    cost: 8750250.00, // Will display as 8.75M
     bigNumber: "18446744073709551616", // 2^64
     btcAmount: "0.00050000", // 8 decimal places
   },
@@ -210,7 +210,7 @@ export const data = [
     regions: ["hkg", "fra", "iad"],
     tags: ["web"],
     date: subDays(new Date(), 1),
-    cost: 12500.99,
+    cost: 12500990.00, // Will display as 12.50M
     bigNumber: "73786976294838206464", // 2^66
     btcAmount: "0.33333333", // 8 decimal places
   },

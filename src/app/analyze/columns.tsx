@@ -220,18 +220,27 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         return <Minus className="h-4 w-4 text-muted-foreground/50" />;
       }
 
-      // Format as USD currency
-      const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
+      // Format value with k/M suffix for large numbers
+      const formatCurrency = (value: number) => {
+        // Use decimal.js-light for precise calculations
+        const decimalValue = new Decimal(value);
+        
+        if (decimalValue.greaterThanOrEqualTo(1000000)) {
+          // For values >= 1M, show as 1.34M
+          return `$${decimalValue.dividedBy(1000000).toFixed(2)}M`;
+        } else if (decimalValue.greaterThanOrEqualTo(1000)) {
+          // For values >= 1k, show as 1.34k
+          return `$${decimalValue.dividedBy(1000).toFixed(2)}k`;
+        } else {
+          // For smaller values, show regular currency format
+          return `$${decimalValue.toFixed(2)}`;
+        }
+      };
 
       return (
         <div className="flex items-center">
           <span className="font-mono font-medium">
-            {formatter.format(value as number)}
+            {formatCurrency(value as number)}
           </span>
         </div>
       );
@@ -276,7 +285,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         return (
           <div className="flex flex-col">
             <span className="font-mono text-xs truncate">{value as string}</span>
-            <span className="text-xs text-muted-foreground">Double: {doubled.toString()}</span>
           </div>
         );
       } catch (error) {
@@ -309,20 +317,13 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         // Use decimal.js-light for precise decimal calculations
         const btcAmount = new Decimal(value as string);
         
-        // Format with exactly 8 decimal places
-        const formattedBtc = btcAmount.toFixed(8);
-        
-        // Calculate BTC value in USD at a mock rate of $50,000 per BTC
-        const btcRate = new Decimal(50000);
-        const usdValue = btcAmount.times(btcRate);
+        // Format with exactly 4 decimal places
+        const formattedBtc = btcAmount.toFixed(4);
         
         return (
           <div className="flex flex-col">
             <span className="font-mono font-medium">
               ₿{formattedBtc}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              ≈ ${usdValue.toFixed(2)} USD
             </span>
           </div>
         );
