@@ -7,7 +7,9 @@ import type {
   SortingState,
   Table,
   VisibilityState,
+  GroupingState,
 } from "@tanstack/react-table";
+import { AggregationConfig } from "@/components/data-table/aggregations";
 import { createContext, useContext, useMemo } from "react";
 import { ControlsProvider } from "../../providers/controls";
 
@@ -21,7 +23,10 @@ interface DataTableStateContextType {
   columnOrder: string[];
   columnVisibility: VisibilityState;
   pagination: PaginationState;
+  grouping: GroupingState;
   enableColumnOrdering: boolean;
+  footerAggregations?: AggregationConfig[];
+  setFooterAggregations?: (aggregations: AggregationConfig[]) => void;
 }
 
 interface DataTableBaseContextType<TData = unknown, TValue = unknown> {
@@ -64,7 +69,10 @@ export function DataTableProvider<TData, TValue>({
       columnOrder: props.columnOrder ?? [],
       columnVisibility: props.columnVisibility ?? {},
       pagination: props.pagination ?? { pageIndex: 0, pageSize: 10 },
+      grouping: props.grouping ?? [],
       enableColumnOrdering: props.enableColumnOrdering ?? false,
+      footerAggregations: props.footerAggregations,
+      setFooterAggregations: props.setFooterAggregations,
     }),
     [
       props.columnFilters,
@@ -73,6 +81,7 @@ export function DataTableProvider<TData, TValue>({
       props.columnOrder,
       props.columnVisibility,
       props.pagination,
+      props.grouping,
       props.table,
       props.filterFields,
       props.columns,
@@ -80,6 +89,8 @@ export function DataTableProvider<TData, TValue>({
       props.isLoading,
       props.getFacetedUniqueValues,
       props.getFacetedMinMaxValues,
+      props.footerAggregations,
+      props.setFooterAggregations,
     ],
   );
 
