@@ -8,8 +8,9 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { format, isSameDay } from "date-fns";
 import { Check, Minus } from "lucide-react";
 import type { ColumnSchema } from "./types";
-import Decimal from "decimal.js-light";
 import { formatCurrency, formatBtcAmount, formatBigNumber } from "./formatters";
+import { ProfitDisplay } from "./profit-display";
+import { AGGREGATION_ROW } from "./common";
 
 export const columns: ColumnDef<ColumnSchema>[] = [
   // {
@@ -216,7 +217,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     ),
     cell: ({ row }) => {
       const value = row.getValue("cost");
-      
+
       if (typeof value === "undefined") {
         return <Minus className="h-4 w-4 text-muted-foreground/50" />;
       }
@@ -255,36 +256,24 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     cell: ({ row }) => {
       const earning = row.getValue("earning") as number;
       const cost = row.getValue("cost") as number;
-      
+
       if (typeof earning === "undefined" || typeof cost === "undefined") {
         return <Minus className="h-4 w-4 text-muted-foreground/50" />;
       }
-  
-      // Calculate profit and profit rate
-      const profit = earning - cost;
-      const profitRate = cost !== 0 ? (profit / cost) * 100 : 0;
-      
-      // Determine color based on profit (positive = red, negative = green)
-      const isPositive = profit >= 0;
-      const textColor = isPositive ? "text-red-500" : "text-green-500";
-      
-      return (
-        <div className="flex flex-col">
-          <div className="flex items-center gap-1">
-            <span className={`font-mono font-medium ${textColor}`}>
+
+      const isAggregationRow = row.id.includes(AGGREGATION_ROW);
+
+      if (isAggregationRow) {
+        return (
+          <div className="flex items-center">
+            <span className="font-mono font-medium">
               {formatCurrency(earning)}
             </span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className={`text-xs font-medium ${textColor}`}>
-              {isPositive ? "↑" : "↓"} {isPositive ? "+" : ""}{profit.toFixed(0)}
-            </span>
-            <span className={`text-xs ${textColor}`}>
-              ({isPositive ? "+" : ""}{profitRate.toFixed(1)}%)
-            </span>
-          </div>
-        </div>
-      );
+        );
+      }
+      
+      return <ProfitDisplay earning={earning} cost={cost} />;
     },
     filterFn: (row, id, value) => {
       const rowValue = row.getValue(id) as number;
@@ -311,7 +300,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     ),
     cell: ({ row }) => {
       const value = row.getValue("bigNumber");
-      
+
       if (typeof value === "undefined") {
         return <Minus className="h-4 w-4 text-muted-foreground/50" />;
       }
@@ -343,14 +332,13 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     ),
     cell: ({ row }) => {
       const value = row.getValue("btcAmount");
-      
       if (typeof value === "undefined") {
         return <Minus className="h-4 w-4 text-muted-foreground/50" />;
       }
 
       try {
         const formattedBtc = formatBtcAmount(value as string);
-        
+
         return (
           <div className="flex flex-col">
             <span className="font-mono font-medium">

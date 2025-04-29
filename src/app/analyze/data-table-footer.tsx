@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { AggregationType } from "../../components/data-table/aggregations";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 import Decimal from "decimal.js-light";
+import { AGGREGATION_ROW } from "./common";
 
 
 
@@ -39,7 +40,6 @@ export function DataTableFooter<TData>({
     // Determine column type based on metadata
     const isMeasure = column.columnDef.meta?.fieldType === 'measure';
     const isBoolean = values.some(v => typeof v === 'boolean');
-    console.log(values, 'values');
 
     // Create a mock row context for rendering cells
     const createMockContext = (value: any) => {
@@ -49,11 +49,11 @@ export function DataTableFooter<TData>({
         row: {
           getValue: () => value,
           original: { [columnId]: value },
-          id: 'aggregation-row',
+          id: `${type}-${AGGREGATION_ROW}`,
           index: -1,
         },
         cell: {
-          id: `${columnId}-aggregation`,
+          id: `${type}-${columnId}-aggregation`,
           getValue: () => value,
         },
         renderValue: () => value,

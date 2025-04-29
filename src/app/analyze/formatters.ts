@@ -6,17 +6,15 @@ import Decimal from "decimal.js-light";
  * @returns Formatted currency string (e.g. $1.25k, $1.25M)
  */
 export const formatCurrency = (value: number): string => {
-  const decimalValue = new Decimal(value);
+  const decimalValue = new Decimal(Math.abs(value));
+  const sign = value < 0 ? '-' : '';
   
   if (decimalValue.greaterThanOrEqualTo(1000000)) {
-    // For values >= 1M, show as 1.34M
-    return `$${decimalValue.dividedBy(1000000).toFixed(2)}M`;
+    return `${sign}$${decimalValue.dividedBy(1000000).toFixed(2)}M`;
   } else if (decimalValue.greaterThanOrEqualTo(1000)) {
-    // For values >= 1k, show as 1.34k
-    return `$${decimalValue.dividedBy(1000).toFixed(2)}k`;
+    return `${sign}$${decimalValue.dividedBy(1000).toFixed(2)}k`;
   } else {
-    // For smaller values, show regular currency format
-    return `$${decimalValue.toFixed(2)}`;
+    return `${sign}$${decimalValue.toFixed(2)}`;
   }
 };
 
