@@ -245,6 +245,63 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     enableGrouping: true,
   },
   {
+    accessorKey: "earning",
+    meta: {
+      fieldType: 'measure'
+    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Profit" />
+    ),
+    cell: ({ row }) => {
+      const earning = row.getValue("earning") as number;
+      const cost = row.getValue("cost") as number;
+      
+      if (typeof earning === "undefined" || typeof cost === "undefined") {
+        return <Minus className="h-4 w-4 text-muted-foreground/50" />;
+      }
+  
+      // Calculate profit and profit rate
+      const profit = earning - cost;
+      const profitRate = cost !== 0 ? (profit / cost) * 100 : 0;
+      
+      // Determine color based on profit (positive = red, negative = green)
+      const isPositive = profit >= 0;
+      const textColor = isPositive ? "text-red-500" : "text-green-500";
+      
+      return (
+        <div className="flex flex-col">
+          <div className="flex items-center gap-1">
+            <span className={`font-mono font-medium ${textColor}`}>
+              {formatCurrency(earning)}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className={`text-xs font-medium ${textColor}`}>
+              {isPositive ? "↑" : "↓"} {isPositive ? "+" : ""}{profit.toFixed(0)}
+            </span>
+            <span className={`text-xs ${textColor}`}>
+              ({isPositive ? "+" : ""}{profitRate.toFixed(1)}%)
+            </span>
+          </div>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      const rowValue = row.getValue(id) as number;
+      if (typeof value === "number") return value === Number(rowValue);
+      if (Array.isArray(value) && isArrayOfNumbers(value)) {
+        if (value.length === 1) {
+          return value[0] === rowValue;
+        } else {
+          const sorted = value.sort((a, b) => a - b);
+          return sorted[0] <= rowValue && rowValue <= sorted[1];
+        }
+      }
+      return false;
+    },
+    enableGrouping: true,
+  },
+  {
     accessorKey: "bigNumber",
     meta: {
       fieldType: 'measure'

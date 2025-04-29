@@ -6,7 +6,6 @@ import Decimal from "decimal.js-light";
  * @returns Formatted currency string (e.g. $1.25k, $1.25M)
  */
 export const formatCurrency = (value: number): string => {
-  // Use decimal.js-light for precise calculations
   const decimalValue = new Decimal(value);
   
   if (decimalValue.greaterThanOrEqualTo(1000000)) {
