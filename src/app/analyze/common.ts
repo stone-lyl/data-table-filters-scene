@@ -1,0 +1,1 @@
+export const AGGREGATION_ROW = "aggregation-row";
