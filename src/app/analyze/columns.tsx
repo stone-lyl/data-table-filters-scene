@@ -116,7 +116,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       }
       return (
         <div>
-          <span className="font-mono">{`${Math.round(value)}`}</span> ms
+          <span>{`${Math.round(value)}`}</span> ms
         </div>
       );
     },
@@ -184,7 +184,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       const value = row.getValue("date");
 
       return (
-        <div className="text-xs text-muted-foreground" suppressHydrationWarning>
+        <div className="text-xs text-muted-foreground min-w-16" suppressHydrationWarning>
           {format(new Date(`${value}`), "LLL dd, y HH:mm")}
         </div>
       );
@@ -224,8 +224,8 @@ export const columns: ColumnDef<ColumnSchema>[] = [
 
       return (
         <div className="flex items-center">
-          <span className="font-mono font-medium">
-            {formatCurrency(value as number)}
+          <span>
+            $ {formatCurrency(value as number)}
           </span>
         </div>
       );
@@ -248,15 +248,18 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "earning",
     meta: {
-      fieldType: 'measure'
+      fieldType: 'measure',
+     
     },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Profit" />
     ),
-    cell: ({ row }) => {
+    cell: ({ row, column }) => {
+      console.log('row', row);
+      console.log('column', column);
+
       const earning = row.getValue("earning") as number;
       const cost = row.getValue("cost") as number;
-
       if (typeof earning === "undefined" || typeof cost === "undefined") {
         return <Minus className="h-4 w-4 text-muted-foreground/50" />;
       }
@@ -266,8 +269,8 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       if (isAggregationRow) {
         return (
           <div className="flex items-center">
-            <span className="font-mono font-medium">
-              {formatCurrency(earning)}
+            <span>
+              $ {formatCurrency(earning)}
             </span>
           </div>
         );
@@ -308,7 +311,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       try {
         return (
           <div className="flex flex-col">
-            <span className="font-mono text-xs truncate">{formatBigNumber(value as string)}</span>
+            <span className="truncate">{formatBigNumber(value as string)}</span>
           </div>
         );
       } catch (error) {
@@ -341,8 +344,8 @@ export const columns: ColumnDef<ColumnSchema>[] = [
 
         return (
           <div className="flex flex-col">
-            <span className="font-mono font-medium">
-              ₿{formattedBtc}
+            <span>
+              ₿ {formattedBtc}
             </span>
           </div>
         );

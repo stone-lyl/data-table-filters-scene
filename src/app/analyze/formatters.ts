@@ -1,6 +1,14 @@
 import Decimal from "decimal.js-light";
 
 /**
+ * todo: 逻辑是否融入代码
+ * {
+    "type": "currency",
+    "unit": "USD"
+}
+ */
+
+/**
  * Format a currency value with k/M suffix for large numbers
  * @param value The number to format
  * @returns Formatted currency string (e.g. $1.25k, $1.25M)
@@ -10,11 +18,11 @@ export const formatCurrency = (value: number): string => {
   const sign = value < 0 ? '-' : '';
   
   if (decimalValue.greaterThanOrEqualTo(1000000)) {
-    return `${sign}$${decimalValue.dividedBy(1000000).toFixed(2)}M`;
+    return `${sign}${decimalValue.dividedBy(1000000).toFixed(2)}M`;
   } else if (decimalValue.greaterThanOrEqualTo(1000)) {
-    return `${sign}$${decimalValue.dividedBy(1000).toFixed(2)}k`;
+    return `${sign}${decimalValue.dividedBy(1000).toFixed(2)}k`;
   } else {
-    return `${sign}$${decimalValue.toFixed(2)}`;
+    return `${sign}${decimalValue.toFixed(2)}`;
   }
 };
 
