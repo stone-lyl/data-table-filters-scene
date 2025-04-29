@@ -243,7 +243,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       }
       return false;
     },
-    enableGrouping: true,
   },
   {
     accessorKey: "earning",
@@ -254,10 +253,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Profit" />
     ),
-    cell: ({ row, column }) => {
-      console.log('row', row);
-      console.log('column', column);
-
+    cell: ({ row }) => {
       const earning = row.getValue("earning") as number;
       const cost = row.getValue("cost") as number;
       if (typeof earning === "undefined" || typeof cost === "undefined") {
@@ -291,7 +287,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       }
       return false;
     },
-    enableGrouping: true,
   },
   {
     accessorKey: "bigNumber",
@@ -323,7 +318,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       if (typeof value === "string") return rowValue === value;
       return false;
     },
-    enableGrouping: true,
   },
   {
     accessorKey: "btcAmount",
@@ -358,6 +352,5 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       if (typeof value === "string") return rowValue === value;
       return false;
     },
-    enableGrouping: true,
   },
 ];

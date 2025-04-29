@@ -12,8 +12,8 @@ export type ColumnSchema = {
   tags: (typeof TAGS)[number][];
   date: Date;
   p95?: number | undefined;
-  cost?: number | undefined;
-  earning?: number | undefined;
-  bigNumber?: string | undefined;
-  btcAmount?: string | undefined;
+  cost: number;
+  earning: number;
+  bigNumber: string;
+  btcAmount: string;
 };
