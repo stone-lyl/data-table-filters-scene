@@ -6,11 +6,12 @@ import { useDataTable } from "./data-table-provider";
 import { FieldType } from "./types";
 
 export function DataTableGroupButtons() {
+  "use no memo"
   const { table, grouping } = useDataTable();
 
   // Filter columns that are dimensions and can be grouped
   const groupableColumns = React.useMemo(() => {
-    return table.getAllLeafColumns().filter(column => {
+    return table.getVisibleFlatColumns().filter(column => {
       // Only allow dimension fields to be grouped
       const fieldType = column.columnDef.meta?.fieldType as FieldType | undefined;
       return column.getCanGroup() && fieldType === 'dimension';
