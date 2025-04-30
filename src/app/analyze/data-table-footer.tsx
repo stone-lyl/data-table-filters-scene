@@ -6,6 +6,8 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { AggregationType } from "../../components/data-table/aggregations";
 import { useDataTable } from "@/components/data-table/data-table-provider";
+import Decimal from "decimal.js-light";
+import { AGGREGATION_ROW } from "./common";
 
 
 
@@ -18,7 +20,7 @@ export function DataTableFooter<TData>({
   getColumnAggregation,
 }: DataTableFooterProps<TData>) {
   "use no memo";
-  
+
   const { footerAggregations = [], table } = useDataTable();
   const pageRows = table.getRowModel().rows;
   const columns = table.getVisibleFlatColumns();
@@ -34,9 +36,9 @@ export function DataTableFooter<TData>({
     if (!column) return null;
 
     const columnDef = column.columnDef as any;
-    
-    // Determine column type based on data values
-    const isNumeric = values.some(v => typeof v === 'number');
+
+    // Determine column type based on metadata
+    const isMeasure = column.columnDef.meta?.fieldType === 'measure';
     const isBoolean = values.some(v => typeof v === 'boolean');
 
     // Create a mock row context for rendering cells
@@ -47,11 +49,11 @@ export function DataTableFooter<TData>({
         row: {
           getValue: () => value,
           original: { [columnId]: value },
-          id: 'aggregation-row',
+          id: `${type}-${AGGREGATION_ROW}`,
           index: -1,
         },
         cell: {
-          id: `${columnId}-aggregation`,
+          id: `${type}-${columnId}-aggregation`,
           getValue: () => value,
         },
         renderValue: () => value,
@@ -64,54 +66,84 @@ export function DataTableFooter<TData>({
         return values.length > 0 ? values.length : null;
 
       case 'sum':
-        if (isNumeric) {
-          const numericValues = values.filter(v => typeof v === 'number') as number[];
-          if (numericValues.length === 0) return null;
+        if (isMeasure) {
+          try {
+            // Filter out null/undefined values
+            const validValues = values.filter(v => v !== null && v !== undefined);
+            if (validValues.length === 0) return null;
 
-          const sum = numericValues.reduce((acc, val) => acc + val, 0);
+            const decimalSum = validValues.reduce((acc, val) => {
+              const decimalVal = new Decimal(val);
+              return acc.plus(decimalVal);
+            }, new Decimal(0));
 
-          // If the column has a cell renderer, use it for consistent formatting
-          if (columnDef.cell && typeof columnDef.cell !== 'string') {
-            try {
-              // Try to use the column's cell renderer for consistent formatting
-              return flexRender(columnDef.cell, createMockContext(sum));
-            } catch (e) {
-              // Fallback to basic formatting if cell renderer fails
-              return <span className="font-mono">{sum}</span>;
+            const sum = decimalSum.toString();
+
+            // If the column has a cell renderer, use it for consistent formatting
+            if (columnDef.cell && typeof columnDef.cell !== 'string') {
+              try {
+                return flexRender(columnDef.cell, createMockContext(sum));
+              } catch (e) {
+                // Fallback to basic formatting
+                return <span className="font-mono">{decimalSum.toFixed(2)}</span>;
+              }
             }
-          }
 
-          return <span className="font-mono">{sum}</span>;
+            // Default fallback formatting
+            return <span className="font-mono">{decimalSum.toFixed(2)}</span>;
+          } catch (error) {
+            return null; // In case of parsing errors
+          }
         }
         return null;
 
       case 'average':
-        if (isNumeric) {
-          const numericValues = values.filter(v => typeof v === 'number') as number[];
-          if (numericValues.length === 0) return null;
+        if (isMeasure) {
+          try {
+            // Filter out null/undefined values
+            const validValues = values.filter(v => v !== null && v !== undefined);
+            if (validValues.length === 0) return null;
 
-          const sum = numericValues.reduce((acc, val) => acc + val, 0);
-          const avg = sum / numericValues.length;
+            // Use decimal.js-light for precise calculation regardless of value type
+            const decimalSum = validValues.reduce((acc, val) => {
+              // Convert all values to Decimal for consistent handling
+              const decimalVal = new Decimal(val);
+              return acc.plus(decimalVal);
+            }, new Decimal(0));
 
-          // If the column has a cell renderer, try to use it
-          if (columnDef.cell && typeof columnDef.cell !== 'string') {
-            try {
-              return flexRender(columnDef.cell, createMockContext(avg));
-            } catch (e) {
-              // Fallback
-              return <span className="font-mono">{avg.toFixed(2)}</span>;
+            const decimalLength = new Decimal(validValues.length);
+            const decimalAvg = decimalSum.dividedBy(decimalLength);
+
+            // Use string for cell renderer to preserve precision
+            const avg = decimalAvg.toString();
+
+            // If the column has a cell renderer, try to use it
+            if (columnDef.cell && typeof columnDef.cell !== 'string') {
+              try {
+                return flexRender(columnDef.cell, createMockContext(avg));
+              } catch (e) {
+                // Fallback to basic formatting
+                return <span className="font-mono">{decimalAvg.toFixed(2)}</span>;
+              }
             }
-          }
 
-          return <span className="font-mono">{avg.toFixed(2)}</span>;
+            // Default fallback formatting
+            return <span className="font-mono">{decimalAvg.toFixed(2)}</span>;
+          } catch (error) {
+            return null; // In case of parsing errors
+          }
         }
         return null;
 
       case 'percentage':
         if (isBoolean) {
           const trueCount = values.filter(Boolean).length;
-          const percentage = Math.round((trueCount / values.length) * 100);
 
+          // Use decimal.js-light for precise percentage calculation
+          const decimalTrueCount = new Decimal(trueCount);
+          const decimalTotal = new Decimal(values.length);
+          const decimalPercentage = decimalTrueCount.dividedBy(decimalTotal).times(100);
+          const percentage = decimalPercentage.toNumber().toFixed(2);
           return (
             <div className="flex items-center gap-1">
               <span className="font-medium">{percentage}%</span>
@@ -147,12 +179,12 @@ export function DataTableFooter<TData>({
             const content = getAggregation(columnId, aggregation.type, values);
 
             return (
-              <TableCell 
-                key={`${aggregation.type}-${columnId}`} 
+              <TableCell
+                key={`${aggregation.type}-${columnId}`}
                 className={cn("font-medium")}
               >
                 <div className="flex flex-col gap-1">
-                  <div className="flex text-xs items-center gap-1 h-4 font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-wider">
+                  <div className="flex text-xs text-muted-foreground uppercase">
                     {colIndex === 0 && aggregation.label}
                   </div>
                   <div className="text-muted-foreground">

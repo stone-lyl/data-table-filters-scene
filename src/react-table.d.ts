@@ -10,6 +10,7 @@ declare module "@tanstack/react-table" {
     headerClassName?: string;
     cellClassName?: string;
     label?: string;
+    fieldType?: 'dimension' | 'measure';
   }
 
   interface FilterFns {

@@ -13,7 +13,10 @@ export const data = [
     regions: ["ams", "gru", "syd"],
     tags: ["api", "enterprise"],
     date: subHours(new Date(), 1),
-    cost: 1250.75,
+    cost: 1250.75, // Will display as 1.25k
+    earning: 980.50, // Lower than cost
+    bigNumber: "90054",
+    btcAmount: "1.23456789", // 8 decimal places
   },
   {
     // name: "Lambda Api",
@@ -26,7 +29,10 @@ export const data = [
     regions: ["ams", "gru", "syd"],
     tags: ["api"],
     date: subHours(new Date(), 10),
-    cost: 875.50,
+    cost: 8750.50, // Will display as 8.75k
+    earning: 12500.75, // Higher than cost
+    bigNumber: "18014394",
+    btcAmount: "0.00123456", // 8 decimal places
   },
 
   {
@@ -40,7 +46,10 @@ export const data = [
     regions: ["iad", "fra"],
     tags: ["app"],
     date: subHours(new Date(), 13),
-    cost: 3200.00,
+    cost: 32000.00, // Will display as 32.00k
+    earning: 29750.25, // Lower than cost
+    bigNumber: "3602863968",
+    btcAmount: "2.50000000", // 8 decimal places
   },
   {
     // name: "Demo",
@@ -53,7 +62,10 @@ export const data = [
     regions: ["iad"],
     tags: ["web", "enterprise"],
     date: subDays(new Date(), 4),
-    cost: 450.25,
+    cost: 450.25, // Will display as regular currency
+    earning: 675.80, // Higher than cost
+    bigNumber: "72057594037927936", // 2^56
+    btcAmount: "0.10000001", // 8 decimal places
   },
   {
     // name: "Documentation",
@@ -66,7 +78,10 @@ export const data = [
     regions: ["ams"],
     tags: ["api", "web"],
     date: subDays(new Date(), 6),
-    cost: 125.99,
+    cost: 125.99, // Will display as regular currency
+    earning: 95.50, // Lower than cost
+    bigNumber: "144115188075855872", // 2^57
+    btcAmount: "5.67890123", // 8 decimal places
   },
   {
     // name: "Boilerplate",
@@ -80,6 +95,9 @@ export const data = [
     tags: ["web"],
     date: subDays(new Date(), 10),
     cost: 0,
+    earning: 150.25, // Higher than cost (cost is 0)
+    bigNumber: "288230376151711744", // 2^58
+    btcAmount: "0.00000001", // 8 decimal places (smallest unit)
   },
   {
     // name: "Dashboard",
@@ -92,7 +110,10 @@ export const data = [
     regions: ["iad", "fra"],
     tags: ["web"],
     date: subHours(new Date(), 28),
-    cost: 750.49,
+    cost: 750000.49, // Will display as 750.00k
+    earning: 566600,
+    bigNumber: "576460752303423488", // 2^59
+    btcAmount: "10.00000000", // 8 decimal places
   },
   {
     // name: "E2E Testing",
@@ -105,7 +126,10 @@ export const data = [
     regions: ["iad"],
     tags: ["web"],
     date: subDays(new Date(), 12),
-    cost: 1899.99,
+    cost: 1899999.99, // Will display as 1.90M
+    earning:1899999, 
+    bigNumber: "1152921504606846976", // 2^60
+    btcAmount: "0.12345678", // 8 decimal places
   },
   {
     // name: "Web App",
@@ -118,7 +142,10 @@ export const data = [
     regions: ["iad"],
     tags: ["web"],
     date: subDays(new Date(), 15),
-    cost: 2500.00,
+    cost: 2500000.00, // Will display as 2.50M
+    earning: 260000.00,
+    bigNumber: "2305843009213693952", // 2^61
+    btcAmount: "3.14159265", // 8 decimal places (truncated)
   },
   {
     // name: "Admin Panel",
@@ -132,6 +159,9 @@ export const data = [
     tags: ["web"],
     date: subHours(new Date(), 5),
     cost: 1050.75,
+    earning: 0,
+    bigNumber: "4611686018427387904", // 2^62
+    btcAmount: "0.87654321", // 8 decimal places
   },
   {
     // name: "API Gateway",
@@ -144,7 +174,10 @@ export const data = [
     regions: ["ams", "hkg"],
     tags: ["api", "enterprise"],
     date: subHours(new Date(), 3),
-    cost: 5250.50,
+    cost: 5250500.00, // Will display as 5.25M
+    earning: 5950500.00,
+    bigNumber: "9223372036854775808", // 2^63
+    btcAmount: "21.00000000", // 8 decimal places (max supply)
   },
   {
     // name: "Analytics Service",
@@ -157,7 +190,10 @@ export const data = [
     regions: ["iad", "fra", "hkg"],
     tags: ["app", "enterprise"],
     date: subDays(new Date(), 2),
-    cost: 8750.25,
+    cost: 8750250.00, // Will display as 8.75M
+    earning: 3750250.00,
+    bigNumber: "18446744073709551616", // 2^64
+    btcAmount: "0.00050000", // 8 decimal places
   },
   {
     // name: "Storybook",
@@ -171,6 +207,9 @@ export const data = [
     tags: ["web"],
     date: subMinutes(new Date(), 10),
     cost: 350.00,
+    earning: 300.00,
+    bigNumber: "36893488147419103232", // 2^65
+    btcAmount: "1.00000000", // 8 decimal places
   },
   {
     // name: "Marketing",
@@ -183,7 +222,10 @@ export const data = [
     regions: ["hkg", "fra", "iad"],
     tags: ["web"],
     date: subDays(new Date(), 1),
-    cost: 12500.99,
+    cost: 12500990.00, // Will display as 12.50M
+    earning: 150090.00, // Will display as 12.50M
+    bigNumber: "73786976294838206464", // 2^66
+    btcAmount: "0.33333333", // 8 decimal places
   },
   {
     // name: "Support Portal",
@@ -197,6 +239,9 @@ export const data = [
     tags: ["web"],
     date: subMinutes(new Date(), 30),
     cost: 950.25,
+    earning: 911,
+    bigNumber: "147573952589676412928", // 2^67
+    btcAmount: "0.05555555", // 8 decimal places
   },
   {
     // name: "User Management",
@@ -210,6 +255,9 @@ export const data = [
     tags: ["app"],
     date: subDays(new Date(), 7),
     cost: 1850.50,
+    earning: 2900,
+    bigNumber: "295147905179352825856", // 2^68
+    btcAmount: "0.99999999", // 8 decimal places
   },
   {
     // name: "Payment Gateway",
@@ -223,6 +271,9 @@ export const data = [
     tags: ["api", "enterprise"],
     date: subHours(new Date(), 8),
     cost: 7500.00,
+    earning: 12330,
+    bigNumber: "590295810358705651712", // 2^69
+    btcAmount: "0.00000100", // 8 decimal places
   },
   {
     // name: "Notification Service",
@@ -236,6 +287,9 @@ export const data = [
     tags: ["api"],
     date: subDays(new Date(), 11),
     cost: 625.75,
+    earning: 233.43,
+    bigNumber: "1180591620717411303424", // 2^70
+    btcAmount: "0.01010101", // 8 decimal places
   },
   {
     // name: "File Storage",
@@ -249,6 +303,9 @@ export const data = [
     tags: ["web", "enterprise"],
     date: subDays(new Date(), 3),
     cost: 4250.50,
+    earning: 2391.32,
+    bigNumber: "2361183241434822606848", // 2^71
+    btcAmount: "0.10101010", // 8 decimal places
   },
   {
     // name: "CDN",
@@ -262,6 +319,9 @@ export const data = [
     tags: ["web"],
     date: subDays(new Date(), 2),
     cost: 9999.99,
+    earning: 100003,
+    bigNumber: "4722366482869645213696", // 2^72
+    btcAmount: "15.55555555", // 8 decimal places
   },
   {
     // name: "Auth Service",
@@ -275,5 +335,8 @@ export const data = [
     tags: ["api"],
     date: subHours(new Date(), 16),
     cost: 2100.25,
+    earning: 31021.22,
+    bigNumber: "9444732965739290427392", // 2^73
+    btcAmount: "0.00777777", // 8 decimal places
   },
 ] satisfies ColumnSchema[];
