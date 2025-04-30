@@ -35,8 +35,12 @@ import {
 } from "@tanstack/react-table";
 import { useQueryStates } from "nuqs";
 import * as React from "react";
+import { useState } from "react";
 import { searchParamsParser } from "./search-params";
 import { DataTableFooterButtons } from "@/components/data-table/data-table-footer-buttons";
+import { RowEditModal } from "./row-edit-modal";
+import { ColumnInfoTooltip } from "./column-info-tooltip";
+import { ColumnSchema } from "./types";
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -48,17 +52,122 @@ export interface DataTableProps<TData, TValue> {
   // Footer configuration
   footerAggregations?: AggregationConfig[];
   getColumnAggregation?: (columnId: string, type: string, values: any[]) => React.ReactNode;
+  // Row event handlers
+  onRow?: (record: any, rowIndex: number) => any;
+  onHeaderRow?: (columns: any, index: number) => any;
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
+  data: initialData,
   defaultColumnFilters = [],
   defaultGrouping = [],
   filterFields = [],
   footerAggregations: defaultFooterAggregations,
   getColumnAggregation,
+  onRow: externalRowHandler,
+  onHeaderRow: externalHeaderRowHandler,
 }: DataTableProps<TData, TValue>) {
+  // State for data management
+  const [data, setData] = useState<any[]>(initialData);
+  
+  // State for row edit modal
+  const [selectedRow, setSelectedRow] = useState<any | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // State for column info tooltip
+  const [tooltipInfo, setTooltipInfo] = useState<any>(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+
+  // Handle row updates
+  const handleRowUpdate = (updatedData: any) => {
+    setData(prevData => 
+      prevData.map(row => {
+        // Use a unique identifier for your data, url is used as an example
+        if ('url' in row && 'url' in updatedData && row.url === updatedData.url) {
+          return updatedData;
+        }
+        return row;
+      })
+    );
+  };
+
+  // Handle row deletion
+  const handleRowDelete = (rowToDelete: any) => {
+    setData(prevData => 
+      prevData.filter(row => {
+        // Use a unique identifier for your data
+        if ('url' in row && 'url' in rowToDelete) {
+          return row.url !== rowToDelete.url;
+        }
+        return true;
+      })
+    );
+  };
+
+  // Row event handlers
+  const rowEventHandlers = (record: any, rowIndex: number) => {
+    // Combine internal handlers with any external handlers
+    const internalHandlers = {
+      onDoubleClick: (e: React.MouseEvent) => {
+        setSelectedRow(record);
+        setIsModalOpen(true);
+        console.log('Row double clicked:', record);
+      },
+      onClick: (e: React.MouseEvent) => {
+        // Optional click handler
+        console.log('Row clicked:', record);
+      },
+      onContextMenu: (e: React.MouseEvent) => {
+        // Optional context menu handler
+        e.preventDefault();
+        console.log('Row right-clicked:', record);
+      },
+      onMouseEnter: (e: React.MouseEvent) => {
+        // Optional mouse enter handler
+        console.log('Mouse entered row:', rowIndex);
+      },
+      onMouseLeave: (e: React.MouseEvent) => {
+        // Optional mouse leave handler
+        console.log('Mouse left row:', rowIndex);
+      }
+    };
+
+    // If external handlers are provided, merge them with internal handlers
+    if (externalRowHandler) {
+      const externalHandlers = externalRowHandler(record, rowIndex);
+      return { ...internalHandlers, ...externalHandlers };
+    }
+
+    return internalHandlers;
+  };
+
+  // Header row event handlers
+  const headerRowEventHandlers = (columns: any, index: number) => {
+    // Combine internal handlers with any external handlers
+    const internalHandlers = {
+      onClick: (e: React.MouseEvent) => {
+        // Optional click handler
+        console.log('Header row clicked:', columns);
+      },
+      onContextMenu: (e: React.MouseEvent) => {
+        e.preventDefault();
+        // Show tooltip with column info
+        setTooltipPosition({ x: e.clientX, y: e.clientY });
+        setTooltipInfo(columns);
+        setIsTooltipOpen(true);
+      }
+    };
+
+    // If external handlers are provided, merge them with internal handlers
+    if (externalHeaderRowHandler) {
+      const externalHandlers = externalHeaderRowHandler(columns, index);
+      return { ...internalHandlers, ...externalHandlers };
+    }
+
+    return internalHandlers;
+  };
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -133,17 +242,37 @@ export function DataTable<TData, TValue>({
   }, [columnFilters]);
 
   return (
-    <DataTableProvider
-      table={table}
-      columns={columns}
-      filterFields={filterFields}
-      columnFilters={columnFilters}
-      sorting={sorting}
-      pagination={pagination}
-      grouping={grouping}
-      footerAggregations={footerAggregations}
-      setFooterAggregations={setFooterAggregations}
-    >
+    <>
+      {/* Column Info Tooltip */}
+      <ColumnInfoTooltip
+        isOpen={isTooltipOpen}
+        onClose={() => setIsTooltipOpen(false)}
+        position={tooltipPosition}
+        columnInfo={tooltipInfo}
+      >
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: isTooltipOpen ? 'auto' : 'none', opacity: 0 }} />
+      </ColumnInfoTooltip>
+      
+      {/* Row Edit Modal */}
+      <RowEditModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        rowData={selectedRow}
+        onSave={handleRowUpdate}
+        onDelete={handleRowDelete}
+      />
+
+      <DataTableProvider
+        table={table}
+        columns={columns}
+        filterFields={filterFields}
+        columnFilters={columnFilters}
+        sorting={sorting}
+        pagination={pagination}
+        grouping={grouping}
+        footerAggregations={footerAggregations}
+        setFooterAggregations={setFooterAggregations}
+      >
       <div className="flex h-full w-full flex-col gap-3 sm:flex-row">
         <div
           className={cn(
@@ -159,11 +288,16 @@ export function DataTable<TData, TValue>({
           <DataTableFooterButtons />
           <DataTableGroupButtons />
           <div className="rounded-md border">
-            <AnalyzeTable getColumnAggregation={getColumnAggregation} />
+            <AnalyzeTable 
+              getColumnAggregation={getColumnAggregation} 
+              onRow={rowEventHandlers}
+              onHeaderRow={headerRowEventHandlers}
+            />
           </div>
           <DataTablePagination />
         </div>
       </div>
     </DataTableProvider>
+    </>
   );
 }

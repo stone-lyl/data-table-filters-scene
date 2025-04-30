@@ -15,11 +15,30 @@ import { DataTableFooter } from "./data-table-footer";
 import { AggregationType } from "@/components/data-table/aggregations";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 
-interface AnalyzeTableProps {
-  getColumnAggregation?: (columnId: string, type: AggregationType, values: any[]) => React.ReactNode;
+interface RowEventHandlers {
+  onClick?: (event: React.MouseEvent) => void;
+  onDoubleClick?: (event: React.MouseEvent) => void;
+  onContextMenu?: (event: React.MouseEvent) => void;
+  onMouseEnter?: (event: React.MouseEvent) => void;
+  onMouseLeave?: (event: React.MouseEvent) => void;
 }
 
-export function AnalyzeTable({ getColumnAggregation }: AnalyzeTableProps) {
+interface HeaderRowEventHandlers {
+  onClick?: (event: React.MouseEvent) => void;
+  onContextMenu?: (event: React.MouseEvent) => void;
+}
+
+interface AnalyzeTableProps {
+  getColumnAggregation?: (columnId: string, type: AggregationType, values: any[]) => React.ReactNode;
+  onRow?: (record: any, rowIndex: number) => RowEventHandlers;
+  onHeaderRow?: (columns: any, index: number) => HeaderRowEventHandlers;
+}
+
+export function AnalyzeTable({
+  getColumnAggregation,
+  onRow,
+  onHeaderRow
+}: AnalyzeTableProps) {
   "use no memo";
 
   const { table } = useDataTable();
@@ -32,6 +51,7 @@ export function AnalyzeTable({ getColumnAggregation }: AnalyzeTableProps) {
           <TableRow
             key={headerGroup.id}
             className="hover:bg-transparent"
+            {...(onHeaderRow ? onHeaderRow(headerGroup.headers, 0) : {})}
           >
             {headerGroup.headers.map((header) => {
               return (
@@ -54,6 +74,7 @@ export function AnalyzeTable({ getColumnAggregation }: AnalyzeTableProps) {
             <TableRow
               key={row.id}
               data-state={row.getIsSelected() && "selected"}
+              {...(onRow ? onRow(row.original, row.index) : {})}
             >
               {row.getVisibleCells().map((cell) => {
                 // Add special rendering for grouped cells
