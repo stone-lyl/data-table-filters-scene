@@ -11,7 +11,19 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface RowEditModalProps<TData> {
   isOpen: boolean;
@@ -21,6 +33,20 @@ interface RowEditModalProps<TData> {
   onDelete: (rowData: TData) => void;
 }
 
+// Helper function to determine if a field should be editable
+const isEditableField = (key: string): boolean => {
+  const nonEditableFields = ['id', 'date', 'regions', 'tags', 'bigNumber', 'btcAmount'];
+  return !nonEditableFields.includes(key);
+};
+
+// Helper function to get field label from camelCase
+const getFieldLabel = (key: string): string => {
+  // Convert camelCase to Title Case with spaces
+  return key
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (str) => str.toUpperCase());
+};
+
 export function RowEditModal<TData>({
   isOpen,
   onClose,
@@ -29,6 +55,7 @@ export function RowEditModal<TData>({
   onDelete,
 }: RowEditModalProps<TData>) {
   const [formData, setFormData] = useState<TData | null>(rowData as TData | null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     if (rowData) {
@@ -36,106 +63,135 @@ export function RowEditModal<TData>({
     }
   }, [rowData]);
 
-
   if (!rowData || !formData) {
     return null;
   }
 
-  const handleInputChange = (field: keyof TData, value: string | number | boolean | Date | string[]) => {
+  const handleInputChange = (field: keyof TData, value: unknown) => {
     setFormData({
       ...formData,
       [field]: value,
     });
   };
 
-  const handleSave = () => {
-    onSave(formData);
-    onClose();
-  };
-
   const handleDelete = () => {
     onDelete(rowData);
     onClose();
+    setShowDeleteConfirm(false);
   };
-  
+
+  const handleCancel = () => {
+    onClose();
+  };
+
+  // Render form fields dynamically based on the data type
+  const renderFormFields = () => {
+    return Object.entries(formData as Record<string, unknown>)
+      .filter(([key]) => isEditableField(key))
+      .map(([key, value]) => {
+        const fieldKey = key as keyof TData;
+        const fieldLabel = getFieldLabel(key);
+        
+        // Render different input types based on the value type
+        if (typeof value === 'boolean') {
+          return (
+            <div key={key} className="grid grid-cols-4 items-center gap-4 py-2">
+              <Label htmlFor={key} className="text-right">
+                {fieldLabel}
+              </Label>
+              <div className="col-span-3 flex items-center space-x-2">
+                <Switch
+                  id={key}
+                  checked={value as boolean}
+                  onCheckedChange={(checked: boolean) => handleInputChange(fieldKey, checked)}
+                />
+                <Label htmlFor={key} className="text-sm font-normal text-muted-foreground">
+                  {value ? 'Enabled' : 'Disabled'}
+                </Label>
+              </div>
+            </div>
+          );
+        } else if (typeof value === 'number') {
+          return (
+            <div key={key} className="grid grid-cols-4 items-center gap-4 py-2">
+              <Label htmlFor={key} className="text-right">
+                {fieldLabel}
+              </Label>
+              <Input
+                id={key}
+                type="number"
+                value={value as number}
+                onChange={(e) => handleInputChange(fieldKey, parseFloat(e.target.value) || 0)}
+                className="col-span-3"
+              />
+            </div>
+          );
+        } else {
+          // Default to string input
+          return (
+            <div key={key} className="grid grid-cols-4 items-center gap-4 py-2">
+              <Label htmlFor={key} className="text-right">
+                {fieldLabel}
+              </Label>
+              <Input
+                id={key}
+                value={value as string}
+                onChange={(e) => handleInputChange(fieldKey, e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+          );
+        }
+      });
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Edit Row Data</DialogTitle>
-          <DialogDescription>
-            Make changes to the row data or delete it.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="firstName" className="text-right">
-              First Name
-            </Label>
-            <Input
-              id="firstName"
-              value={formData.firstName}
-              onChange={(e) => handleInputChange("firstName", e.target.value)}
-              className="col-span-3"
-            />
+    <>
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="sm:max-w-[425px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogDescription>
+              此操作无法撤销，将永久删除该数据。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle>编辑数据</DialogTitle>
+            <DialogDescription>
+              修改数据或删除此条记录。
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            <div className="grid gap-3 py-4">
+              {renderFormFields()}
+            </div>
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="lastName" className="text-right">
-              Last Name
-            </Label>
-            <Input
-              id="lastName"
-              value={formData.lastName}
-              onChange={(e) => handleInputChange("lastName", e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="url" className="text-right">
-              URL
-            </Label>
-            <Input
-              id="url"
-              value={formData.url}
-              onChange={(e) => handleInputChange("url", e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="cost" className="text-right">
-              Cost
-            </Label>
-            <Input
-              id="cost"
-              type="number"
-              value={formData.cost}
-              onChange={(e) => handleInputChange("cost", Number(e.target.value))}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="earning" className="text-right">
-              Earning
-            </Label>
-            <Input
-              id="earning"
-              type="number"
-              value={formData.earning}
-              onChange={(e) => handleInputChange("earning", Number(e.target.value))}
-              className="col-span-3"
-            />
-          </div>
-        </div>
-        <DialogFooter className="flex justify-between">
-          <Button variant="destructive" onClick={handleDelete}>
-            Delete
-          </Button>
-          <Button type="submit" onClick={handleSave}>
-            Save changes
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <DialogFooter className="flex items-center justify-between pt-2 border-t">
+            <Button variant="outline" onClick={handleCancel}>
+              取消
+            </Button>
+            <div className="flex space-x-2">
+              <Button variant="destructive" size="sm" onClick={() => setShowDeleteConfirm(true)}>
+                删除
+              </Button>
+              <Button type="submit" onClick={() => onSave(formData)}>
+                保存
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
