@@ -10,7 +10,7 @@ import {
 } from "@/components/custom/table";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { ColumnDef, flexRender } from "@tanstack/react-table";
+import { ColumnDef, flexRender, Header, Row } from "@tanstack/react-table";
 import { DataTableFooter } from "./data-table-footer";
 import { AggregationType } from "@/components/data-table/aggregations";
 import { useDataTable } from "@/components/data-table/data-table-provider";
@@ -30,8 +30,8 @@ interface HeaderRowEventHandlers {
 
 interface AnalyzeTableProps<TData> {
   getColumnAggregation?: (columnId: string, type: AggregationType, values: unknown[]) => React.ReactNode;
-  onRow?: (record: TData, rowIndex: number) => RowEventHandlers;
-  onHeaderRow?: (columns: ColumnDef<TData, unknown>[], index: number) => HeaderRowEventHandlers;
+  onRow?: (row: Row<TData>, rowIndex: number) => RowEventHandlers;
+  onHeaderRow?: (columns: Header<TData, unknown>[], index: number) => HeaderRowEventHandlers;
 }
 
 export function AnalyzeTable<TData>({
@@ -51,11 +51,13 @@ export function AnalyzeTable<TData>({
           <TableRow
             key={headerGroup.id}
             className="hover:bg-transparent"
-            {...(onHeaderRow ? onHeaderRow(headerGroup.headers, 0) : {})}
           >
-            {headerGroup.headers.map((header) => {
+            {headerGroup.headers.map((header, index) => {
               return (
-                <TableHead key={header.id}>
+                <TableHead 
+                  key={header.id}
+                  {...(onHeaderRow ? onHeaderRow(headerGroup.headers as Header<TData, unknown>[], index) : {})}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -74,7 +76,7 @@ export function AnalyzeTable<TData>({
             <TableRow
               key={row.id}
               data-state={row.getIsSelected() && "selected"}
-              {...(onRow ? onRow(row.original as TData, row.index) : {})}
+              {...(onRow ? onRow(row as Row<TData>, row.index) : {})}
             >
               {row.getVisibleCells().map((cell) => {
                 // Add special rendering for grouped cells

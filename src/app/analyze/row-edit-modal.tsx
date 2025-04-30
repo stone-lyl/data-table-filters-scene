@@ -25,6 +25,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+import { Row } from "@tanstack/react-table";
+
 interface RowEditModalProps<TData> {
   isOpen: boolean;
   onClose: () => void;
@@ -84,6 +86,11 @@ export function RowEditModal<TData>({
     onClose();
   };
 
+  const handleSave = () => {
+    onSave(formData);
+    onClose();
+  };
+
   // Render form fields dynamically based on the data type
   const renderFormFields = () => {
     return Object.entries(formData as Record<string, unknown>)
@@ -91,7 +98,7 @@ export function RowEditModal<TData>({
       .map(([key, value]) => {
         const fieldKey = key as keyof TData;
         const fieldLabel = getFieldLabel(key);
-        
+
         // Render different input types based on the value type
         if (typeof value === 'boolean') {
           return (
@@ -127,6 +134,7 @@ export function RowEditModal<TData>({
             </div>
           );
         } else {
+          console.log(value, 'value', key, 'key');
           // Default to string input
           return (
             <div key={key} className="grid grid-cols-4 items-center gap-4 py-2">
@@ -135,7 +143,7 @@ export function RowEditModal<TData>({
               </Label>
               <Input
                 id={key}
-                value={value as string}
+                value={(value?.toString()) as string}
                 onChange={(e) => handleInputChange(fieldKey, e.target.value)}
                 className="col-span-3"
               />
@@ -150,15 +158,15 @@ export function RowEditModal<TData>({
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent className="sm:max-w-[425px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
             <AlertDialogDescription>
-              此操作无法撤销，将永久删除该数据。
+              This action cannot be undone, will permanently delete the data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              删除
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -167,9 +175,9 @@ export function RowEditModal<TData>({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
-            <DialogTitle>编辑数据</DialogTitle>
+            <DialogTitle>Edit Row Data</DialogTitle>
             <DialogDescription>
-              修改数据或删除此条记录。
+              only some fields are editable
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[60vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
@@ -177,16 +185,19 @@ export function RowEditModal<TData>({
               {renderFormFields()}
             </div>
           </div>
-          <DialogFooter className="flex items-center justify-between pt-2 border-t">
-            <Button variant="outline" onClick={handleCancel}>
-              取消
-            </Button>
+          <DialogFooter className="flex items-center sm:justify-between pt-2 border-t">
             <div className="flex space-x-2">
               <Button variant="destructive" size="sm" onClick={() => setShowDeleteConfirm(true)}>
-                删除
+                Delete
               </Button>
-              <Button type="submit" onClick={() => onSave(formData)}>
-                保存
+            </div>
+
+            <div className="flex space-x-2">
+              <Button size="sm" variant="outline" onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button size="sm" onClick={handleSave}>
+                Save
               </Button>
             </div>
           </DialogFooter>

@@ -20,6 +20,8 @@ import type {
   VisibilityState,
   GroupingState,
   ExpandedState,
+  Row,
+  Header,
 } from "@tanstack/react-table";
 import {
   getCoreRowModel,
@@ -65,11 +67,11 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   // State for data management
   const [data, setData] = useState<TData[]>(initialData as TData[]);
-  
+
   // State for row edit modal
   const [selectedRow, setSelectedRow] = useState<TData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   // State for column info tooltip
   const [tooltipInfo, setTooltipInfo] = useState<{ columns: ColumnDef<TData, TValue>[]; colIndex: number } | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
@@ -77,43 +79,47 @@ export function DataTable<TData, TValue>({
 
   // Handle row updates
   const handleRowUpdate = (updatedData: TData) => {
-    console.log(updatedData, 'updatedData');
-    setData(prevData => 
+    setData(prevData =>
       prevData.map(row => (row as ColumnSchema).id === (updatedData as ColumnSchema).id ? updatedData : row)
     );
   };
 
   // Handle row deletion
   const handleRowDelete = (rowToDelete: TData) => {
-    setData(prevData => 
+    setData(prevData =>
       prevData.filter(row => (row as ColumnSchema).id !== (rowToDelete as ColumnSchema).id)
     );
   };
 
   // Row event handlers
-  const rowEventHandlers = (record: TData, rowIndex: number) => {
+  const rowEventHandlers = (row: Row<TData>, rowIndex: number) => {
     return {
       onDoubleClick: (e: React.MouseEvent) => {
-        setSelectedRow(record);
+        const visibleColumns = row.getVisibleCells().map(cell => cell.column.id);
+        const visibleRow = {} as Record<string, unknown>;
+        visibleColumns.forEach(columnId => {
+          visibleRow[columnId] = (row.original as Record<string, unknown>)[columnId];
+        });
+        setSelectedRow(visibleRow as TData);
         setIsModalOpen(true);
       },
-      onClick: (e: React.MouseEvent) => {},
-      onContextMenu: (e: React.MouseEvent) => {},
-      onMouseEnter: (e: React.MouseEvent) => {},
-      onMouseLeave: (e: React.MouseEvent) => {},
+      onClick: (e: React.MouseEvent) => { },
+      onContextMenu: (e: React.MouseEvent) => { },
+      onMouseEnter: (e: React.MouseEvent) => { },
+      onMouseLeave: (e: React.MouseEvent) => { },
     };
   };
 
   // Header row event handlers
-  const headerRowEventHandlers = (columns: ColumnDef<TData, TValue>[], index: number) => {
+  const headerRowEventHandlers = (columns: Header<TData, unknown>[], index: number) => {
     return {
-      onClick: (e: React.MouseEvent) => {},
+      onClick: (e: React.MouseEvent) => { },
       onContextMenu: (e: React.MouseEvent) => {
         e.preventDefault();
         // Show tooltip with column info
         console.log(columns, index);
         setTooltipPosition({ x: e.clientX - 10, y: e.clientY - 10 });
-        setTooltipInfo({ columns: columns, colIndex: index});
+        setTooltipInfo({ columns: columns, colIndex: index });
         setIsTooltipOpen(true);
       }
     };
@@ -130,7 +136,7 @@ export function DataTable<TData, TValue>({
   });
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<VisibilityState>("data-table-visibility", {});
-  const [footerAggregations, setFooterAggregations] = 
+  const [footerAggregations, setFooterAggregations] =
     React.useState<AggregationConfig[]>(defaultFooterAggregations || []);
   const [_, setSearch] = useQueryStates(searchParamsParser);
 
@@ -194,25 +200,6 @@ export function DataTable<TData, TValue>({
 
   return (
     <>
-      {/* Column Info Tooltip */}
-      <ColumnInfoTooltip
-        isOpen={isTooltipOpen}
-        onClose={() => setIsTooltipOpen(false)}
-        position={tooltipPosition}
-        columnInfo={tooltipInfo as ColumnInfoTooltipProps['columnInfo']}
-      >
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: isTooltipOpen ? 'auto' : 'none', opacity: 0 }} />
-      </ColumnInfoTooltip>
-      
-      {/* Row Edit Modal */}
-      <RowEditModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        rowData={selectedRow as ColumnSchema}
-        onSave={handleRowUpdate as (updatedData: ColumnSchema) => void}
-        onDelete={handleRowDelete as (rowToDelete: ColumnSchema) => void}
-      />
-
       <DataTableProvider
         table={table}
         columns={columns}
@@ -224,31 +211,50 @@ export function DataTable<TData, TValue>({
         footerAggregations={footerAggregations}
         setFooterAggregations={setFooterAggregations}
       >
-      <div className="flex h-full w-full flex-col gap-3 sm:flex-row">
-        <div
-          className={cn(
-            "hidden w-full p-1 sm:block sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-64 md:max-w-64",
-            "group-data-[expanded=false]/controls:hidden",
-          )}
+
+        {/* Column Info Tooltip */}
+        <ColumnInfoTooltip
+          isOpen={isTooltipOpen}
+          onClose={() => setIsTooltipOpen(false)}
+          position={tooltipPosition}
+          columnInfo={tooltipInfo as ColumnInfoTooltipProps['columnInfo']}
         >
-          <DataTableFilterControls />
-        </div>
-        <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
-          <DataTableFilterCommand searchParamsParser={searchParamsParser} />
-          <DataTableToolbar />
-          <DataTableFooterButtons />
-          <DataTableGroupButtons />
-          <div className="rounded-md border">
-            <AnalyzeTable<TData> 
-              getColumnAggregation={getColumnAggregation} 
-              onRow={rowEventHandlers}
-              onHeaderRow={headerRowEventHandlers}
-            />
+          <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: isTooltipOpen ? 'auto' : 'none', opacity: 0 }} />
+        </ColumnInfoTooltip>
+
+        {/* Row Edit Modal */}
+        <RowEditModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          rowData={selectedRow as ColumnSchema}
+          onSave={handleRowUpdate as (updatedData: ColumnSchema) => void}
+          onDelete={handleRowDelete as (rowToDelete: ColumnSchema) => void}
+        />
+        <div className="flex h-full w-full flex-col gap-3 sm:flex-row">
+          <div
+            className={cn(
+              "hidden w-full p-1 sm:block sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-64 md:max-w-64",
+              "group-data-[expanded=false]/controls:hidden",
+            )}
+          >
+            <DataTableFilterControls />
           </div>
-          <DataTablePagination />
+          <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
+            <DataTableFilterCommand searchParamsParser={searchParamsParser} />
+            <DataTableToolbar />
+            <DataTableFooterButtons />
+            <DataTableGroupButtons />
+            <div className="rounded-md border">
+              <AnalyzeTable<TData>
+                getColumnAggregation={getColumnAggregation}
+                onRow={rowEventHandlers}
+                onHeaderRow={headerRowEventHandlers}
+              />
+            </div>
+            <DataTablePagination />
+          </div>
         </div>
-      </div>
-    </DataTableProvider>
+      </DataTableProvider>
     </>
   );
 }
