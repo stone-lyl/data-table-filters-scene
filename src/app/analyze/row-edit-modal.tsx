@@ -134,7 +134,6 @@ export function RowEditModal<TData>({
             </div>
           );
         } else {
-          console.log(value, 'value', key, 'key');
           // Default to string input
           return (
             <div key={key} className="grid grid-cols-4 items-center gap-4 py-2">

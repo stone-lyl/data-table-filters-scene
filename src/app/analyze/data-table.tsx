@@ -95,12 +95,7 @@ export function DataTable<TData, TValue>({
   const rowEventHandlers = (row: Row<TData>, rowIndex: number) => {
     return {
       onDoubleClick: (e: React.MouseEvent) => {
-        const visibleColumns = row.getVisibleCells().map(cell => cell.column.id);
-        const visibleRow = {} as Record<string, unknown>;
-        visibleColumns.forEach(columnId => {
-          visibleRow[columnId] = (row.original as Record<string, unknown>)[columnId];
-        });
-        setSelectedRow(visibleRow as TData);
+        setSelectedRow(row.original as TData);
         setIsModalOpen(true);
       },
       onClick: (e: React.MouseEvent) => { },
@@ -116,8 +111,6 @@ export function DataTable<TData, TValue>({
       onClick: (e: React.MouseEvent) => { },
       onContextMenu: (e: React.MouseEvent) => {
         e.preventDefault();
-        // Show tooltip with column info
-        console.log(columns, index);
         setTooltipPosition({ x: e.clientX - 10, y: e.clientY - 10 });
         setTooltipInfo({ columns: columns, colIndex: index });
         setIsTooltipOpen(true);
