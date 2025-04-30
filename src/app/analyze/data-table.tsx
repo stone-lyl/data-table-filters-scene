@@ -39,7 +39,7 @@ import { useState } from "react";
 import { searchParamsParser } from "./search-params";
 import { DataTableFooterButtons } from "@/components/data-table/data-table-footer-buttons";
 import { RowEditModal } from "./row-edit-modal";
-import { ColumnInfoTooltip } from "./column-info-tooltip";
+import { ColumnInfoTooltip, ColumnInfoTooltipProps } from "./column-info-tooltip";
 import { ColumnSchema } from "./types";
 
 export interface DataTableProps<TData, TValue> {
@@ -51,10 +51,7 @@ export interface DataTableProps<TData, TValue> {
   filterFields?: DataTableFilterField<TData>[];
   // Footer configuration
   footerAggregations?: AggregationConfig[];
-  getColumnAggregation?: (columnId: string, type: string, values: any[]) => React.ReactNode;
-  // Row event handlers
-  onRow?: (record: any, rowIndex: number) => any;
-  onHeaderRow?: (columns: any, index: number) => any;
+  getColumnAggregation?: (columnId: string, type: string, values: unknown[]) => React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -65,109 +62,63 @@ export function DataTable<TData, TValue>({
   filterFields = [],
   footerAggregations: defaultFooterAggregations,
   getColumnAggregation,
-  onRow: externalRowHandler,
-  onHeaderRow: externalHeaderRowHandler,
 }: DataTableProps<TData, TValue>) {
   // State for data management
-  const [data, setData] = useState<any[]>(initialData);
+  const [data, setData] = useState<TData[]>(initialData as TData[]);
   
   // State for row edit modal
-  const [selectedRow, setSelectedRow] = useState<any | null>(null);
+  const [selectedRow, setSelectedRow] = useState<TData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   // State for column info tooltip
-  const [tooltipInfo, setTooltipInfo] = useState<any>(null);
+  const [tooltipInfo, setTooltipInfo] = useState<{ columns: ColumnDef<TData, TValue>[]; colIndex: number } | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   // Handle row updates
-  const handleRowUpdate = (updatedData: any) => {
+  const handleRowUpdate = (updatedData: TData) => {
+    console.log(updatedData, 'updatedData');
     setData(prevData => 
-      prevData.map(row => {
-        // Use a unique identifier for your data, url is used as an example
-        if ('url' in row && 'url' in updatedData && row.url === updatedData.url) {
-          return updatedData;
-        }
-        return row;
-      })
+      prevData.map(row => (row as ColumnSchema).id === (updatedData as ColumnSchema).id ? updatedData : row)
     );
   };
 
   // Handle row deletion
-  const handleRowDelete = (rowToDelete: any) => {
+  const handleRowDelete = (rowToDelete: TData) => {
     setData(prevData => 
-      prevData.filter(row => {
-        // Use a unique identifier for your data
-        if ('url' in row && 'url' in rowToDelete) {
-          return row.url !== rowToDelete.url;
-        }
-        return true;
-      })
+      prevData.filter(row => (row as ColumnSchema).id !== (rowToDelete as ColumnSchema).id)
     );
   };
 
   // Row event handlers
-  const rowEventHandlers = (record: any, rowIndex: number) => {
-    // Combine internal handlers with any external handlers
-    const internalHandlers = {
+  const rowEventHandlers = (record: TData, rowIndex: number) => {
+    return {
       onDoubleClick: (e: React.MouseEvent) => {
         setSelectedRow(record);
         setIsModalOpen(true);
-        console.log('Row double clicked:', record);
       },
-      onClick: (e: React.MouseEvent) => {
-        // Optional click handler
-        console.log('Row clicked:', record);
-      },
-      onContextMenu: (e: React.MouseEvent) => {
-        // Optional context menu handler
-        e.preventDefault();
-        console.log('Row right-clicked:', record);
-      },
-      onMouseEnter: (e: React.MouseEvent) => {
-        // Optional mouse enter handler
-        console.log('Mouse entered row:', rowIndex);
-      },
-      onMouseLeave: (e: React.MouseEvent) => {
-        // Optional mouse leave handler
-        console.log('Mouse left row:', rowIndex);
-      }
+      onClick: (e: React.MouseEvent) => {},
+      onContextMenu: (e: React.MouseEvent) => {},
+      onMouseEnter: (e: React.MouseEvent) => {},
+      onMouseLeave: (e: React.MouseEvent) => {},
     };
-
-    // If external handlers are provided, merge them with internal handlers
-    if (externalRowHandler) {
-      const externalHandlers = externalRowHandler(record, rowIndex);
-      return { ...internalHandlers, ...externalHandlers };
-    }
-
-    return internalHandlers;
   };
 
   // Header row event handlers
-  const headerRowEventHandlers = (columns: any, index: number) => {
-    // Combine internal handlers with any external handlers
-    const internalHandlers = {
-      onClick: (e: React.MouseEvent) => {
-        // Optional click handler
-        console.log('Header row clicked:', columns);
-      },
+  const headerRowEventHandlers = (columns: ColumnDef<TData, TValue>[], index: number) => {
+    return {
+      onClick: (e: React.MouseEvent) => {},
       onContextMenu: (e: React.MouseEvent) => {
         e.preventDefault();
         // Show tooltip with column info
-        setTooltipPosition({ x: e.clientX, y: e.clientY });
-        setTooltipInfo(columns);
+        console.log(columns, index);
+        setTooltipPosition({ x: e.clientX - 10, y: e.clientY - 10 });
+        setTooltipInfo({ columns: columns, colIndex: index});
         setIsTooltipOpen(true);
       }
     };
-
-    // If external handlers are provided, merge them with internal handlers
-    if (externalHeaderRowHandler) {
-      const externalHandlers = externalHeaderRowHandler(columns, index);
-      return { ...internalHandlers, ...externalHandlers };
-    }
-
-    return internalHandlers;
   };
+
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -248,7 +199,7 @@ export function DataTable<TData, TValue>({
         isOpen={isTooltipOpen}
         onClose={() => setIsTooltipOpen(false)}
         position={tooltipPosition}
-        columnInfo={tooltipInfo}
+        columnInfo={tooltipInfo as ColumnInfoTooltipProps['columnInfo']}
       >
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: isTooltipOpen ? 'auto' : 'none', opacity: 0 }} />
       </ColumnInfoTooltip>
@@ -257,9 +208,9 @@ export function DataTable<TData, TValue>({
       <RowEditModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        rowData={selectedRow}
-        onSave={handleRowUpdate}
-        onDelete={handleRowDelete}
+        rowData={selectedRow as ColumnSchema}
+        onSave={handleRowUpdate as (updatedData: ColumnSchema) => void}
+        onDelete={handleRowDelete as (rowToDelete: ColumnSchema) => void}
       />
 
       <DataTableProvider
@@ -288,7 +239,7 @@ export function DataTable<TData, TValue>({
           <DataTableFooterButtons />
           <DataTableGroupButtons />
           <div className="rounded-md border">
-            <AnalyzeTable 
+            <AnalyzeTable<TData> 
               getColumnAggregation={getColumnAggregation} 
               onRow={rowEventHandlers}
               onHeaderRow={headerRowEventHandlers}

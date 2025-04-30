@@ -2,6 +2,7 @@ import { REGIONS } from "@/constants/region";
 import { TAGS } from "@/constants/tag";
 
 export type ColumnSchema = {
+  id: string;
   // name: string;
   firstName: string;
   lastName: string;

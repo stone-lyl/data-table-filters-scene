@@ -11,38 +11,37 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { ColumnSchema } from "./types";
+import { useEffect, useState } from "react";
 
-interface RowEditModalProps {
+interface RowEditModalProps<TData> {
   isOpen: boolean;
   onClose: () => void;
-  rowData: ColumnSchema | null;
-  onSave: (updatedData: ColumnSchema) => void;
-  onDelete: (rowData: ColumnSchema) => void;
+  rowData: TData | null;
+  onSave: (updatedData: TData) => void;
+  onDelete: (rowData: TData) => void;
 }
 
-export function RowEditModal({
+export function RowEditModal<TData>({
   isOpen,
   onClose,
   rowData,
   onSave,
   onDelete,
-}: RowEditModalProps) {
-  const [formData, setFormData] = useState<ColumnSchema | null>(null);
+}: RowEditModalProps<TData>) {
+  const [formData, setFormData] = useState<TData | null>(rowData as TData | null);
 
-  // Initialize form data when rowData changes
-  useState(() => {
+  useEffect(() => {
     if (rowData) {
       setFormData({ ...rowData });
     }
-  });
+  }, [rowData]);
+
 
   if (!rowData || !formData) {
     return null;
   }
 
-  const handleInputChange = (field: keyof ColumnSchema, value: any) => {
+  const handleInputChange = (field: keyof TData, value: string | number | boolean | Date | string[]) => {
     setFormData({
       ...formData,
       [field]: value,
@@ -58,6 +57,7 @@ export function RowEditModal({
     onDelete(rowData);
     onClose();
   };
+  
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

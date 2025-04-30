@@ -6,13 +6,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ColumnDef } from "@tanstack/react-table";
 import { ReactNode } from "react";
 
-interface ColumnInfoTooltipProps {
+export interface ColumnInfoTooltipProps {
   isOpen: boolean;
   onClose: () => void;
   position: { x: number; y: number };
-  columnInfo: any;
+  columnInfo: { colIndex: number, columns: ColumnDef<unknown, unknown>[] } | null;
   children: ReactNode;
 }
 
@@ -25,9 +26,7 @@ export function ColumnInfoTooltip({
 }: ColumnInfoTooltipProps) {
   if (!columnInfo) return null;
 
-  // Extract column information
-  const { id, header, accessorKey, meta } = columnInfo.column?.columnDef || {};
-  const fieldType = meta?.fieldType || "unknown";
+  const { colIndex } = columnInfo;
 
   return (
     <TooltipProvider>
@@ -43,12 +42,9 @@ export function ColumnInfoTooltip({
           }}
           className="z-50"
         >
-          <div className="space-y-2 p-2">
-            <div className="font-semibold">{header || accessorKey || id}</div>
+          <div className="space-y-2 p-2 w-32">
             <div className="text-sm">
-              <div><span className="text-muted-foreground">ID:</span> {id}</div>
-              <div><span className="text-muted-foreground">Type:</span> {fieldType}</div>
-              <div><span className="text-muted-foreground">Key:</span> {accessorKey}</div>
+              <div><span className="text-muted-foreground">column index:</span> {colIndex}</div>
             </div>
           </div>
         </TooltipContent>

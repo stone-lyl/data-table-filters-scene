@@ -10,7 +10,7 @@ import {
 } from "@/components/custom/table";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { flexRender } from "@tanstack/react-table";
+import { ColumnDef, flexRender } from "@tanstack/react-table";
 import { DataTableFooter } from "./data-table-footer";
 import { AggregationType } from "@/components/data-table/aggregations";
 import { useDataTable } from "@/components/data-table/data-table-provider";
@@ -28,17 +28,17 @@ interface HeaderRowEventHandlers {
   onContextMenu?: (event: React.MouseEvent) => void;
 }
 
-interface AnalyzeTableProps {
-  getColumnAggregation?: (columnId: string, type: AggregationType, values: any[]) => React.ReactNode;
-  onRow?: (record: any, rowIndex: number) => RowEventHandlers;
-  onHeaderRow?: (columns: any, index: number) => HeaderRowEventHandlers;
+interface AnalyzeTableProps<TData> {
+  getColumnAggregation?: (columnId: string, type: AggregationType, values: unknown[]) => React.ReactNode;
+  onRow?: (record: TData, rowIndex: number) => RowEventHandlers;
+  onHeaderRow?: (columns: ColumnDef<TData, unknown>[], index: number) => HeaderRowEventHandlers;
 }
 
-export function AnalyzeTable({
+export function AnalyzeTable<TData>({
   getColumnAggregation,
   onRow,
   onHeaderRow
-}: AnalyzeTableProps) {
+}: AnalyzeTableProps<TData>) {
   "use no memo";
 
   const { table } = useDataTable();
@@ -74,7 +74,7 @@ export function AnalyzeTable({
             <TableRow
               key={row.id}
               data-state={row.getIsSelected() && "selected"}
-              {...(onRow ? onRow(row.original, row.index) : {})}
+              {...(onRow ? onRow(row.original as TData, row.index) : {})}
             >
               {row.getVisibleCells().map((cell) => {
                 // Add special rendering for grouped cells
