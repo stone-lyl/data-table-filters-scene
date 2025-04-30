@@ -3,6 +3,7 @@ import type { ColumnSchema } from "./types";
 
 export const data = [
   {
+    id: "1",
     // name: "Edge Api",
     firstName: "John",
     lastName: "Smith",
@@ -19,6 +20,7 @@ export const data = [
     btcAmount: "1.23456789", // 8 decimal places
   },
   {
+    id: "2",
     // name: "Lambda Api",
     firstName: "John",
     lastName: "Doe",
@@ -36,6 +38,7 @@ export const data = [
   },
 
   {
+    id: "3",
     // name: "App",
     firstName: "Sarah",
     lastName: "Davis",
@@ -52,6 +55,7 @@ export const data = [
     btcAmount: "2.50000000", // 8 decimal places
   },
   {
+    id: "4",
     // name: "Demo",
     firstName: "David",
     lastName: "Wilson",
@@ -68,6 +72,7 @@ export const data = [
     btcAmount: "0.10000001", // 8 decimal places
   },
   {
+    id: "5",
     // name: "Documentation",
     firstName: "Jennifer",
     lastName: "Taylor",
@@ -84,6 +89,7 @@ export const data = [
     btcAmount: "5.67890123", // 8 decimal places
   },
   {
+    id: "6",
     // name: "Boilerplate",
     firstName: "Robert",
     lastName: "Anderson",
@@ -100,6 +106,7 @@ export const data = [
     btcAmount: "0.00000001", // 8 decimal places (smallest unit)
   },
   {
+    id: "7",
     // name: "Dashboard",
     firstName: "Lisa",
     lastName: "Martinez",
@@ -116,6 +123,7 @@ export const data = [
     btcAmount: "10.00000000", // 8 decimal places
   },
   {
+    id: "8",
     // name: "E2E Testing",
     firstName: "Daniel",
     lastName: "Thompson",
@@ -132,6 +140,7 @@ export const data = [
     btcAmount: "0.12345678", // 8 decimal places
   },
   {
+    id: "9",
     // name: "Web App",
     firstName: "Lisa",
     lastName: "Garcia",
@@ -148,6 +157,7 @@ export const data = [
     btcAmount: "3.14159265", // 8 decimal places (truncated)
   },
   {
+    id: "10",
     // name: "Admin Panel",
     firstName: "Lisa",
     lastName: "Rodriguez",
@@ -164,6 +174,7 @@ export const data = [
     btcAmount: "0.87654321", // 8 decimal places
   },
   {
+    id: "11",
     // name: "API Gateway",
     firstName: "Lisa",
     lastName: "Lee",
@@ -180,6 +191,7 @@ export const data = [
     btcAmount: "21.00000000", // 8 decimal places (max supply)
   },
   {
+    id: "12",
     // name: "Analytics Service",
     firstName: "Andrew",
     lastName: "Clark",
@@ -196,6 +208,7 @@ export const data = [
     btcAmount: "0.00050000", // 8 decimal places
   },
   {
+    id: "13",
     // name: "Storybook",
     firstName: "Emma",
     lastName: "Johnson",
@@ -212,6 +225,7 @@ export const data = [
     btcAmount: "1.00000000", // 8 decimal places
   },
   {
+    id: "14",
     // name: "Marketing",
     firstName: "Michael",
     lastName: "Brown",
@@ -228,6 +242,7 @@ export const data = [
     btcAmount: "0.33333333", // 8 decimal places
   },
   {
+    id: "15",
     // name: "Support Portal",
     firstName: "Michelle",
     lastName: "Lewis",
@@ -244,6 +259,7 @@ export const data = [
     btcAmount: "0.05555555", // 8 decimal places
   },
   {
+    id: "16",
     // name: "User Management",
     firstName: "Michelle",
     lastName: "Walker",
@@ -260,6 +276,7 @@ export const data = [
     btcAmount: "0.99999999", // 8 decimal places
   },
   {
+    id: "17",
     // name: "Payment Gateway",
     firstName: "Elizabeth",
     lastName: "Hall",
@@ -276,6 +293,7 @@ export const data = [
     btcAmount: "0.00000100", // 8 decimal places
   },
   {
+    id: "18",
     // name: "Notification Service",
     firstName: "Ryan",
     lastName: "Young",
@@ -292,6 +310,7 @@ export const data = [
     btcAmount: "0.01010101", // 8 decimal places
   },
   {
+    id: "19",
     // name: "File Storage",
     firstName: "Sophia",
     lastName: "Allen",
@@ -308,6 +327,7 @@ export const data = [
     btcAmount: "0.10101010", // 8 decimal places
   },
   {
+    id: "20",
     // name: "CDN",
     firstName: "Sophia",
     lastName: "King",
@@ -324,6 +344,7 @@ export const data = [
     btcAmount: "15.55555555", // 8 decimal places
   },
   {
+    id: "21",
     // name: "Auth Service",
     firstName: "Olivia",
     lastName: "Green",

@@ -6,6 +6,7 @@ import { DataTable } from "./data-table";
 import { searchParamsCache } from "./search-params";
 import { Skeleton } from "./skeleton";
 import { defaultAggregations } from "../../components/data-table/aggregations";
+import { ColumnSchema } from "./types";
 
 export default async function Page({
   searchParams,
@@ -16,9 +17,9 @@ export default async function Page({
 
   return (
     <React.Suspense fallback={<Skeleton />}>
-      <DataTable
+      <DataTable<ColumnSchema, unknown>
         columns={columns}
-        data={data}
+        data={data as ColumnSchema[]}
         filterFields={filterFields}
         defaultGrouping={[
           // "firstName"

@@ -20,6 +20,8 @@ import type {
   VisibilityState,
   GroupingState,
   ExpandedState,
+  Row,
+  Header,
 } from "@tanstack/react-table";
 import {
   getCoreRowModel,
@@ -35,8 +37,12 @@ import {
 } from "@tanstack/react-table";
 import { useQueryStates } from "nuqs";
 import * as React from "react";
+import { useState } from "react";
 import { searchParamsParser } from "./search-params";
 import { DataTableFooterButtons } from "@/components/data-table/data-table-footer-buttons";
+import { RowEditModal } from "./row-edit-modal";
+import { ColumnInfoTooltip, ColumnInfoTooltipProps } from "./column-info-tooltip";
+import { ColumnSchema } from "./types";
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -47,18 +53,71 @@ export interface DataTableProps<TData, TValue> {
   filterFields?: DataTableFilterField<TData>[];
   // Footer configuration
   footerAggregations?: AggregationConfig[];
-  getColumnAggregation?: (columnId: string, type: string, values: any[]) => React.ReactNode;
+  getColumnAggregation?: (columnId: string, type: string, values: unknown[]) => React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
+  data: initialData,
   defaultColumnFilters = [],
   defaultGrouping = [],
   filterFields = [],
   footerAggregations: defaultFooterAggregations,
   getColumnAggregation,
 }: DataTableProps<TData, TValue>) {
+  // State for data management
+  const [data, setData] = useState<TData[]>(initialData as TData[]);
+
+  // State for row edit modal
+  const [selectedRow, setSelectedRow] = useState<TData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // State for column info tooltip
+  const [tooltipInfo, setTooltipInfo] = useState<{ columns: ColumnDef<TData, TValue>[]; colIndex: number } | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+
+  // Handle row updates
+  const handleRowUpdate = (updatedData: TData) => {
+    setData(prevData =>
+      prevData.map(row => (row as ColumnSchema).id === (updatedData as ColumnSchema).id ? updatedData : row)
+    );
+  };
+
+  // Handle row deletion
+  const handleRowDelete = (rowToDelete: TData) => {
+    setData(prevData =>
+      prevData.filter(row => (row as ColumnSchema).id !== (rowToDelete as ColumnSchema).id)
+    );
+  };
+
+  // Row event handlers
+  const rowEventHandlers = (row: Row<TData>, rowIndex: number) => {
+    return {
+      onDoubleClick: (e: React.MouseEvent) => {
+        setSelectedRow(row.original as TData);
+        setIsModalOpen(true);
+      },
+      onClick: (e: React.MouseEvent) => { },
+      onContextMenu: (e: React.MouseEvent) => { },
+      onMouseEnter: (e: React.MouseEvent) => { },
+      onMouseLeave: (e: React.MouseEvent) => { },
+    };
+  };
+
+  // Header row event handlers
+  const headerRowEventHandlers = (columns: Header<TData, unknown>[], index: number) => {
+    return {
+      onClick: (e: React.MouseEvent) => { },
+      onContextMenu: (e: React.MouseEvent) => {
+        e.preventDefault();
+        setTooltipPosition({ x: e.clientX - 10, y: e.clientY - 10 });
+        setTooltipInfo({ columns: columns, colIndex: index });
+        setIsTooltipOpen(true);
+      }
+    };
+  };
+
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -70,7 +129,7 @@ export function DataTable<TData, TValue>({
   });
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<VisibilityState>("data-table-visibility", {});
-  const [footerAggregations, setFooterAggregations] = 
+  const [footerAggregations, setFooterAggregations] =
     React.useState<AggregationConfig[]>(defaultFooterAggregations || []);
   const [_, setSearch] = useQueryStates(searchParamsParser);
 
@@ -133,37 +192,62 @@ export function DataTable<TData, TValue>({
   }, [columnFilters]);
 
   return (
-    <DataTableProvider
-      table={table}
-      columns={columns}
-      filterFields={filterFields}
-      columnFilters={columnFilters}
-      sorting={sorting}
-      pagination={pagination}
-      grouping={grouping}
-      footerAggregations={footerAggregations}
-      setFooterAggregations={setFooterAggregations}
-    >
-      <div className="flex h-full w-full flex-col gap-3 sm:flex-row">
-        <div
-          className={cn(
-            "hidden w-full p-1 sm:block sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-64 md:max-w-64",
-            "group-data-[expanded=false]/controls:hidden",
-          )}
+    <>
+      <DataTableProvider
+        table={table}
+        columns={columns}
+        filterFields={filterFields}
+        columnFilters={columnFilters}
+        sorting={sorting}
+        pagination={pagination}
+        grouping={grouping}
+        footerAggregations={footerAggregations}
+        setFooterAggregations={setFooterAggregations}
+      >
+
+        {/* Column Info Tooltip */}
+        <ColumnInfoTooltip
+          isOpen={isTooltipOpen}
+          onClose={() => setIsTooltipOpen(false)}
+          position={tooltipPosition}
+          columnInfo={tooltipInfo as ColumnInfoTooltipProps['columnInfo']}
         >
-          <DataTableFilterControls />
-        </div>
-        <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
-          <DataTableFilterCommand searchParamsParser={searchParamsParser} />
-          <DataTableToolbar />
-          <DataTableFooterButtons />
-          <DataTableGroupButtons />
-          <div className="rounded-md border">
-            <AnalyzeTable getColumnAggregation={getColumnAggregation} />
+          <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: isTooltipOpen ? 'auto' : 'none', opacity: 0 }} />
+        </ColumnInfoTooltip>
+
+        {/* Row Edit Modal */}
+        <RowEditModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          rowData={selectedRow as ColumnSchema}
+          onSave={handleRowUpdate as (updatedData: ColumnSchema) => void}
+          onDelete={handleRowDelete as (rowToDelete: ColumnSchema) => void}
+        />
+        <div className="flex h-full w-full flex-col gap-3 sm:flex-row">
+          <div
+            className={cn(
+              "hidden w-full p-1 sm:block sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-64 md:max-w-64",
+              "group-data-[expanded=false]/controls:hidden",
+            )}
+          >
+            <DataTableFilterControls />
           </div>
-          <DataTablePagination />
+          <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
+            <DataTableFilterCommand searchParamsParser={searchParamsParser} />
+            <DataTableToolbar />
+            <DataTableFooterButtons />
+            <DataTableGroupButtons />
+            <div className="rounded-md border">
+              <AnalyzeTable<TData>
+                getColumnAggregation={getColumnAggregation}
+                onRow={rowEventHandlers}
+                onHeaderRow={headerRowEventHandlers}
+              />
+            </div>
+            <DataTablePagination />
+          </div>
         </div>
-      </div>
-    </DataTableProvider>
+      </DataTableProvider>
+    </>
   );
 }
