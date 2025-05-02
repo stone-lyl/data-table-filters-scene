@@ -1,14 +1,6 @@
 import Decimal from "decimal.js-light";
 
 /**
- * todo: 逻辑是否融入代码
- * {
-    "type": "currency",
-    "unit": "USD"
-}
- */
-
-/**
  * Format a currency value with k/M suffix for large numbers
  * @param value The number to format
  * @returns Formatted currency string (e.g. $1.25k, $1.25M)

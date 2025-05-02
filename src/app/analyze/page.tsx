@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { columns } from "./columns";
 import { data } from "./data";
@@ -30,7 +32,7 @@ export default async function Page({
             value,
           }))
           .filter(({ value }) => value ?? undefined)}
-        footerAggregations={defaultAggregations.slice(0, 3)}
+        footerAggregations={defaultAggregations.slice(1, 3)}
       />
     </React.Suspense>
   );

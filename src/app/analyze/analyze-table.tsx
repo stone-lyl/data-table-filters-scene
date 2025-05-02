@@ -19,13 +19,11 @@ import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "./types/event-hand
 // Using the common types from types/event-handlers.ts
 
 interface AnalyzeTableProps<TData> {
-  getColumnAggregation?: (columnId: string, type: AggregationType, values: unknown[]) => React.ReactNode;
   onRow?: RowEventHandlersFn<TData>;
   onHeaderRow?: HeaderRowEventHandlersFn<TData>;
 }
 
 export function AnalyzeTable<TData>({
-  getColumnAggregation,
   onRow,
   onHeaderRow
 }: AnalyzeTableProps<TData>) {
@@ -122,7 +120,7 @@ export function AnalyzeTable<TData>({
           </TableRow>
         )}
       </TableBody>
-      <DataTableFooter getColumnAggregation={getColumnAggregation} />
+      <DataTableFooter />
     </Table>
   );
 }

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { useDataTable } from "./data-table-provider";
-import { Calculator, ArrowDownUp, Plus, Percent } from "lucide-react";
+import { Calculator } from "lucide-react";
 import { defaultAggregations, AggregationType } from "@/components/data-table/aggregations";
 import {
   DropdownMenu,

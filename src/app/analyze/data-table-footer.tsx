@@ -1,24 +1,19 @@
 "use client";
 
 import { TableCell, TableFooter, TableRow } from "@/components/custom/table";
-import { flexRender } from "@tanstack/react-table";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { AggregationType } from "../../components/data-table/aggregations";
 import { useDataTable } from "@/components/data-table/data-table-provider";
-import Decimal from "decimal.js-light";
-import { AGGREGATION_ROW } from "./common";
 
 
 
 // Define props for the DataTableFooter component
 export interface DataTableFooterProps<TData> {
-  getColumnAggregation?: (columnId: string, type: AggregationType, values: any[]) => React.ReactNode;
+  // No props needed anymore as we use aggregation methods directly
 }
 
-export function DataTableFooter<TData>({
-  getColumnAggregation,
-}: DataTableFooterProps<TData>) {
+export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
   "use no memo";
 
   const { footerAggregations = [], table } = useDataTable();
@@ -26,137 +21,29 @@ export function DataTableFooter<TData>({
   const columns = table.getVisibleFlatColumns();
 
 
-  // Default implementation for column aggregation
-  const defaultGetColumnAggregation = (columnId: string, type: AggregationType, values: any[]): React.ReactNode => {
+  // Use aggregation methods directly from the aggregation config
+  const getAggregation = (columnId: string, type: AggregationType, values: any[]): React.ReactNode => {
     if (values.length === 0) return null;
 
+    // Find the aggregation config for this type
+    const aggregationConfig = footerAggregations.find(agg => agg.type === type);
+    
+    // If we have an aggregation method for this type, use it
+    if (aggregationConfig?.aggregationMethod) {
+      return aggregationConfig.aggregationMethod(columnId, values, table);
+    }
+    
+    // Fallback to basic handling if no specific method is found
     const column = table.getColumn(columnId);
     if (!column) return null;
-
-    const columnDef = column.columnDef as any;
-
-    // Determine column type based on metadata
-    const isMeasure = column.columnDef.meta?.fieldType === 'measure';
-    const isBoolean = values.some(v => typeof v === 'boolean');
-
-    const createMockContext = (value: any) => {
-      return {
-        table,
-        column,
-        row: {
-          getValue: () => value,
-          original: { [columnId]: value },
-          id: `${type}-${AGGREGATION_ROW}`,
-          index: -1,
-        },
-        cell: {
-          id: `${type}-${columnId}-aggregation`,
-          getValue: () => value,
-        },
-        renderValue: () => value,
-      };
-    };
-
-    // Format based on aggregation type and column type
-    switch (type) {
-      case 'count':
-        return values.length > 0 ? values.length : null;
-
-      case 'sum':
-        if (isMeasure) {
-          try {
-            // Filter out null/undefined values
-            const validValues = values.filter(v => v !== null && v !== undefined);
-            if (validValues.length === 0) return null;
-
-            const decimalSum = validValues.reduce((acc, val) => {
-              const decimalVal = new Decimal(val);
-              return acc.plus(decimalVal);
-            }, new Decimal(0));
-
-            const sum = decimalSum.toString();
-
-            // If the column has a cell renderer, use it for consistent formatting
-            if (columnDef.cell && typeof columnDef.cell !== 'string') {
-              try {
-                return flexRender(columnDef.cell, createMockContext(sum));
-              } catch (e) {
-                // Fallback to basic formatting
-                return <span className="font-mono">{decimalSum.toFixed(2)}</span>;
-              }
-            }
-
-            // Default fallback formatting
-            return <span className="font-mono">{decimalSum.toFixed(2)}</span>;
-          } catch (error) {
-            return null; // In case of parsing errors
-          }
-        }
-        return null;
-
-      case 'average':
-        if (isMeasure) {
-          try {
-            // Filter out null/undefined values
-            const validValues = values.filter(v => v !== null && v !== undefined);
-            if (validValues.length === 0) return null;
-
-            // Use decimal.js-light for precise calculation regardless of value type
-            const decimalSum = validValues.reduce((acc, val) => {
-              // Convert all values to Decimal for consistent handling
-              const decimalVal = new Decimal(val);
-              return acc.plus(decimalVal);
-            }, new Decimal(0));
-
-            const decimalLength = new Decimal(validValues.length);
-            const decimalAvg = decimalSum.dividedBy(decimalLength);
-
-            // Use string for cell renderer to preserve precision
-            const avg = decimalAvg.toString();
-
-            // If the column has a cell renderer, try to use it
-            if (columnDef.cell && typeof columnDef.cell !== 'string') {
-              try {
-                return flexRender(columnDef.cell, createMockContext(avg));
-              } catch (e) {
-                // Fallback to basic formatting
-                return <span className="font-mono">{decimalAvg.toFixed(2)}</span>;
-              }
-            }
-
-            // Default fallback formatting
-            return <span className="font-mono">{decimalAvg.toFixed(2)}</span>;
-          } catch (error) {
-            return null; // In case of parsing errors
-          }
-        }
-        return null;
-
-      case 'percentage':
-        if (isBoolean) {
-          const trueCount = values.filter(Boolean).length;
-
-          // Use decimal.js-light for precise percentage calculation
-          const decimalTrueCount = new Decimal(trueCount);
-          const decimalTotal = new Decimal(values.length);
-          const decimalPercentage = decimalTrueCount.dividedBy(decimalTotal).times(100);
-          const percentage = decimalPercentage.toNumber().toFixed(2);
-          return (
-            <div className="flex items-center gap-1">
-              <span className="font-medium">{percentage}%</span>
-              <span className="text-xs text-muted-foreground">({trueCount}/{values.length})</span>
-            </div>
-          );
-        }
-        return null;
-
-      default:
-        return null;
+    
+    // For count type, always return the count regardless of column type
+    if (type === 'count') {
+      return values.length;
     }
+    
+    return null;
   };
-
-  // Use custom or default aggregation function
-  const getAggregation = getColumnAggregation || defaultGetColumnAggregation;
 
   return (
     <TableFooter className="bg-muted/50">
