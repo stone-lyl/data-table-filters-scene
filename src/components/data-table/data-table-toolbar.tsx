@@ -23,6 +23,7 @@ interface DataTableToolbarProps {
 }
 
 export function DataTableToolbar({ renderActions }: DataTableToolbarProps) {
+  "use no memo"
   const { table, isLoading, columnFilters } = useDataTable();
   const { open, setOpen } = useControls();
   useHotKey(() => setOpen((prev) => !prev), "b");

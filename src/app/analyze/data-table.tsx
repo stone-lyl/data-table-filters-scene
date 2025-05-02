@@ -67,7 +67,7 @@ export function DataTable<TData, TValue>({
   rowEventHandlers,
   headerRowEventHandlers,
 }: DataTableProps<TData, TValue>) {
-
+  "use no memo"
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
   const [sorting, setSorting] = React.useState<SortingState>([]);

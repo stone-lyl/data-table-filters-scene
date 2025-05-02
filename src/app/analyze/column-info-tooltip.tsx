@@ -4,9 +4,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ReactNode } from "react";
 import { UseColumnTooltipReturn } from "./hooks/use-column-tooltip";
 import { ColumnSchema } from "./types";
 
