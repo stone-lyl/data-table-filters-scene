@@ -1,14 +1,13 @@
-import { useState } from "react";
-import { Row } from "@tanstack/react-table";
+import React, { useState } from "react";
 import { ColumnSchema } from "../types";
-import { RowEventHandlers, RowEventHandlersFn } from "../types/event-handlers";
+import { RowEventHandlersFn } from "../types/event-handlers";
 
-interface UseRowEditOptions<TData> {
+export interface UseRowEditOptions<TData> {
   data: TData[];
   onDataChange?: (newData: TData[]) => void;
 }
 
-interface UseRowEditReturn<TData> {
+export interface UseRowEditReturn<TData> {
   selectedRow: TData | null;
   isModalOpen: boolean;
   handleRowUpdate: (updatedData: TData) => void;

@@ -7,30 +7,30 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ReactNode } from "react";
-import { useColumnTooltip } from "./hooks/use-column-tooltip";
+import { UseColumnTooltipReturn } from "./hooks/use-column-tooltip";
+import { ColumnSchema } from "./types";
 
 export interface ColumnInfoTooltipProps {
-  children?: ReactNode;
+  columnTooltip: UseColumnTooltipReturn<ColumnSchema, unknown>;
 }
 
 export function ColumnInfoTooltip({
-  children,
+  columnTooltip,
 }: ColumnInfoTooltipProps) {
   const {
     tooltipInfo,
     tooltipPosition,
     isTooltipOpen,
     closeTooltip
-  } = useColumnTooltip();
+  } = columnTooltip;
 
-  if (!tooltipInfo) return <>{children}</>;
+  if (!tooltipInfo) return <></>;
 
   const { colIndex } = tooltipInfo;
 
   return (
     <TooltipProvider>
       <Tooltip open={isTooltipOpen} onOpenChange={closeTooltip}>
-        <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent
           side="bottom"
           align="start"

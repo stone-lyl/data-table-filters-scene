@@ -31,16 +31,13 @@ import {
 } from "@tanstack/react-table";
 import { useQueryStates } from "nuqs";
 import * as React from "react";
-import { useState } from "react";
 import { searchParamsParser } from "./search-params";
-import { RowEditModal } from "./row-edit-modal";
-import { ColumnInfoTooltip } from "./column-info-tooltip";
-import { useRowEdit } from "./hooks/use-row-edit";
-import { useColumnTooltip } from "./hooks/use-column-tooltip";
+import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "./types/event-handlers";
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onDataChange?: (data: TData[]) => void;
   defaultColumnFilters?: ColumnFiltersState;
   defaultGrouping?: GroupingState;
   // TODO: add sortingColumnFilters
@@ -51,11 +48,15 @@ export interface DataTableProps<TData, TValue> {
   sidebarSlot?: React.ReactNode;
   controlsSlot?: React.ReactNode;
   paginationSlot?: React.ReactNode;
+  // Event handlers
+  rowEventHandlers?: RowEventHandlersFn<TData>;
+  headerRowEventHandlers?: HeaderRowEventHandlersFn<TData>;
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data: initialData,
+  data,
+  onDataChange,
   defaultColumnFilters = [],
   defaultGrouping = [],
   filterFields = [],
@@ -63,20 +64,9 @@ export function DataTable<TData, TValue>({
   sidebarSlot,
   controlsSlot,
   paginationSlot,
+  rowEventHandlers,
+  headerRowEventHandlers,
 }: DataTableProps<TData, TValue>) {
-  // State for data management
-  const [data, setData] = useState<TData[]>(initialData as TData[]);
-
-  const {
-    rowEventHandlers,
-  } = useRowEdit<TData>({
-    data,
-    onDataChange: setData
-  });
-
-  const {
-    headerRowEventHandlers,
-  } = useColumnTooltip<TData, TValue>();
 
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
@@ -92,6 +82,13 @@ export function DataTable<TData, TValue>({
   const [footerAggregations, setFooterAggregations] =
     React.useState<AggregationConfig<TData>[]>(defaultFooterAggregations || []);
   const [_, setSearch] = useQueryStates(searchParamsParser);
+  
+  // Function to handle data changes
+  const handleDataChange = (newData: TData[]) => {
+    if (onDataChange) {
+      onDataChange(newData);
+    }
+  };
 
   const table = useReactTable({
     data,
@@ -156,7 +153,7 @@ export function DataTable<TData, TValue>({
       <DataTableProvider
         table={table}
         data={data}
-        onDataChange={setData}
+        onDataChange={handleDataChange}
         columns={columns}
         filterFields={filterFields}
         columnFilters={columnFilters}
@@ -171,12 +168,7 @@ export function DataTable<TData, TValue>({
           {sidebarSlot}
 
           <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
-            {controlsSlot}
-            <ColumnInfoTooltip>
-              <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'auto', opacity: 0 }} />
-            </ColumnInfoTooltip>
-
-            <RowEditModal />
+            {controlsSlot }
 
             <div className="rounded-md border">
               <AnalyzeTable<TData>

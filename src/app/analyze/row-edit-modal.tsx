@@ -24,9 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { useDataTable } from "@/components/data-table/data-table-provider";
-import { useRowEdit } from "./hooks/use-row-edit";
-
+import type { UseRowEditReturn } from "./hooks/use-row-edit";
 
 // Helper function to determine if a field should be editable
 const isEditableField = (key: string): boolean => {
@@ -42,9 +40,8 @@ const getFieldLabel = (key: string): string => {
     .replace(/^./, (str) => str.toUpperCase());
 };
 
-export function RowEditModal<TData>() {
-  const { data } = useDataTable();
-  const { selectedRow, closeModal, handleRowUpdate, handleRowDelete, isModalOpen, openModal } = useRowEdit<TData>({ data: data as TData[] });
+export function RowEditModal<TData>({ rowEdit }: { rowEdit: UseRowEditReturn<TData> }) {
+  const { selectedRow, closeModal, handleRowUpdate, handleRowDelete, isModalOpen } = rowEdit;
   const [formData, setFormData] = useState<TData | null>(selectedRow as TData | null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 

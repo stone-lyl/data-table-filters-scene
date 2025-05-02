@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ColumnDef, Header } from "@tanstack/react-table";
 import { HeaderRowEventHandlers, HeaderRowEventHandlersFn } from "../types/event-handlers";
 
-interface UseColumnTooltipReturn<TData, TValue> {
+export interface UseColumnTooltipReturn<TData, TValue> {
   tooltipInfo: { columns: ColumnDef<TData, TValue>[]; colIndex: number } | null;
   tooltipPosition: { x: number; y: number };
   isTooltipOpen: boolean;
@@ -11,7 +11,6 @@ interface UseColumnTooltipReturn<TData, TValue> {
 }
 
 export function useColumnTooltip<TData, TValue>(): UseColumnTooltipReturn<TData, TValue> {
-  // State for column info tooltip
   const [tooltipInfo, setTooltipInfo] = useState<{ columns: ColumnDef<TData, TValue>[]; colIndex: number } | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
