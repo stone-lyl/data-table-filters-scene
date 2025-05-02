@@ -55,6 +55,10 @@ export interface DataTableProps<TData, TValue> {
   filterFields?: DataTableFilterField<TData>[];
   // Footer configuration
   footerAggregations?: AggregationConfig<TData>[];
+  // Slots for custom components
+  sidebarSlot?: React.ReactNode;
+  controlsSlot?: React.ReactNode;
+  paginationSlot?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -64,6 +68,9 @@ export function DataTable<TData, TValue>({
   defaultGrouping = [],
   filterFields = [],
   footerAggregations: defaultFooterAggregations,
+  sidebarSlot,
+  controlsSlot,
+  paginationSlot,
 }: DataTableProps<TData, TValue>) {
   // State for data management
   const [data, setData] = useState<TData[]>(initialData as TData[]);
@@ -195,26 +202,42 @@ export function DataTable<TData, TValue>({
       >
 
         <div className="flex h-full w-full flex-col gap-3 sm:flex-row">
-          <div
-            className={cn(
-              "hidden w-full p-1 sm:block sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-64 md:max-w-64",
-              "group-data-[expanded=false]/controls:hidden",
-            )}
-          >
-            <DataTableFilterControls />
-          </div>
+          {/* Sidebar slot */}
+          {sidebarSlot ? (
+            sidebarSlot
+          ) : (
+            <div
+              className={cn(
+                "hidden w-full p-1 sm:block sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-64 md:max-w-64",
+                "group-data-[expanded=false]/controls:hidden",
+              )}
+            >
+              <DataTableFilterControls />
+            </div>
+          )}
+          
           <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
-            <DataTableFilterCommand searchParamsParser={searchParamsParser} />
-            <DataTableToolbar />
-            <DataTableFooterButtons />
-            <DataTableGroupButtons />
+            {/* Controls slot */}
+            {controlsSlot ? (
+              controlsSlot
+            ) : (
+              <>
+                <DataTableFilterCommand searchParamsParser={searchParamsParser} />
+                <DataTableToolbar />
+                <DataTableFooterButtons />
+                <DataTableGroupButtons />
+              </>
+            )}
+            
             <div className="rounded-md border">
               <AnalyzeTable<TData>
                 onRow={rowEventHandlers}
                 onHeaderRow={headerRowEventHandlers}
               />
             </div>
-            <DataTablePagination />
+            
+            {/* Pagination slot */}
+            {paginationSlot ? paginationSlot : <DataTablePagination />}
           </div>
         </div>
       </DataTableProvider>
