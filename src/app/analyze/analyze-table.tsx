@@ -14,24 +14,14 @@ import { ColumnDef, flexRender, Header, Row } from "@tanstack/react-table";
 import { DataTableFooter } from "./data-table-footer";
 import { AggregationType } from "@/components/data-table/aggregations";
 import { useDataTable } from "@/components/data-table/data-table-provider";
+import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "./types/event-handlers";
 
-interface RowEventHandlers {
-  onClick?: (event: React.MouseEvent) => void;
-  onDoubleClick?: (event: React.MouseEvent) => void;
-  onContextMenu?: (event: React.MouseEvent) => void;
-  onMouseEnter?: (event: React.MouseEvent) => void;
-  onMouseLeave?: (event: React.MouseEvent) => void;
-}
-
-interface HeaderRowEventHandlers {
-  onClick?: (event: React.MouseEvent) => void;
-  onContextMenu?: (event: React.MouseEvent) => void;
-}
+// Using the common types from types/event-handlers.ts
 
 interface AnalyzeTableProps<TData> {
   getColumnAggregation?: (columnId: string, type: AggregationType, values: unknown[]) => React.ReactNode;
-  onRow?: (row: Row<TData>, rowIndex: number) => RowEventHandlers;
-  onHeaderRow?: (columns: Header<TData, unknown>[], index: number) => HeaderRowEventHandlers;
+  onRow?: RowEventHandlersFn<TData>;
+  onHeaderRow?: HeaderRowEventHandlersFn<TData>;
 }
 
 export function AnalyzeTable<TData>({

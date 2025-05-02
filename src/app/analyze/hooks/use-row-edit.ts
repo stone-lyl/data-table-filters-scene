@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Row } from "@tanstack/react-table";
 import { ColumnSchema } from "../types";
+import { RowEventHandlers, RowEventHandlersFn } from "../types/event-handlers";
 
 interface UseRowEditOptions<TData> {
   data: TData[];
@@ -12,13 +13,7 @@ interface UseRowEditReturn<TData> {
   isModalOpen: boolean;
   handleRowUpdate: (updatedData: TData) => void;
   handleRowDelete: (rowToDelete: TData) => void;
-  rowEventHandlers: (row: Row<TData>, rowIndex: number) => {
-    onDoubleClick: (e: React.MouseEvent) => void;
-    onClick: (e: React.MouseEvent) => void;
-    onContextMenu: (e: React.MouseEvent) => void;
-    onMouseEnter: (e: React.MouseEvent) => void;
-    onMouseLeave: (e: React.MouseEvent) => void;
-  };
+  rowEventHandlers: RowEventHandlersFn<TData>;
   openModal: (row: TData) => void;
   closeModal: () => void;
 }
@@ -51,9 +46,10 @@ export function useRowEdit<TData>({ data, onDataChange }: UseRowEditOptions<TDat
   };
 
   // Row event handlers
-  const rowEventHandlers = (row: Row<TData>, rowIndex: number) => {
+  const rowEventHandlers: RowEventHandlersFn<TData> = (row, rowIndex) => {
     return {
       onDoubleClick: (e: React.MouseEvent) => {
+        console.log('row event onDoubleClick')
         setSelectedRow(row.original as TData);
         setIsModalOpen(true);
       },

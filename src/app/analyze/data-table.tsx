@@ -179,7 +179,6 @@ export function DataTable<TData, TValue>({
         setFooterAggregations={setFooterAggregations}
       >
 
-        {/* Column Info Tooltip */}
         <ColumnInfoTooltip
           isOpen={isTooltipOpen}
           onClose={closeTooltip}
@@ -189,7 +188,6 @@ export function DataTable<TData, TValue>({
           <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: isTooltipOpen ? 'auto' : 'none', opacity: 0 }} />
         </ColumnInfoTooltip>
 
-        {/* Row Edit Modal */}
         <RowEditModal
           isOpen={isModalOpen}
           onClose={closeModal}
@@ -209,8 +207,8 @@ export function DataTable<TData, TValue>({
           <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
             <DataTableFilterCommand searchParamsParser={searchParamsParser} />
             <DataTableToolbar />
-            {/* <DataTableFooterButtons /> */}
-            {/* <DataTableGroupButtons /> */}
+            <DataTableFooterButtons />
+            <DataTableGroupButtons />
             <div className="rounded-md border">
               <AnalyzeTable<TData>
                 getColumnAggregation={getColumnAggregation}
