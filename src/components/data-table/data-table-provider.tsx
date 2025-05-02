@@ -16,7 +16,7 @@ import { ControlsProvider } from "../../providers/controls";
 // REMINDER: read about how to move controlled state out of the useReactTable hook
 // https://github.com/TanStack/table/discussions/4005#discussioncomment-7303569
 
-interface DataTableStateContextType {
+interface DataTableStateContextType<TData = unknown> {
   columnFilters: ColumnFiltersState;
   sorting: SortingState;
   rowSelection: RowSelectionState;
@@ -25,8 +25,10 @@ interface DataTableStateContextType {
   pagination: PaginationState;
   grouping: GroupingState;
   enableColumnOrdering: boolean;
-  footerAggregations?: AggregationConfig[];
-  setFooterAggregations?: (aggregations: AggregationConfig[]) => void;
+  footerAggregations?: AggregationConfig<TData>[];
+  setFooterAggregations?: (aggregations: AggregationConfig<TData>[]) => void;
+  onDataChange?: (newData: TData[]) => void;
+  data?: TData[];
 }
 
 interface DataTableBaseContextType<TData = unknown, TValue = unknown> {
@@ -45,7 +47,7 @@ interface DataTableBaseContextType<TData = unknown, TValue = unknown> {
 }
 
 interface DataTableContextType<TData = unknown, TValue = unknown>
-  extends DataTableStateContextType,
+  extends DataTableStateContextType<TData>,
     DataTableBaseContextType<TData, TValue> {}
 
 export const DataTableContext = createContext<DataTableContextType<
@@ -56,7 +58,7 @@ export const DataTableContext = createContext<DataTableContextType<
 export function DataTableProvider<TData, TValue>({
   children,
   ...props
-}: Partial<DataTableStateContextType> &
+}: Partial<DataTableStateContextType<TData>> &
   DataTableBaseContextType<TData, TValue> & {
     children: React.ReactNode;
   }) {
