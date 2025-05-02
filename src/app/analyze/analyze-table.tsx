@@ -103,12 +103,9 @@ export function AnalyzeTable<TData>({
                     </TableCell>
                   );
                 }
-                // For cells that are aggregated (part of a grouping but not the grouped column)
                 else if (cell.getIsAggregated()) {
-                  // Return empty cell for aggregated cells in the grouped row
                   return <TableCell key={cell.id} />;
                 }
-                // For regular cells in a grouped row todo: 如果需要做小计
                 else if (cell.getIsPlaceholder()) {
                   return <TableCell key={cell.id} />;
                 }

@@ -43,6 +43,8 @@ import { DataTableFooterButtons } from "@/components/data-table/data-table-foote
 import { RowEditModal } from "./row-edit-modal";
 import { ColumnInfoTooltip, ColumnInfoTooltipProps } from "./column-info-tooltip";
 import { ColumnSchema } from "./types";
+import { useRowEdit } from "./hooks/use-row-edit";
+import { useColumnTooltip } from "./hooks/use-column-tooltip";
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -68,55 +70,27 @@ export function DataTable<TData, TValue>({
   // State for data management
   const [data, setData] = useState<TData[]>(initialData as TData[]);
 
-  // State for row edit modal
-  const [selectedRow, setSelectedRow] = useState<TData | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Use the row edit hook
+  const {
+    selectedRow,
+    isModalOpen,
+    handleRowUpdate,
+    handleRowDelete,
+    rowEventHandlers,
+    closeModal
+  } = useRowEdit<TData>({
+    data,
+    onDataChange: setData
+  });
 
-  // State for column info tooltip
-  const [tooltipInfo, setTooltipInfo] = useState<{ columns: ColumnDef<TData, TValue>[]; colIndex: number } | null>(null);
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
-  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
-
-  // Handle row updates
-  const handleRowUpdate = (updatedData: TData) => {
-    setData(prevData =>
-      prevData.map(row => (row as ColumnSchema).id === (updatedData as ColumnSchema).id ? updatedData : row)
-    );
-  };
-
-  // Handle row deletion
-  const handleRowDelete = (rowToDelete: TData) => {
-    setData(prevData =>
-      prevData.filter(row => (row as ColumnSchema).id !== (rowToDelete as ColumnSchema).id)
-    );
-  };
-
-  // Row event handlers
-  const rowEventHandlers = (row: Row<TData>, rowIndex: number) => {
-    return {
-      onDoubleClick: (e: React.MouseEvent) => {
-        setSelectedRow(row.original as TData);
-        setIsModalOpen(true);
-      },
-      onClick: (e: React.MouseEvent) => { },
-      onContextMenu: (e: React.MouseEvent) => { },
-      onMouseEnter: (e: React.MouseEvent) => { },
-      onMouseLeave: (e: React.MouseEvent) => { },
-    };
-  };
-
-  // Header row event handlers
-  const headerRowEventHandlers = (columns: Header<TData, unknown>[], index: number) => {
-    return {
-      onClick: (e: React.MouseEvent) => { },
-      onContextMenu: (e: React.MouseEvent) => {
-        e.preventDefault();
-        setTooltipPosition({ x: e.clientX - 10, y: e.clientY - 10 });
-        setTooltipInfo({ columns: columns, colIndex: index });
-        setIsTooltipOpen(true);
-      }
-    };
-  };
+  // Use the column tooltip hook
+  const {
+    tooltipInfo,
+    tooltipPosition,
+    isTooltipOpen,
+    headerRowEventHandlers,
+    closeTooltip
+  } = useColumnTooltip<TData, TValue>();
 
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
@@ -208,7 +182,7 @@ export function DataTable<TData, TValue>({
         {/* Column Info Tooltip */}
         <ColumnInfoTooltip
           isOpen={isTooltipOpen}
-          onClose={() => setIsTooltipOpen(false)}
+          onClose={closeTooltip}
           position={tooltipPosition}
           columnInfo={tooltipInfo as ColumnInfoTooltipProps['columnInfo']}
         >
@@ -218,7 +192,7 @@ export function DataTable<TData, TValue>({
         {/* Row Edit Modal */}
         <RowEditModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={closeModal}
           rowData={selectedRow as ColumnSchema}
           onSave={handleRowUpdate as (updatedData: ColumnSchema) => void}
           onDelete={handleRowDelete as (rowToDelete: ColumnSchema) => void}
@@ -235,8 +209,8 @@ export function DataTable<TData, TValue>({
           <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
             <DataTableFilterCommand searchParamsParser={searchParamsParser} />
             <DataTableToolbar />
-            <DataTableFooterButtons />
-            <DataTableGroupButtons />
+            {/* <DataTableFooterButtons /> */}
+            {/* <DataTableGroupButtons /> */}
             <div className="rounded-md border">
               <AnalyzeTable<TData>
                 getColumnAggregation={getColumnAggregation}

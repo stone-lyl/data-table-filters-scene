@@ -28,10 +28,8 @@ export function DataTableFooter<TData>({
 
   // Default implementation for column aggregation
   const defaultGetColumnAggregation = (columnId: string, type: AggregationType, values: any[]): React.ReactNode => {
-    // Skip empty values
     if (values.length === 0) return null;
 
-    // Get column definition if available
     const column = table.getColumn(columnId);
     if (!column) return null;
 
@@ -41,7 +39,6 @@ export function DataTableFooter<TData>({
     const isMeasure = column.columnDef.meta?.fieldType === 'measure';
     const isBoolean = values.some(v => typeof v === 'boolean');
 
-    // Create a mock row context for rendering cells
     const createMockContext = (value: any) => {
       return {
         table,
