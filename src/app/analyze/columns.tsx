@@ -110,7 +110,10 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       <DataTableColumnHeader column={column} title="P95" />
     ),
     cell: ({ row }) => {
-      const value = row.getValue("p95");
+      let value = row.getValue("p95");
+      if (typeof value === 'string') {
+        value = parseFloat(value);
+      }
       if (typeof value === "undefined" || typeof value !== "number") {
         return <Minus className="h-4 w-4 text-muted-foreground/50" />;
       }
