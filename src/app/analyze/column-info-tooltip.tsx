@@ -4,41 +4,38 @@ import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ColumnDef } from "@tanstack/react-table";
-import { ReactNode } from "react";
+import { UseColumnTooltipReturn } from "./hooks/use-column-tooltip";
+import { ColumnSchema } from "./types";
 
 export interface ColumnInfoTooltipProps {
-  isOpen: boolean;
-  onClose: () => void;
-  position: { x: number; y: number };
-  columnInfo: { colIndex: number, columns: ColumnDef<unknown, unknown>[] } | null;
-  children: ReactNode;
+  columnTooltip: UseColumnTooltipReturn<ColumnSchema, unknown>;
 }
 
 export function ColumnInfoTooltip({
-  isOpen,
-  onClose,
-  position,
-  columnInfo,
-  children,
+  columnTooltip,
 }: ColumnInfoTooltipProps) {
-  if (!columnInfo) return null;
+  const {
+    tooltipInfo,
+    tooltipPosition,
+    isTooltipOpen,
+    closeTooltip
+  } = columnTooltip;
 
-  const { colIndex } = columnInfo;
+  if (!tooltipInfo) return <></>;
+
+  const { colIndex } = tooltipInfo;
 
   return (
     <TooltipProvider>
-      <Tooltip open={isOpen} onOpenChange={onClose}>
-        <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <Tooltip open={isTooltipOpen} onOpenChange={closeTooltip}>
         <TooltipContent
           side="bottom"
           align="start"
           style={{
             position: "absolute",
-            left: `${position.x}px`,
-            top: `${position.y}px`,
+            left: `${tooltipPosition.x}px`,
+            top: `${tooltipPosition.y}px`,
           }}
           className="z-50"
         >

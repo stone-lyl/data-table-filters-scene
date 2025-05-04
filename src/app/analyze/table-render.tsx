@@ -10,35 +10,20 @@ import {
 } from "@/components/custom/table";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { ColumnDef, flexRender, Header, Row } from "@tanstack/react-table";
+import { flexRender, Header, Row } from "@tanstack/react-table";
 import { DataTableFooter } from "./data-table-footer";
-import { AggregationType } from "@/components/data-table/aggregations";
 import { useDataTable } from "@/components/data-table/data-table-provider";
+import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "./types/event-handlers";
 
-interface RowEventHandlers {
-  onClick?: (event: React.MouseEvent) => void;
-  onDoubleClick?: (event: React.MouseEvent) => void;
-  onContextMenu?: (event: React.MouseEvent) => void;
-  onMouseEnter?: (event: React.MouseEvent) => void;
-  onMouseLeave?: (event: React.MouseEvent) => void;
+interface TableRenderProps<TData> {
+  onRow?: RowEventHandlersFn<TData>;
+  onHeaderRow?: HeaderRowEventHandlersFn<TData>;
 }
 
-interface HeaderRowEventHandlers {
-  onClick?: (event: React.MouseEvent) => void;
-  onContextMenu?: (event: React.MouseEvent) => void;
-}
-
-interface AnalyzeTableProps<TData> {
-  getColumnAggregation?: (columnId: string, type: AggregationType, values: unknown[]) => React.ReactNode;
-  onRow?: (row: Row<TData>, rowIndex: number) => RowEventHandlers;
-  onHeaderRow?: (columns: Header<TData, unknown>[], index: number) => HeaderRowEventHandlers;
-}
-
-export function AnalyzeTable<TData>({
-  getColumnAggregation,
+export function TableRender<TData>({
   onRow,
   onHeaderRow
-}: AnalyzeTableProps<TData>) {
+}: TableRenderProps<TData>) {
   "use no memo";
 
   const { table } = useDataTable();
@@ -103,12 +88,9 @@ export function AnalyzeTable<TData>({
                     </TableCell>
                   );
                 }
-                // For cells that are aggregated (part of a grouping but not the grouped column)
                 else if (cell.getIsAggregated()) {
-                  // Return empty cell for aggregated cells in the grouped row
                   return <TableCell key={cell.id} />;
                 }
-                // For regular cells in a grouped row todo: 如果需要做小计
                 else if (cell.getIsPlaceholder()) {
                   return <TableCell key={cell.id} />;
                 }
@@ -135,7 +117,7 @@ export function AnalyzeTable<TData>({
           </TableRow>
         )}
       </TableBody>
-      <DataTableFooter getColumnAggregation={getColumnAggregation} />
+      <DataTableFooter />
     </Table>
   );
 }

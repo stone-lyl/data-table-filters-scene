@@ -1,12 +1,8 @@
 import * as React from "react";
-import { columns } from "./columns";
-import { data } from "./data";
-import { filterFields } from "./constants";
-import { DataTable } from "./data-table";
+import { Suspense } from "react";
 import { searchParamsCache } from "./search-params";
 import { Skeleton } from "./skeleton";
-import { defaultAggregations } from "../../components/data-table/aggregations";
-import { ColumnSchema } from "./types";
+import { AnalyticsTable } from "./analytics-table";
 
 export default async function Page({
   searchParams,
@@ -14,24 +10,10 @@ export default async function Page({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const search = searchParamsCache.parse(await searchParams);
-
+  
   return (
-    <React.Suspense fallback={<Skeleton />}>
-      <DataTable<ColumnSchema, unknown>
-        columns={columns}
-        data={data as ColumnSchema[]}
-        filterFields={filterFields}
-        defaultGrouping={[
-          // "firstName"
-        ]}
-        defaultColumnFilters={Object.entries(search)
-          .map(([key, value]) => ({
-            id: key,
-            value,
-          }))
-          .filter(({ value }) => value ?? undefined)}
-        footerAggregations={defaultAggregations.slice(0, 3)}
-      />
-    </React.Suspense>
+    <Suspense fallback={<Skeleton />}>
+      <AnalyticsTable search={search} />
+    </Suspense>
   );
 }

@@ -3,8 +3,8 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { useDataTable } from "./data-table-provider";
-import { Calculator, ArrowDownUp, Plus, Percent } from "lucide-react";
-import { defaultAggregations, AggregationType } from "@/components/data-table/aggregations";
+import { Calculator } from "lucide-react";
+import { defaultAggregations, AggregationType, AggregationConfig } from "@/components/data-table/aggregations";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,7 +33,7 @@ export function DataTableFooterButtons() {
       );
     } else {
       // Add the aggregation
-      const aggToAdd = defaultAggregations.find(agg => agg.type === type);
+      const aggToAdd = defaultAggregations.find(agg => agg.type === type) as AggregationConfig<unknown>;
       if (aggToAdd) {
         setFooterAggregations([...(footerAggregations || []), aggToAdd]);
       }

@@ -12,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
 import {
   AlertDialog,
@@ -25,15 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { Row } from "@tanstack/react-table";
-
-interface RowEditModalProps<TData> {
-  isOpen: boolean;
-  onClose: () => void;
-  rowData: TData | null;
-  onSave: (updatedData: TData) => void;
-  onDelete: (rowData: TData) => void;
-}
+import type { UseRowEditReturn } from "./hooks/use-row-edit";
 
 // Helper function to determine if a field should be editable
 const isEditableField = (key: string): boolean => {
@@ -49,23 +40,18 @@ const getFieldLabel = (key: string): string => {
     .replace(/^./, (str) => str.toUpperCase());
 };
 
-export function RowEditModal<TData>({
-  isOpen,
-  onClose,
-  rowData,
-  onSave,
-  onDelete,
-}: RowEditModalProps<TData>) {
-  const [formData, setFormData] = useState<TData | null>(rowData as TData | null);
+export function RowEditModal<TData>({ rowEdit }: { rowEdit: UseRowEditReturn<TData> }) {
+  const { selectedRow, closeModal, handleRowUpdate, handleRowDelete, isModalOpen } = rowEdit;
+  const [formData, setFormData] = useState<TData | null>(selectedRow as TData | null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
-    if (rowData) {
-      setFormData({ ...rowData });
+    if (selectedRow) {
+      setFormData({ ...selectedRow });
     }
-  }, [rowData]);
+  }, [selectedRow]);
 
-  if (!rowData || !formData) {
+  if (!selectedRow || !formData) {
     return null;
   }
 
@@ -77,18 +63,18 @@ export function RowEditModal<TData>({
   };
 
   const handleDelete = () => {
-    onDelete(rowData);
-    onClose();
+    handleRowDelete(selectedRow);
+    closeModal();
     setShowDeleteConfirm(false);
   };
 
   const handleCancel = () => {
-    onClose();
+    closeModal();
   };
 
   const handleSave = () => {
-    onSave(formData);
-    onClose();
+    handleRowUpdate(formData);
+    closeModal();
   };
 
   // Render form fields dynamically based on the data type
@@ -171,7 +157,7 @@ export function RowEditModal<TData>({
         </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog open={isModalOpen} onOpenChange={closeModal}>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
             <DialogTitle>Edit Row Data</DialogTitle>

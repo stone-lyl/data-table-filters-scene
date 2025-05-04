@@ -110,7 +110,10 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       <DataTableColumnHeader column={column} title="P95" />
     ),
     cell: ({ row }) => {
-      const value = row.getValue("p95");
+      let value = row.getValue("p95");
+      if (typeof value === 'string') {
+        value = parseFloat(value);
+      }
       if (typeof value === "undefined" || typeof value !== "number") {
         return <Minus className="h-4 w-4 text-muted-foreground/50" />;
       }
@@ -197,7 +200,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       if (Array.isArray(value)) {
         if (isArrayOfDates(value) && rowValue instanceof Date) {
           const sorted = value.sort((a, b) => a.getTime() - b.getTime());
-          // TODO: check length
           return (
             sorted[0]?.getTime() <= rowValue.getTime() &&
             rowValue.getTime() <= sorted[1]?.getTime()
