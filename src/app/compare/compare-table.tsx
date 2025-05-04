@@ -1,59 +1,20 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { generateSalesDataset } from './mock-data';
-import { useTransform } from './use-transform';
+import { generateColumns, generateSalesDataset } from './mock-data';
+import { useTransform } from '../analyze/compare/use-transform';
+import { AnalyticsTableCore } from '../analyze/analytics-table-core';
+import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
+import { DataTableGroupButtons } from '@/components/data-table/data-table-group-buttons';
+import { DataTablePagination } from '@/components/data-table/data-table-pagination';
 import {
   Aggregations,
   buildJoinQuery,
   buildQuery,
   windowFunctions,
-} from './query-builder';
+} from '../analyze/compare/query-builder';
 
-function generateColumns(data: unknown[]) {
-  if (data.length === 0) return [];
-
-  const firstRow = data[0] as Record<string, unknown>;
-  return Object.keys(firstRow).map((key) => {
-    const column = {
-      title: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '),
-      dataIndex: key,
-      key: key,
-    };
-
-    // Add special rendering for specific data types
-    const value = firstRow[key];
-    // https://github.com/duckdb/duckdb-wasm/issues/873
-    if (typeof value === 'number') {
-      if (
-        key.toLowerCase().includes('price') ||
-        key.toLowerCase().includes('amount')
-      ) {
-        return {
-          ...column,
-          render: (val: number) => `$${val.toFixed(2)}`,
-        };
-      } else if (
-        key.toLowerCase().includes('percentage') ||
-        key.toLowerCase().includes('discount')
-      ) {
-        return {
-          ...column,
-          render: (val: number) => `${val}%`,
-        };
-      }
-    } else {
-      return {
-        ...column,
-        render: (val?: string) => val?.valueOf(),
-      };
-    }
-
-    return column;
-  });
-}
-
-export default function DuckDb() {
+export default function CompareTable() {
   const [currentYear] = useState(() =>
     generateSalesDataset({ count: 5000, from: '2024-01-01', to: '2024-12-31' })
   );
@@ -159,22 +120,31 @@ export default function DuckDb() {
 
   const columns = generateColumns(data);
 
-  console.log('duckdb columns', columns);
-  console.log('duckdb data', data);
+  // Create custom controls with DataTableViewOptions and DataTableGroupButtons
+  const customControls = (
+    <div className="flex items-center justify-between mb-4">
+      <DataTableGroupButtons />
+      <DataTableViewOptions />
+    </div>
+  );
+
+  // Create custom pagination
+  const customPagination = <DataTablePagination />;
+
   return (
-    <div style={{ padding: '24px' }}>
-        duckdb component
-      {/* <Table<unknown>
-        columns={columns}
-        dataSource={data}
-        rowKey="transactionId"
-        scroll={{ x: 'max-content' }}
-        pagination={{
-          defaultPageSize: 10,
-          showSizeChanger: true,
-          showTotal: (total) => `Total ${total} items`,
-        }}
-      /> */}
+    <div className="p-4">
+      <h3 className="mb-4 text-lg font-medium">DuckDB Data Analysis</h3>
+      <div className="h-[calc(100vh-10rem)] overflow-y-scroll">
+        <AnalyticsTableCore
+          columns={columns}
+          data={data}
+          pageSize={1000}
+          defaultColumnFilters={[]}
+          defaultGrouping={[]}
+          filterFields={[]}
+          controlsSlot={customControls}
+        />
+      </div>
     </div>
   );
 }

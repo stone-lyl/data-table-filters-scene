@@ -1,4 +1,6 @@
+import type { FieldType } from '@/components/data-table/types';
 import { faker } from '@faker-js/faker';
+import type { ColumnDef } from '@tanstack/react-table';
 
 export interface SalesRecord {
   transactionId: string;
@@ -76,4 +78,60 @@ export function generateSalesDataset(
   return Array.from({ length: opts.count }, () =>
     generateSalesRecord({ from: opts.from, to: opts.to })
   );
+}
+export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] {
+  if (data.length === 0) return [];
+
+  const firstRow = data[0] as Record<string, unknown>;
+  return Object.keys(firstRow).map((key) => {
+    // Determine the field type based on the key name
+    const fieldType: FieldType = key.toLowerCase().includes('date') ||
+      key.toLowerCase().includes('region') ||
+      key.toLowerCase().includes('method') ?
+      'dimension' : 'measure';
+
+    // Create column definition in TanStack Table format
+    const column: ColumnDef<unknown, unknown> = {
+      id: key,
+      accessorKey: key,
+      header: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '),
+      meta: {
+        fieldType,
+        label: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')
+      }
+    };
+
+    // Add special cell formatting for specific data types
+    const value = firstRow[key];
+    if (typeof value === 'number') {
+      if (key.toLowerCase().includes('price') ||
+        key.toLowerCase().includes('amount')) {
+        return {
+          ...column,
+          cell: ({ getValue }) => {
+            const value = getValue() as number;
+            return `$${value.toFixed(2)}`;
+          },
+        };
+      } else if (key.toLowerCase().includes('percentage') ||
+        key.toLowerCase().includes('discount')) {
+        return {
+          ...column,
+          cell: ({ getValue }) => {
+            const value = getValue() as number;
+            return `${value}%`;
+          },
+        };
+      }
+    }
+
+    // Default cell renderer
+    return {
+      ...column,
+      cell: ({ getValue }) => {
+        const value = getValue();
+        return value?.toString() || '';
+      },
+    };
+  });
 }

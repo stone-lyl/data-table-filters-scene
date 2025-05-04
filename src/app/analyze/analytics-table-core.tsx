@@ -51,6 +51,8 @@ export interface AnalyticsTableCoreProps<TData, TValue> {
   // Event handlers
   rowEventHandlers?: RowEventHandlersFn<TData>;
   headerRowEventHandlers?: HeaderRowEventHandlersFn<TData>;
+  // pageSize
+  pageSize?: number;
 }
 
 export function AnalyticsTableCore<TData, TValue>({
@@ -66,6 +68,7 @@ export function AnalyticsTableCore<TData, TValue>({
   paginationSlot,
   rowEventHandlers,
   headerRowEventHandlers,
+  pageSize,
 }: AnalyticsTableCoreProps<TData, TValue>) {
   "use no memo"
   const [columnFilters, setColumnFilters] =
@@ -75,7 +78,7 @@ export function AnalyticsTableCore<TData, TValue>({
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: pageSize || 10,
   });
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<VisibilityState>("data-table-visibility", {});
