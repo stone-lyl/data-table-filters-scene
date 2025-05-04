@@ -8,6 +8,9 @@ import { filterFields } from "./constants";
 import { AnalyticsTableCore } from "./analytics-table-core";
 import { searchParamsParser } from "./search-params";
 import { defaultAggregations } from "../../components/data-table/aggregations";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useQueryStates } from "nuqs";
+import { VisibilityState } from "@tanstack/react-table";
 import { ColumnSchema } from "./types";
 import { cn } from "@/lib/utils";
 import { DataTableFilterControls } from "@/components/data-table/data-table-filter-controls";
@@ -33,6 +36,12 @@ export function AnalyticsTable({
 }: AnalyticsTableProps) {
   'use no memo';
   const [data, setData] = useState<ColumnSchema[]>(propData || initialData as ColumnSchema[]);
+  
+  // Moved from analytics-table-core.tsx
+  const [columnVisibility, setColumnVisibility] = 
+    useLocalStorage<VisibilityState>("data-table-visibility", {});
+  const [_, setSearch] = useQueryStates(searchParamsParser);
+  
   const rowEdit = useRowEdit<ColumnSchema>({
     data,
     onDataChange: setData
@@ -92,6 +101,10 @@ export function AnalyticsTable({
       paginationSlot={customPagination}
       rowEventHandlers={rowEventHandlers}
       headerRowEventHandlers={headerRowEventHandlers}
+      // Pass the moved state
+      columnVisibility={columnVisibility}
+      setColumnVisibility={setColumnVisibility}
+      setSearch={setSearch}
     />
   );
 }

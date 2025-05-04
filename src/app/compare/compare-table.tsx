@@ -7,6 +7,8 @@ import { AnalyticsTableCore } from '../analyze/analytics-table-core';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
 import { DataTableGroupButtons } from '@/components/data-table/data-table-group-buttons';
 import { DataTablePagination } from '@/components/data-table/data-table-pagination';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import { VisibilityState } from '@tanstack/react-table';
 import {
   Aggregations,
   buildJoinQuery,
@@ -14,6 +16,19 @@ import {
   windowFunctions,
 } from '../analyze/compare/query-builder';
 
+const defaultColumnVisibility = {
+  storeRegion: true,
+  paymentMethod: true,
+  year_month: true,
+  monthlyTotalAmount: true,
+  totalQuantity: true,
+  periodKey: true,
+  lastMonthAmount: true,
+  lastMonthQuantity: true,
+  compare_monthlyTotalAmount: true,
+  compare_totalQuantity: true,
+  compare_periodDate: true,
+};
 export default function CompareTable() {
   const [currentYear] = useState(() =>
     generateSalesDataset({ count: 5000, from: '2024-01-01', to: '2024-12-31' })
@@ -25,6 +40,10 @@ export default function CompareTable() {
     () => ({ currentYear, lastYear }),
     [currentYear, lastYear]
   );
+  
+  // Add columnVisibility state for the table
+  const [columnVisibility, setColumnVisibility] = 
+    useLocalStorage<VisibilityState>("compare-table-visibility", defaultColumnVisibility);
   const currentYearTableName = 'currentYear';
   const totalAmount = (table: string) => ({
     name: 'monthlyTotalAmount',
@@ -128,23 +147,21 @@ export default function CompareTable() {
     </div>
   );
 
-  // Create custom pagination
-  const customPagination = <DataTablePagination />;
-
   return (
     <div className="p-4">
       <h3 className="mb-4 text-lg font-medium">DuckDB Data Analysis</h3>
-      <div className="h-[calc(100vh-10rem)] overflow-y-scroll">
-        <AnalyticsTableCore
-          columns={columns}
-          data={data}
-          pageSize={1000}
-          defaultColumnFilters={[]}
-          defaultGrouping={[]}
-          filterFields={[]}
-          controlsSlot={customControls}
-        />
-      </div>
+      <AnalyticsTableCore
+        columns={columns}
+        data={data}
+        pageSize={1000}
+        tableClassName="h-[calc(100vh-16rem)] overflow-y-scroll"
+        defaultColumnFilters={[]}
+        defaultGrouping={[]}
+        filterFields={[]}
+        controlsSlot={customControls}
+        columnVisibility={columnVisibility}
+        setColumnVisibility={setColumnVisibility}
+      />
     </div>
   );
 }

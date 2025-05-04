@@ -16,6 +16,8 @@ import type {
   ExpandedState,
   Row,
   Header,
+  Updater,
+  OnChangeFn,
 } from "@tanstack/react-table";
 import {
   getCoreRowModel,
@@ -33,6 +35,7 @@ import { useQueryStates } from "nuqs";
 import * as React from "react";
 import { searchParamsParser } from "./search-params";
 import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "./types/event-handlers";
+import { cn } from "@/lib/utils";
 
 export interface AnalyticsTableCoreProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -53,6 +56,13 @@ export interface AnalyticsTableCoreProps<TData, TValue> {
   headerRowEventHandlers?: HeaderRowEventHandlersFn<TData>;
   // pageSize
   pageSize?: number;
+  // table className
+  tableClassName?: string;
+  // Column visibility state (moved from internal state)
+  columnVisibility?: VisibilityState;
+  setColumnVisibility?: OnChangeFn<VisibilityState>;
+  // Search state setter (moved from internal state)
+  setSearch?: OnChangeFn<Record<string, unknown>>;
 }
 
 export function AnalyticsTableCore<TData, TValue>({
@@ -69,6 +79,10 @@ export function AnalyticsTableCore<TData, TValue>({
   rowEventHandlers,
   headerRowEventHandlers,
   pageSize,
+  tableClassName,
+  columnVisibility = {},
+  setColumnVisibility,
+  setSearch,
 }: AnalyticsTableCoreProps<TData, TValue>) {
   "use no memo"
   const [columnFilters, setColumnFilters] =
@@ -80,12 +94,11 @@ export function AnalyticsTableCore<TData, TValue>({
     pageIndex: 0,
     pageSize: pageSize || 10,
   });
-  const [columnVisibility, setColumnVisibility] =
-    useLocalStorage<VisibilityState>("data-table-visibility", {});
   const [footerAggregations, setFooterAggregations] =
     React.useState<AggregationConfig<TData>[]>(defaultFooterAggregations || []);
-  const [_, setSearch] = useQueryStates(searchParamsParser);
   
+  // Using columnVisibility and setSearch from props instead of internal state
+
   // Function to handle data changes
   const handleDataChange = (newData: TData[]) => {
     if (onDataChange) {
@@ -147,7 +160,7 @@ export function AnalyticsTableCore<TData, TValue>({
       {} as Record<string, unknown>,
     );
 
-    setSearch(search);
+    setSearch?.(search);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnFilters]);
 
@@ -172,9 +185,9 @@ export function AnalyticsTableCore<TData, TValue>({
           {sidebarSlot}
 
           <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
-            {controlsSlot }
+            {controlsSlot}
 
-            <div className="rounded-md border">
+            <div className={cn("rounded-md border", tableClassName)}>
               <TableRender<TData>
                 onRow={rowEventHandlers}
                 onHeaderRow={headerRowEventHandlers}

@@ -17,6 +17,7 @@ export function DataTableGroupButtons() {
     });
   }, [table.getAllColumns(), columnVisibility]);
 
+  console.log('DataTableGroupButtons groupableColumns',groupableColumns);
   if (groupableColumns.length === 0) {
     return null;
   }
