@@ -1,12 +1,11 @@
 import createMDX from '@next/mdx'
-
 import rehypePrettyCode from "rehype-pretty-code";
- 
+
 /** @type {import('rehype-pretty-code').Options} */
 const options = {
 	keepBackground: false,
 };
- 
+
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -16,9 +15,25 @@ const nextConfig = {
 		// https://react.dev/learn/react-compiler
 		reactCompiler: false
 	},
-  async redirects() {
-    return [
-      {
+	// WebAssembly configuration
+	webpack: (config, { isServer }) => {
+		// Enable WebAssembly
+		config.experiments = {
+			...config.experiments,
+			asyncWebAssembly: true
+		};
+
+		// Add rule for .wasm files
+		config.module.rules.push({
+			test: /\.wasm$/,
+			type: 'asset/resource'
+		});
+
+		return config;
+	},
+	async redirects() {
+		return [
+			{
 				source: "/i",
 				destination: "/infinite",
 				permanent: true
@@ -35,8 +50,8 @@ const nextConfig = {
 const withMDX = createMDX({
 	extension: /\.mdx?$/,
 	options: {
-	  remarkPlugins: [],
-	  rehypePlugins: [[rehypePrettyCode, options]],
+		remarkPlugins: [],
+		rehypePlugins: [[rehypePrettyCode, options]],
 	},
 })
 

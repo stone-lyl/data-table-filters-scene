@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { searchParamsCache } from "./search-params";
 import { Skeleton } from "./skeleton";
 import { AnalyticsTable } from "./analytics-table";
+import DuckDb from "./compare/duckdb";
 
 export default async function Page({
   searchParams,
@@ -14,6 +15,7 @@ export default async function Page({
   return (
     <Suspense fallback={<Skeleton />}>
       <AnalyticsTable search={search} />
+      <DuckDb />
     </Suspense>
   );
 }
