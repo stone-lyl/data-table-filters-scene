@@ -22,9 +22,9 @@ export function DataTableGroupButtons() {
   }
 
   return (
-    <div>
-      <p>Row Group by</p>
-      <div className="flex flex-wrap gap-2 mb-2">
+    <div className="flex flex-row items-center">
+      <p className="mr-2 text-muted-foreground text-sm">Row Group</p>
+      <div className="flex flex-wrap gap-2">
         {groupableColumns.map(column => {
           const columnTitle = typeof column.columnDef.header === 'string' 
             ? column.columnDef.header 

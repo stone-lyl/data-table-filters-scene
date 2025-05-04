@@ -51,8 +51,7 @@ export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
         <TableRow
           key={`${aggregation.type}-row`}
           className={cn(
-            "hover:bg-transparent border-b transition-colors",
-            index === 0 ? 'border-t border-muted' : ''
+            index === 0 ? 'border-t' : ''
           )}
         >
           {columns.map((column, colIndex) => {
