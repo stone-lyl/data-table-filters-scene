@@ -7,7 +7,7 @@ import { AnalyticsTable } from "./analytics-table";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const search = searchParamsCache.parse(await searchParams);
   

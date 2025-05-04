@@ -24,7 +24,7 @@ import { ColumnFiltersState } from "@tanstack/react-table";
 
 interface AnalyticsTableProps {
   data?: ColumnSchema[];
-  search: Record<string, any>;
+  search: Record<string, unknown>;
 }
 
 export function AnalyticsTable({
