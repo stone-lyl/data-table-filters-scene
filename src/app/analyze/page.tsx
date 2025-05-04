@@ -2,7 +2,7 @@ import * as React from "react";
 import { Suspense } from "react";
 import { searchParamsCache } from "./search-params";
 import { Skeleton } from "./skeleton";
-import { ToolbarAndAnalyzeTable } from "./toolbar-and-analyze-table";
+import { AnalyticsTable } from "./analytics-table";
 
 export default async function Page({
   searchParams,
@@ -13,7 +13,7 @@ export default async function Page({
   
   return (
     <Suspense fallback={<Skeleton />}>
-      <ToolbarAndAnalyzeTable search={search} />
+      <AnalyticsTable search={search} />
     </Suspense>
   );
 }

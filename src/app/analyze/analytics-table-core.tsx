@@ -4,7 +4,7 @@ import { DataTableProvider } from "@/components/data-table/data-table-provider";
 import type { DataTableFilterField } from "@/components/data-table/types";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { AggregationConfig } from "../../components/data-table/aggregations";
-import { AnalyzeTable } from "./analyze-table";
+import { TableRender } from "./table-render";
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -34,7 +34,7 @@ import * as React from "react";
 import { searchParamsParser } from "./search-params";
 import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "./types/event-handlers";
 
-export interface DataTableProps<TData, TValue> {
+export interface AnalyticsTableCoreProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onDataChange?: (data: TData[]) => void;
@@ -53,7 +53,7 @@ export interface DataTableProps<TData, TValue> {
   headerRowEventHandlers?: HeaderRowEventHandlersFn<TData>;
 }
 
-export function DataTable<TData, TValue>({
+export function AnalyticsTableCore<TData, TValue>({
   columns,
   data,
   onDataChange,
@@ -66,7 +66,7 @@ export function DataTable<TData, TValue>({
   paginationSlot,
   rowEventHandlers,
   headerRowEventHandlers,
-}: DataTableProps<TData, TValue>) {
+}: AnalyticsTableCoreProps<TData, TValue>) {
   "use no memo"
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
@@ -172,7 +172,7 @@ export function DataTable<TData, TValue>({
             {controlsSlot }
 
             <div className="rounded-md border">
-              <AnalyzeTable<TData>
+              <TableRender<TData>
                 onRow={rowEventHandlers}
                 onHeaderRow={headerRowEventHandlers}
               />

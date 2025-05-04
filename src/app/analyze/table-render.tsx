@@ -10,23 +10,20 @@ import {
 } from "@/components/custom/table";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { ColumnDef, flexRender, Header, Row } from "@tanstack/react-table";
+import { flexRender, Header, Row } from "@tanstack/react-table";
 import { DataTableFooter } from "./data-table-footer";
-import { AggregationType } from "@/components/data-table/aggregations";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "./types/event-handlers";
 
-// Using the common types from types/event-handlers.ts
-
-interface AnalyzeTableProps<TData> {
+interface TableRenderProps<TData> {
   onRow?: RowEventHandlersFn<TData>;
   onHeaderRow?: HeaderRowEventHandlersFn<TData>;
 }
 
-export function AnalyzeTable<TData>({
+export function TableRender<TData>({
   onRow,
   onHeaderRow
-}: AnalyzeTableProps<TData>) {
+}: TableRenderProps<TData>) {
   "use no memo";
 
   const { table } = useDataTable();

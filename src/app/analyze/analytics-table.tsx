@@ -5,7 +5,7 @@ import { useState } from "react";
 import { columns } from "./columns";
 import { data as initialData } from "./data";
 import { filterFields } from "./constants";
-import { DataTable } from "./data-table";
+import { AnalyticsTableCore } from "./analytics-table-core";
 import { searchParamsParser } from "./search-params";
 import { defaultAggregations } from "../../components/data-table/aggregations";
 import { ColumnSchema } from "./types";
@@ -22,15 +22,15 @@ import { useRowEdit } from "./hooks/use-row-edit";
 import { useColumnTooltip } from "./hooks/use-column-tooltip";
 import { ColumnFiltersState } from "@tanstack/react-table";
 
-interface ToolbarAndAnalyzeTableProps {
+interface AnalyticsTableProps {
   data?: ColumnSchema[];
   search: Record<string, any>;
 }
 
-export function ToolbarAndAnalyzeTable({
+export function AnalyticsTable({
   data: propData,
   search,
-}: ToolbarAndAnalyzeTableProps) {
+}: AnalyticsTableProps) {
   'use no memo';
   const [data, setData] = useState<ColumnSchema[]>(propData || initialData as ColumnSchema[]);
   const rowEdit = useRowEdit<ColumnSchema>({
@@ -72,7 +72,7 @@ export function ToolbarAndAnalyzeTable({
   const customPagination = <DataTablePagination />;
 
   return (
-    <DataTable<ColumnSchema, unknown>
+    <AnalyticsTableCore<ColumnSchema, unknown>
       columns={columns}
       data={data}
       onDataChange={setData}
