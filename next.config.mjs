@@ -14,7 +14,7 @@ const nextConfig = {
 	experimental: {
 		// REMINDER: new react compiler to memoize the components
 		// https://react.dev/learn/react-compiler
-		reactCompiler: true
+		reactCompiler: false
 	},
   async redirects() {
     return [

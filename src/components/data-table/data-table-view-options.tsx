@@ -1,7 +1,6 @@
 "use client";
 
 import { Check, GripVertical, Settings2 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -86,9 +85,9 @@ export function DataTableViewOptions() {
                     <SortableItem key={column.id} value={column.id} asChild>
                       <CommandItem
                         value={column.id}
-                        onSelect={() =>
+                        onSelect={() => {
                           column.toggleVisibility(!column.getIsVisible())
-                        }
+                        }}
                         className={"capitalize"}
                         disabled={drag}
                       >

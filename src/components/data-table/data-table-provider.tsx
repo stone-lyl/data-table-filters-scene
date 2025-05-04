@@ -18,17 +18,17 @@ import { ControlsProvider } from "../../providers/controls";
 
 interface DataTableStateContextType<TData = unknown> {
   columnFilters: ColumnFiltersState;
-  sorting: SortingState;
-  rowSelection: RowSelectionState;
   columnOrder: string[];
   columnVisibility: VisibilityState;
-  pagination: PaginationState;
-  grouping: GroupingState;
+  data?: TData[];
   enableColumnOrdering: boolean;
   footerAggregations?: AggregationConfig<TData>[];
-  setFooterAggregations?: (aggregations: AggregationConfig<TData>[]) => void;
+  grouping: GroupingState;
   onDataChange?: (newData: TData[]) => void;
-  data?: TData[];
+  pagination: PaginationState;
+  rowSelection: RowSelectionState;
+  setFooterAggregations?: (aggregations: AggregationConfig<TData>[]) => void;
+  sorting: SortingState;
 }
 
 interface DataTableBaseContextType<TData = unknown, TValue = unknown> {

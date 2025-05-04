@@ -151,17 +151,18 @@ export function DataTable<TData, TValue>({
   return (
     <>
       <DataTableProvider
-        table={table}
-        data={data}
-        onDataChange={handleDataChange}
-        columns={columns}
-        filterFields={filterFields}
         columnFilters={columnFilters}
-        sorting={sorting}
-        pagination={pagination}
-        grouping={grouping}
+        columnVisibility={columnVisibility}
+        columns={columns}
+        data={data}
+        filterFields={filterFields}
         footerAggregations={footerAggregations}
+        grouping={grouping}
+        onDataChange={handleDataChange}
+        pagination={pagination}
         setFooterAggregations={setFooterAggregations}
+        sorting={sorting}
+        table={table}
       >
 
         <div className="flex h-full w-full flex-col gap-3 sm:flex-row">
