@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ColumnSchema } from "../types";
+import { ColumnSchema } from "../types/types";
 import { RowEventHandlersFn } from "../types/event-handlers";
 
 export interface UseRowEditOptions<TData> {

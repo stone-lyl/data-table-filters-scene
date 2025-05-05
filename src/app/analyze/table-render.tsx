@@ -89,7 +89,17 @@ export function TableRender<TData>({
                   );
                 }
                 else if (cell.getIsAggregated()) {
-                  return <TableCell key={cell.id} />;
+                  console.log(cell.column.columnDef, 'meta');
+                  if (cell.column.columnDef.meta?.fieldType === 'dimension') {
+                    return <TableCell key={cell.id}></TableCell>
+                  }
+
+                  return <TableCell key={cell.id}>
+                    {flexRender(
+                      cell.column.columnDef.cell,
+                      cell.getContext()
+                    )}
+                  </TableCell>
                 }
                 else if (cell.getIsPlaceholder()) {
                   return <TableCell key={cell.id} />;

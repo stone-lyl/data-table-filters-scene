@@ -7,9 +7,9 @@ import { isArrayOfDates, isArrayOfNumbers } from "@/lib/is-array";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format, isSameDay } from "date-fns";
 import { Check, Minus } from "lucide-react";
-import type { ColumnSchema } from "./types";
-import { formatCurrency, formatBtcAmount, formatBigNumber } from "./formatters";
-import { ProfitDisplay } from "./profit-display";
+import type { ColumnSchema } from "../types/types";
+import { formatCurrency, formatBtcAmount, formatBigNumber } from "../util/formatters";
+import { ProfitDisplay } from "../components/profit-display";
 import { AGGREGATION_ROW } from "./common";
 
 export const columns: ColumnDef<ColumnSchema>[] = [

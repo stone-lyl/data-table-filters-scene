@@ -33,7 +33,7 @@ import {
 } from "@tanstack/react-table";
 import { useQueryStates } from "nuqs";
 import * as React from "react";
-import { searchParamsParser } from "./search-params";
+import { searchParamsParser } from "./const/search-params";
 import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "./types/event-handlers";
 import { cn } from "@/lib/utils";
 

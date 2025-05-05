@@ -6,16 +6,11 @@ import { cn } from "@/lib/utils";
 import { AggregationType } from "../../components/data-table/aggregations";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 
-
-
-// Define props for the DataTableFooter component
 export interface DataTableFooterProps<TData> {
   // No props needed anymore as we use aggregation methods directly
 }
 
 export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
-  "use no memo";
-
   const { footerAggregations = [], table } = useDataTable();
   const pageRows = table.getRowModel().rows;
   const columns = table.getVisibleFlatColumns();

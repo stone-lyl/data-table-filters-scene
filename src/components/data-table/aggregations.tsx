@@ -3,8 +3,8 @@ import * as React from "react";
 import { flexRender } from "@tanstack/react-table";
 import Decimal from "decimal.js-light";
 import { Table } from "@tanstack/react-table";
-import { ColumnSchema } from "@/app/analyze/types";
-import { AGGREGATION_ROW } from "@/app/analyze/common";
+import { ColumnSchema } from "@/app/analyze/types/types";
+import { AGGREGATION_ROW } from "@/app/analyze/const/common";
 
 // Define the available aggregation types
 export type AggregationType = string;

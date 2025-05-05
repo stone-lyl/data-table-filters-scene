@@ -55,7 +55,7 @@ export default function CompareTable() {
     groupDimensions: groupDims('lastYear'),
     segments: [
       {
-        name: 'year_month',
+        name: 'current_date',
         expression: `datetrunc('month', "date"::timestamp)`
       }
     ],
@@ -64,11 +64,11 @@ export default function CompareTable() {
       totalQuantity('lastYear'),
       {
         name: 'periodKey',
-        expression: 'date_add("year_month", INTERVAL 1 YEAR)',
+        expression: 'date_add("current_date", INTERVAL 1 YEAR)',
       },
       {
         name: 'periodDate',
-        expression: `"year_month"`,
+        expression: `"current_date"`,
       },
     ],
   });
@@ -77,21 +77,21 @@ export default function CompareTable() {
     groupDimensions: groupDims(currentYearTableName),
     segments: [
       {
-        name: 'year_month',
+        name: 'current_date',
         expression: `datetrunc('month', "currentYear"."date"::timestamp)`
       }
     ],
     measures: [
       totalAmount(currentYearTableName),
       totalQuantity(currentYearTableName),
-      { name: 'periodKey', expression: `"year_month"` },
+      { name: 'periodKey', expression: `"current_date"` },
       {
         name: 'lastMonthQuantity',
         expression: windowFunctions.lag('"totalQuantity"', 1, null, {
           partitionBy: groupDims(currentYearTableName).map(
             (it) => it.columnName
           ),
-          orderBy: 'year_month',
+          orderBy: 'current_date',
         }),
       },
     ],
