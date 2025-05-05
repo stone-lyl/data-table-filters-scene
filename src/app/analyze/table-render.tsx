@@ -94,8 +94,8 @@ export function TableRender<TData>({
                     return <TableCell key={cell.id}></TableCell>
                   }
                   
-                  // TanStack Table handles the aggregation automatically
-                  // We just need to render the cell with the aggregated value
+                  console.log('aggregated cell.getContext',cell.getContext());
+                  console.log('aggregated cell.column.columnDef.cell',cell.column.columnDef.cell);
                   return (
                     <TableCell key={cell.id} className="font-medium">
                       {flexRender(
