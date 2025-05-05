@@ -79,7 +79,6 @@ async function transformData(datasets: Record<string, unknown[]>, sql: string) {
   // Close the connection to release memory
   await c.close();
   worker.terminate();
-  console.log('jsResult', jsResult);
   return jsResult;
 }
 
