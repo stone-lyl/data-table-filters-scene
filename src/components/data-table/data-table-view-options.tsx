@@ -34,12 +34,17 @@ export function DataTableViewOptions() {
   const columnOrder = table.getState().columnOrder;
 
   const sortedColumns = useMemo(
-    () =>
-      table.getAllColumns().sort((a, b) => {
+    () => {
+      if (columnOrder.length === 0) {
+        return table.getAllColumns();
+      }
+      return table.getAllColumns().sort((a, b) => {
         return columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id);
-      }),
-    [columnOrder],
+      })
+    },
+    [columnOrder, table.getAllColumns()],
   );
+
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
