@@ -1,12 +1,11 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { generateColumns, generateSalesDataset } from './mock-data';
+import { defaultColumnVisibility, generateColumns, generateSalesDataset } from './mock-data';
 import { useTransform } from '../analyze/compare/use-transform';
 import { AnalyticsTableCore } from '../analyze/analytics-table-core';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
 import { DataTableGroupButtons } from '@/components/data-table/data-table-group-buttons';
-import { DataTablePagination } from '@/components/data-table/data-table-pagination';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { VisibilityState } from '@tanstack/react-table';
 import {
@@ -16,19 +15,6 @@ import {
   windowFunctions,
 } from '../analyze/compare/query-builder';
 
-const defaultColumnVisibility = {
-  storeRegion: true,
-  paymentMethod: true,
-  year_month: true,
-  monthlyTotalAmount: true,
-  totalQuantity: true,
-  periodKey: true,
-  lastMonthAmount: true,
-  lastMonthQuantity: true,
-  compare_monthlyTotalAmount: true,
-  compare_totalQuantity: true,
-  compare_periodDate: true,
-};
 export default function CompareTable() {
   const [currentYear] = useState(() =>
     generateSalesDataset({ count: 5000, from: '2024-01-01', to: '2024-12-31' })
@@ -100,15 +86,6 @@ export default function CompareTable() {
       totalQuantity(currentYearTableName),
       { name: 'periodKey', expression: `"year_month"` },
       {
-        name: 'lastMonthAmount',
-        expression: windowFunctions.lag('"monthlyTotalAmount"', 1, null, {
-          partitionBy: groupDims(currentYearTableName).map(
-            (it) => it.columnName
-          ),
-          orderBy: 'year_month',
-        }),
-      },
-      {
         name: 'lastMonthQuantity',
         expression: windowFunctions.lag('"totalQuantity"', 1, null, {
           partitionBy: groupDims(currentYearTableName).map(
@@ -139,6 +116,8 @@ export default function CompareTable() {
 
   const columns = generateColumns(data);
 
+
+ 
   // Create custom controls with DataTableViewOptions and DataTableGroupButtons
   const customControls = (
     <div className="flex items-center justify-between mb-4">

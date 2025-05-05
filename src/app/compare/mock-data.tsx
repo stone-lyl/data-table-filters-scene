@@ -1,6 +1,8 @@
 import type { FieldType } from '@/components/data-table/types';
 import { faker } from '@faker-js/faker';
 import type { ColumnDef } from '@tanstack/react-table';
+import { format } from 'date-fns';
+import { formatCurrency } from '../analyze/formatters';
 
 export interface SalesRecord {
   transactionId: string;
@@ -71,6 +73,19 @@ function generateSalesRecord(options: {
   };
 }
 
+export const defaultColumnVisibility = {
+  storeRegion: true,
+  paymentMethod: true,
+  year_month: true,
+  monthlyTotalAmount: true,
+  totalQuantity: true,
+  compare_periodDate: true,
+  compare_monthlyTotalAmount: true,
+  compare_totalQuantity: true,
+  lastMonthQuantity: true,
+  periodKey: false,
+};
+
 export function generateSalesDataset(
   options: GenerateOptions | number
 ): SalesRecord[] {
@@ -79,11 +94,12 @@ export function generateSalesDataset(
     generateSalesRecord({ from: opts.from, to: opts.to })
   );
 }
+
 export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] {
   if (data.length === 0) return [];
 
   const firstRow = data[0] as Record<string, unknown>;
-  return Object.keys(firstRow).map((key) => {
+  const columns : ColumnDef<unknown, unknown>[] = Object.keys(firstRow).map((key) => {
     // Determine the field type based on the key name
     const fieldType: FieldType = key.toLowerCase().includes('date') ||
       key.toLowerCase().includes('region') ||
@@ -103,14 +119,13 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
 
     // Add special cell formatting for specific data types
     const value = firstRow[key];
-    if (typeof value === 'number') {
-      if (key.toLowerCase().includes('price') ||
-        key.toLowerCase().includes('amount')) {
+    if (column.meta?.fieldType === 'measure' || value instanceof Number) {
+      if (key.toLocaleLowerCase().includes('amount')) {
         return {
           ...column,
           cell: ({ getValue }) => {
             const value = getValue() as number;
-            return `$${value.toFixed(2)}`;
+            return `$${formatCurrency(value)}`;
           },
         };
       } else if (key.toLowerCase().includes('percentage') ||
@@ -130,8 +145,20 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
       ...column,
       cell: ({ getValue }) => {
         const value = getValue();
+        if (key.toLowerCase().includes('date') || key.toLowerCase().includes('year_month')) {
+          return format(new Date(value as string), "LLL dd, yyyy");
+        }
         return value?.toString() || '';
       },
     };
   });
+
+  // the columns order as defaultColumnVisibility key order
+  columns.sort((a, b) => {
+    return Object.keys(defaultColumnVisibility).indexOf(a.id as string) - Object.keys(defaultColumnVisibility).indexOf(b.id as string);
+  });
+
+  return columns;
 }
+
+
