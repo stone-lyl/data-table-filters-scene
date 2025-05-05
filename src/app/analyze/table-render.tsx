@@ -89,17 +89,21 @@ export function TableRender<TData>({
                   );
                 }
                 else if (cell.getIsAggregated()) {
-                  console.log(cell.column.columnDef, 'meta');
+                  // Skip aggregation for dimension columns
                   if (cell.column.columnDef.meta?.fieldType === 'dimension') {
                     return <TableCell key={cell.id}></TableCell>
                   }
-
-                  return <TableCell key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
-                    )}
-                  </TableCell>
+                  
+                  // TanStack Table handles the aggregation automatically
+                  // We just need to render the cell with the aggregated value
+                  return (
+                    <TableCell key={cell.id} className="font-medium">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  );
                 }
                 else if (cell.getIsPlaceholder()) {
                   return <TableCell key={cell.id} />;

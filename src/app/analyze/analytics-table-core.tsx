@@ -96,6 +96,8 @@ export function AnalyticsTableCore<TData, TValue>({
   });
   const [footerAggregations, setFooterAggregations] =
     React.useState<AggregationConfig<TData>[]>(defaultFooterAggregations || []);
+  const [selectedAggregation, setSelectedAggregation] =
+    React.useState<AggregationConfig<TData> | undefined>();
   
   // Using columnVisibility and setSearch from props instead of internal state
 
@@ -179,6 +181,8 @@ export function AnalyticsTableCore<TData, TValue>({
         setFooterAggregations={setFooterAggregations}
         sorting={sorting}
         table={table}
+        selectedAggregation={selectedAggregation}
+        setSelectedAggregation={setSelectedAggregation}
       >
 
         <div className="flex h-full w-full flex-col gap-3 sm:flex-row">

@@ -57,11 +57,11 @@ const createMockContext = (table: Table<ColumnSchema>, columnId: string, type: s
 };
 
 // Aggregation methods
-const countAggregation = (columnId: string, values: any[], table: Table<ColumnSchema>) => {
+export const countAggregation = (columnId: string, values: any[], table: Table<ColumnSchema>) => {
   return values.length > 0 ? values.length : null;
 };
 
-const sumAggregation = (columnId: string, values: any[], table: Table<ColumnSchema>) => {
+export const sumAggregation = (columnId: string, values: any[], table: Table<ColumnSchema>) => {
   const column = table.getColumn(columnId);
   if (!column) return null;
 

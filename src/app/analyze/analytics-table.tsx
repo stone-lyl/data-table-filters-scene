@@ -19,11 +19,13 @@ import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { DataTableFooterButtons } from "@/components/data-table/data-table-footer-buttons";
 import { DataTableGroupButtons } from "@/components/data-table/data-table-group-buttons";
 import { DataTablePagination } from "@/components/data-table/data-table-pagination";
+import { DataTableAggregationToolbar } from "@/components/data-table/data-table-aggregation-toolbar";
 import { ColumnInfoTooltip } from "./components/column-info-tooltip";
 import { RowEditModal } from "./components/row-edit-modal";
 import { useRowEdit } from "./hooks/use-row-edit";
 import { useColumnTooltip } from "./hooks/use-column-tooltip";
 import { ColumnFiltersState } from "@tanstack/react-table";
+import { DataTableAggregationControls } from "@/components/data-table/data-table-aggregation-controls";
 
 interface AnalyticsTableProps {
   data?: ColumnSchema[];
@@ -71,6 +73,7 @@ export function AnalyticsTable({
       <DataTableFilterCommand searchParamsParser={searchParamsParser} />
       <DataTableToolbar />
       <DataTableFooterButtons />
+      <DataTableAggregationToolbar />
       <DataTableGroupButtons />
       <ColumnInfoTooltip columnTooltip={columnTooltip} />
       <RowEditModal rowEdit={rowEdit} />

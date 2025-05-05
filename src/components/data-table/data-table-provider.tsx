@@ -29,6 +29,8 @@ interface DataTableStateContextType<TData = unknown> {
   rowSelection: RowSelectionState;
   setFooterAggregations?: (aggregations: AggregationConfig<TData>[]) => void;
   sorting: SortingState;
+  selectedAggregation?: AggregationConfig<TData>;
+  setSelectedAggregation?: (aggregation: AggregationConfig<TData>) => void;
 }
 
 interface DataTableBaseContextType<TData = unknown, TValue = unknown> {
@@ -75,6 +77,8 @@ export function DataTableProvider<TData, TValue>({
       enableColumnOrdering: props.enableColumnOrdering ?? false,
       footerAggregations: props.footerAggregations,
       setFooterAggregations: props.setFooterAggregations,
+      selectedAggregation: props.selectedAggregation,
+      setSelectedAggregation: props.setSelectedAggregation,
     }),
     [
       props.columnFilters,
@@ -93,6 +97,8 @@ export function DataTableProvider<TData, TValue>({
       props.getFacetedMinMaxValues,
       props.footerAggregations,
       props.setFooterAggregations,
+      props.selectedAggregation,
+      props.setSelectedAggregation,
     ],
   );
 
