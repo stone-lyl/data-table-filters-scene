@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker';
 import type { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { formatCurrency } from '../analyze/formatters';
+import { AmountComparisonCell } from './comparison-cell';
 
 export interface SalesRecord {
   transactionId: string;
@@ -77,13 +78,14 @@ export const defaultColumnVisibility = {
   storeRegion: true,
   paymentMethod: true,
   year_month: true,
-  monthlyTotalAmount: true,
+  totalAmount: true,
   totalQuantity: true,
-  compare_periodDate: true,
-  compare_monthlyTotalAmount: true,
-  compare_totalQuantity: true,
-  lastMonthQuantity: true,
+  c_periodDate: true,
+  c_totalAmount: true,
+  c_totalQuantity: true,
+  lastMonthQuantity: false,
   periodKey: false,
+  amount_comparison: true,
 };
 
 export function generateSalesDataset(
@@ -140,7 +142,6 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
       }
     }
 
-    // Default cell renderer
     return {
       ...column,
       cell: ({ getValue }) => {
@@ -153,9 +154,55 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
     };
   });
 
+  // Add a special comparison column for totalAmount and c_totalAmount
+  if (firstRow.hasOwnProperty('totalAmount') && firstRow.hasOwnProperty('c_totalAmount')) {
+    columns.push({
+      id: 'amount_comparison',
+      header: 'Amount Comparison',
+      meta: {
+        fieldType: 'measure',
+        label: 'Amount Comparison'
+      },
+      cell: ({ row }) => {
+        // Safely get values with fallbacks to prevent errors
+        const currentAmount = row.getValue('totalAmount') as number || 0;
+        const previousAmount = row.getValue('c_totalAmount') as number || 0;
+        
+        // Get date values if they exist
+        let currentDate: string | undefined;
+        let previousDate: string | undefined;
+        
+        try {
+          if (row.getValue('year_month')) {
+            currentDate = format(new Date(row.getValue('year_month') as string), "LLL dd, yyyy");
+          }
+          
+          if (row.getValue('c_periodDate')) {
+            previousDate = format(new Date(row.getValue('c_periodDate') as string), "LLL dd, yyyy");
+          }
+        } catch (error) {
+          console.warn('Error formatting dates:', error);
+        }
+        
+        return (
+          <AmountComparisonCell
+            currentAmount={currentAmount}
+            previousAmount={previousAmount}
+            currentDate={currentDate}
+            previousDate={previousDate}
+            showDate={true}
+          />
+        );
+      }
+    });
+  }
+
   // the columns order as defaultColumnVisibility key order
   columns.sort((a, b) => {
-    return Object.keys(defaultColumnVisibility).indexOf(a.id as string) - Object.keys(defaultColumnVisibility).indexOf(b.id as string);
+    const aIndex = Object.keys(defaultColumnVisibility).indexOf(a.id as string);
+    const bIndex = Object.keys(defaultColumnVisibility).indexOf(b.id as string);
+    
+    return aIndex - bIndex;
   });
 
   return columns;

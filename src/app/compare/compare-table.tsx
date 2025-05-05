@@ -32,7 +32,7 @@ export default function CompareTable() {
     useLocalStorage<VisibilityState>("compare-table-visibility", defaultColumnVisibility);
   const currentYearTableName = 'currentYear';
   const totalAmount = (table: string) => ({
-    name: 'monthlyTotalAmount',
+    name: 'totalAmount',
     expression: Aggregations.sum({
       tableName: table,
       columnName: 'totalAmount',
@@ -105,8 +105,8 @@ export default function CompareTable() {
       name: 'lastYearResult',
       query: lastYearQuery,
       pick: {
-        prefix: 'compare_',
-        columns: ['monthlyTotalAmount', 'totalQuantity', 'periodDate'],
+        prefix: 'c_',
+        columns: ['totalAmount', 'totalQuantity', 'periodDate'],
       },
     },
     using: [...groupDims('').map((it) => it.columnName), 'periodKey'],

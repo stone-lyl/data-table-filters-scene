@@ -18,7 +18,6 @@ export const ProfitDisplay = ({ earning, cost }: { earning: number; cost: number
   const isPositive = profit.greaterThanOrEqualTo(0);
   const textColor = isPositive ? "text-[#ec4899]" : "text-[#10b981]";
 
-  // todo：我总觉得 profitRate and profit 的 - 与数字的距离不一样
   return (
     <div className="flex flex-col text-xs tabular-nums">
       <div className="flex items-center">
