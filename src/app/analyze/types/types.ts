@@ -18,3 +18,44 @@ export type ColumnSchema = {
   bigNumber: string;
   btcAmount: string;
 };
+export interface ColumnReference {
+  tableName: string;
+  columnName: string;
+}
+
+export interface GenericColumnDefinition {
+  name: string;
+  expression: string;
+}
+
+export interface OutputableColumn {
+  toString(): string;
+}
+
+export interface QueryOptions {
+  /**
+   * Table name of the main dataset
+   */
+  dataset: string;
+  /**
+   * Group rows by these dimensions
+   */
+  groupDimensions: ColumnReference[];
+  /**
+   * create segments from these expressions
+   */
+  segments?: GenericColumnDefinition[];
+  measures: GenericColumnDefinition[];
+  /**
+   * todo
+   */
+  windows?: {
+    name: string;
+    partitionBy: ColumnReference[];
+    // orderBy: ColumnReference[];
+    /**
+     * https://duckdb.org/docs/stable/sql/functions/window_functions#framing
+     */
+    frame: string;
+  }[];
+}
