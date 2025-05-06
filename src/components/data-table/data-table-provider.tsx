@@ -9,7 +9,7 @@ import type {
   VisibilityState,
   GroupingState,
 } from "@tanstack/react-table";
-import { AggregationConfig } from "@/components/data-table/aggregations";
+import { AggregationConfig } from "@/components/data-table/data-table-aggregations";
 import { createContext, useContext, useMemo } from "react";
 import { ControlsProvider } from "../../providers/controls";
 

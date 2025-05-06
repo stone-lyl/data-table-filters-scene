@@ -3,7 +3,7 @@
 import { DataTableProvider } from "@/components/data-table/data-table-provider";
 import type { DataTableFilterField } from "@/components/data-table/types";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { AggregationConfig } from "../../components/data-table/aggregations";
+import { AggregationConfig } from "../../components/data-table/data-table-aggregations";
 import { TableRender } from "./table-render";
 import type {
   ColumnDef,
@@ -84,7 +84,6 @@ export function AnalyticsTableCore<TData, TValue>({
   setColumnVisibility,
   setSearch,
 }: AnalyticsTableCoreProps<TData, TValue>) {
-  "use no memo"
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
   const [sorting, setSorting] = React.useState<SortingState>([]);

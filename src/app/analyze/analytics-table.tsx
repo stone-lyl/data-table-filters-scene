@@ -7,7 +7,7 @@ import { data as initialData } from "./const/data";
 import { filterFields } from "./const/constants";
 import { AnalyticsTableCore } from "./analytics-table-core";
 import { searchParamsParser } from "./const/search-params";
-import { defaultAggregations } from "../../components/data-table/aggregations";
+import { AggregationConfig, defaultAggregations } from "../../components/data-table/data-table-aggregations";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useQueryStates } from "nuqs";
 import { VisibilityState } from "@tanstack/react-table";
@@ -95,7 +95,7 @@ export function AnalyticsTable({
           value,
         }))
         .filter(({ value }) => value ?? undefined) as ColumnFiltersState}
-      footerAggregations={defaultAggregations.slice(1, 3)}
+      footerAggregations={defaultAggregations.slice(1, 3) as unknown as AggregationConfig<ColumnSchema>[]}
       sidebarSlot={customSidebar}
       controlsSlot={customControls}
       paginationSlot={customPagination}

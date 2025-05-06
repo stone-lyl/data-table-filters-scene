@@ -3,13 +3,10 @@ import * as React from "react";
 import { flexRender } from "@tanstack/react-table";
 import Decimal from "decimal.js-light";
 import { Table } from "@tanstack/react-table";
-import { ColumnSchema } from "@/app/analyze/types/types";
 import { AGGREGATION_ROW } from "@/app/analyze/const/common";
 
-// Define the available aggregation types
 export type AggregationType = string;
 
-// Define the configuration for each aggregation row
 export interface AggregationConfig<TData> {
   type: AggregationType;
   label: string;
@@ -17,11 +14,9 @@ export interface AggregationConfig<TData> {
   aggregationMethod?: (columnId: string, values: any[], table: Table<TData>) => React.ReactNode;
 }
 
-// Helper function to create a mock context for cell renderers
-const createMockContext = (table: Table<ColumnSchema>, columnId: string, type: string, value: any) => {
+const createMockContext = (table: Table<unknown>, columnId: string, type: string, value: any) => {
   const column = table.getColumn(columnId);
   if (!column) {
-    // Return a default context if column is not found to avoid null
     return {
       table,
       column: {} as any,
@@ -57,11 +52,11 @@ const createMockContext = (table: Table<ColumnSchema>, columnId: string, type: s
 };
 
 // Aggregation methods
-export const countAggregation = (columnId: string, values: any[], table: Table<ColumnSchema>) => {
+export const countAggregation = (columnId: string, values: any[], table: Table<unknown>) => {
   return values.length > 0 ? values.length : null;
 };
 
-export const sumAggregation = (columnId: string, values: any[], table: Table<ColumnSchema>) => {
+export const sumAggregation = (columnId: string, values: any[], table: Table<unknown>) => {
   const column = table.getColumn(columnId);
   if (!column) return null;
 
@@ -101,7 +96,7 @@ export const sumAggregation = (columnId: string, values: any[], table: Table<Col
   return null;
 };
 
-const averageAggregation = (columnId: string, values: any[], table: Table<ColumnSchema>) => {
+const averageAggregation = (columnId: string, values: any[], table: Table<unknown>) => {
   const column = table.getColumn(columnId);
   if (!column) return null;
 
@@ -142,7 +137,7 @@ const averageAggregation = (columnId: string, values: any[], table: Table<Column
   return null;
 };
 
-const percentageAggregation = (columnId: string, values: any[], table: Table<ColumnSchema>) => {
+const percentageAggregation = (columnId: string, values: any[], table: Table<unknown>) => {
   const isBoolean = values.some(v => typeof v === 'boolean');
   
   if (isBoolean) {
@@ -165,7 +160,7 @@ const percentageAggregation = (columnId: string, values: any[], table: Table<Col
 };
 
 // Define the default aggregations with their respective aggregation methods
-export const defaultAggregations: AggregationConfig<ColumnSchema>[] = [
+export const defaultAggregations: AggregationConfig<unknown>[] = [
   { 
     type: 'count', 
     label: 'Count', 

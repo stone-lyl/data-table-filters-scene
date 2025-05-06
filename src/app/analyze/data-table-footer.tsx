@@ -3,7 +3,7 @@
 import { TableCell, TableFooter, TableRow } from "@/components/custom/table";
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { AggregationType } from "../../components/data-table/aggregations";
+import { AggregationType } from "../../components/data-table/data-table-aggregations";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 
 export interface DataTableFooterProps<TData> {
