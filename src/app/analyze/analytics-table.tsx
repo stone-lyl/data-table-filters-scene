@@ -35,12 +35,11 @@ export function AnalyticsTable({
   search,
 }: AnalyticsTableProps) {
   const [data, setData] = useState<ColumnSchema[]>(propData || initialData as ColumnSchema[]);
-  
-  // Moved from analytics-table-core.tsx
-  const [columnVisibility, setColumnVisibility] = 
+
+  const [columnVisibility, setColumnVisibility] =
     useLocalStorage<VisibilityState>("data-table-visibility", {});
   const [_, setSearch] = useQueryStates(searchParamsParser);
-  
+
   const rowEdit = useRowEdit<ColumnSchema>({
     data,
     onDataChange: setData
@@ -81,30 +80,31 @@ export function AnalyticsTable({
   const customPagination = <DataTablePagination data-testid="data-table-pagination" />;
 
   return (
-    <AnalyticsTableCore<ColumnSchema, unknown>
-      data-testid="analytics-table"
-      columns={columns}
-      data={data}
-      onDataChange={setData}
-      filterFields={filterFields}
-      defaultGrouping={[
-        // "firstName"
-      ]}
-      defaultColumnFilters={Object.entries(search)
-        .map(([key, value]) => ({
-          id: key,
-          value,
-        }))
-        .filter(({ value }) => value ?? undefined) as ColumnFiltersState}
-      footerAggregations={defaultAggregations.slice(1, 3) as unknown as AggregationConfig<ColumnSchema>[]}
-      sidebarSlot={customSidebar}
-      controlsSlot={customControls}
-      paginationSlot={customPagination}
-      rowEventHandlers={rowEventHandlers}
-      headerRowEventHandlers={headerRowEventHandlers}
-      columnVisibility={columnVisibility}
-      setColumnVisibility={setColumnVisibility}
-      setSearch={setSearch}
-    />
+    <div data-testid="analytics-table">
+      <AnalyticsTableCore<ColumnSchema, unknown>
+        columns={columns}
+        data={data}
+        onDataChange={setData}
+        filterFields={filterFields}
+        defaultGrouping={[
+          // "firstName"
+        ]}
+        defaultColumnFilters={Object.entries(search)
+          .map(([key, value]) => ({
+            id: key,
+            value,
+          }))
+          .filter(({ value }) => value ?? undefined) as ColumnFiltersState}
+        footerAggregations={defaultAggregations.slice(1, 3) as unknown as AggregationConfig<ColumnSchema>[]}
+        sidebarSlot={customSidebar}
+        controlsSlot={customControls}
+        paginationSlot={customPagination}
+        rowEventHandlers={rowEventHandlers}
+        headerRowEventHandlers={headerRowEventHandlers}
+        columnVisibility={columnVisibility}
+        setColumnVisibility={setColumnVisibility}
+        setSearch={setSearch}
+      />
+    </div>
   );
 }
