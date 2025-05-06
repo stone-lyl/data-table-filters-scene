@@ -3,7 +3,7 @@
 import { DataTableProvider } from "@/components/data-table/data-table-provider";
 import type { DataTableFilterField } from "@/components/data-table/types";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { AggregationConfig } from "../../components/data-table/aggregations";
+import { AggregationConfig } from "../../components/data-table/data-table-aggregations";
 import { TableRender } from "./table-render";
 import type {
   ColumnDef,
@@ -33,7 +33,7 @@ import {
 } from "@tanstack/react-table";
 import { useQueryStates } from "nuqs";
 import * as React from "react";
-import { searchParamsParser } from "./search-params";
+import { searchParamsParser } from "./const/search-params";
 import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "./types/event-handlers";
 import { cn } from "@/lib/utils";
 
@@ -84,7 +84,6 @@ export function AnalyticsTableCore<TData, TValue>({
   setColumnVisibility,
   setSearch,
 }: AnalyticsTableCoreProps<TData, TValue>) {
-  "use no memo"
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -109,6 +108,7 @@ export function AnalyticsTableCore<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    paginateExpandedRows: false,
     state: { columnFilters, sorting, columnVisibility, pagination, grouping, expanded },
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
@@ -167,6 +167,7 @@ export function AnalyticsTableCore<TData, TValue>({
   return (
     <>
       <DataTableProvider
+        data-testid="data-table-provider"
         columnFilters={columnFilters}
         columnVisibility={columnVisibility}
         columns={columns}
@@ -181,14 +182,15 @@ export function AnalyticsTableCore<TData, TValue>({
         table={table}
       >
 
-        <div className="flex h-full w-full flex-col gap-3 sm:flex-row">
+        <div data-testid="analytics-table-core-container" className="flex h-full w-full flex-col gap-3 sm:flex-row">
           {sidebarSlot}
 
-          <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
+          <div data-testid="analytics-table-core-content" className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
             {controlsSlot}
 
-            <div className={cn("rounded-md border", tableClassName)}>
+            <div data-testid="analytics-table-core-table-container" className={cn("rounded-md border", tableClassName)}>
               <TableRender<TData>
+                data-testid="table-render"
                 onRow={rowEventHandlers}
                 onHeaderRow={headerRowEventHandlers}
               />

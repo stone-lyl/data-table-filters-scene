@@ -1,5 +1,5 @@
 "use client";
-import { formatCurrency } from "./formatters";
+import { formatCurrency } from "../util/formatters";
 import Decimal from "decimal.js-light";
 
 // Profit display component

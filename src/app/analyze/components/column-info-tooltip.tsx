@@ -5,8 +5,8 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-import { UseColumnTooltipReturn } from "./hooks/use-column-tooltip";
-import { ColumnSchema } from "./types";
+import { UseColumnTooltipReturn } from "../hooks/use-column-tooltip";
+import { ColumnSchema } from "../types/types";
 
 export interface ColumnInfoTooltipProps {
   columnTooltip: UseColumnTooltipReturn<ColumnSchema, unknown>;

@@ -8,7 +8,7 @@ import { REGIONS } from "@/constants/region";
 import { tagColor, TAGS } from "@/constants/tag";
 import { cn } from "@/lib/utils";
 import { data } from "./data";
-import type { ColumnSchema } from "./types";
+import type { ColumnSchema } from "../types/types";
 
 export const filterFields = [
   {

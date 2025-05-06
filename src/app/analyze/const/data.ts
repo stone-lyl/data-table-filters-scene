@@ -1,7 +1,7 @@
 import { subDays, subHours, subMinutes } from "date-fns";
-import type { ColumnSchema } from "./types";
+import { ColumnSchema } from "../types/types";
 
-export const data = [
+export const data: ColumnSchema[] = [
   {
     id: "1",
     // name: "Edge Api",

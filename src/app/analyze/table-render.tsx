@@ -24,22 +24,24 @@ export function TableRender<TData>({
   onRow,
   onHeaderRow
 }: TableRenderProps<TData>) {
-  "use no memo";
 
   const { table } = useDataTable();
   const columns = table.getAllColumns();
 
   return (
-    <Table>
-      <TableHeader className="bg-muted/50">
+    <Table data-testid="analytics-table-main">
+      <TableHeader data-testid="table-header" className="bg-muted/50">
         {table.getHeaderGroups().map((headerGroup) => (
+      
           <TableRow
+            data-testid={`header-row-${headerGroup.id}`}
             key={headerGroup.id}
             className="hover:bg-transparent"
           >
             {headerGroup.headers.map((header, index) => {
               return (
                 <TableHead 
+                  data-testid={`header-cell-${header.id}`}
                   key={header.id}
                   {...(onHeaderRow ? onHeaderRow(headerGroup.headers as Header<TData, unknown>[], index) : {})}
                 >
@@ -55,10 +57,11 @@ export function TableRender<TData>({
           </TableRow>
         ))}
       </TableHeader>
-      <TableBody>
+      <TableBody data-testid="table-body">
         {table.getRowModel().rows?.length ? (
           table.getRowModel().rows.map((row) => (
             <TableRow
+              data-testid={`table-row-${row.id}`}
               key={row.id}
               data-state={row.getIsSelected() && "selected"}
               {...(onRow ? onRow(row as Row<TData>, row.index) : {})}
@@ -89,14 +92,29 @@ export function TableRender<TData>({
                   );
                 }
                 else if (cell.getIsAggregated()) {
-                  return <TableCell key={cell.id} />;
+                  // Skip aggregation for dimension columns
+                  if (cell.column.columnDef.meta?.fieldType === 'dimension') {
+                    return <TableCell key={cell.id}></TableCell>
+                  }
+                  
+                  return (
+                    <TableCell key={cell.id} className="font-medium">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  );
                 }
                 else if (cell.getIsPlaceholder()) {
                   return <TableCell key={cell.id} />;
                 }
                 // For normal cells
                 return (
-                  <TableCell key={cell.id}>
+                  <TableCell 
+                    data-testid={`table-cell-${cell.id}`}
+                    key={cell.id}
+                  >
                     {flexRender(
                       cell.column.columnDef.cell,
                       cell.getContext()
@@ -107,8 +125,9 @@ export function TableRender<TData>({
             </TableRow>
           ))
         ) : (
-          <TableRow>
+          <TableRow data-testid="empty-row">
             <TableCell
+              data-testid="empty-cell"
               colSpan={columns.length}
               className="h-24 text-center"
             >
@@ -117,7 +136,7 @@ export function TableRender<TData>({
           </TableRow>
         )}
       </TableBody>
-      <DataTableFooter />
+      <DataTableFooter data-testid="data-table-footer" />
     </Table>
   );
 }

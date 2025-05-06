@@ -2,7 +2,7 @@ import type { FieldType } from '@/components/data-table/types';
 import { faker } from '@faker-js/faker';
 import type { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { formatCurrency } from '../analyze/formatters';
+import { formatCurrency } from '../analyze/util/formatters';
 import { AmountComparisonCell } from './comparison-cell';
 
 export interface SalesRecord {
@@ -77,7 +77,7 @@ function generateSalesRecord(options: {
 export const defaultColumnVisibility = {
   storeRegion: true,
   paymentMethod: true,
-  year_month: true,
+  current_date: true,
   totalAmount: true,
   totalQuantity: true,
   c_periodDate: true,
@@ -146,7 +146,7 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
       ...column,
       cell: ({ getValue }) => {
         const value = getValue();
-        if (key.toLowerCase().includes('date') || key.toLowerCase().includes('year_month')) {
+        if (key.toLowerCase().includes('date') || key.toLowerCase().includes('current_date')) {
           return format(new Date(value as string), "LLL dd, yyyy");
         }
         return value?.toString() || '';
@@ -173,8 +173,8 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
         let previousDate: string | undefined;
         
         try {
-          if (row.getValue('year_month')) {
-            currentDate = format(new Date(row.getValue('year_month') as string), "LLL dd, yyyy");
+          if (row.getValue('current_date')) {
+            currentDate = format(new Date(row.getValue('current_date') as string), "LLL dd, yyyy");
           }
           
           if (row.getValue('c_periodDate')) {

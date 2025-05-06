@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Suspense } from "react";
-import { searchParamsCache } from "./search-params";
-import { Skeleton } from "./skeleton";
+import { searchParamsCache } from "./const/search-params";
+import { Skeleton } from "./components/skeleton";
 import { AnalyticsTable } from "./analytics-table";
 
 export default async function Page({

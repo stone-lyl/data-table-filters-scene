@@ -4,7 +4,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { useDataTable } from "./data-table-provider";
 import { Calculator } from "lucide-react";
-import { defaultAggregations, AggregationType, AggregationConfig } from "@/components/data-table/aggregations";
+import { defaultAggregations, AggregationType, AggregationConfig } from "@/components/data-table/data-table-aggregations";
 import {
   DropdownMenu,
   DropdownMenuContent,

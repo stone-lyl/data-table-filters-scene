@@ -2,7 +2,7 @@
 
 import React from "react";
 import Decimal from "decimal.js-light";
-import { formatCurrency, formatBigNumber } from "../analyze/formatters";
+import { formatCurrency, formatBigNumber } from "../analyze/util/formatters";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
