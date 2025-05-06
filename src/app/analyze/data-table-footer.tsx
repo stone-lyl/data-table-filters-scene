@@ -15,6 +15,27 @@ export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
 
   const columns = table.getVisibleFlatColumns();
 
+  const getColumnValues = React.useCallback((columnId: string, isTotal: boolean | undefined): any[] => {
+    let rows = [];
+    if (isTotal) {
+      const allLeafRows = table.getCoreRowModel().flatRows.filter(row => row.subRows.length === 0);
+      rows = allLeafRows;
+    } else {
+      const pageLeafRows = table.getPaginationRowModel().flatRows
+        .filter(row => row.subRows.length === 0);
+
+      const uniqueRowsId = new Set();
+      rows = pageLeafRows.filter(row => {
+        if (!uniqueRowsId.has(row.id)) {
+          uniqueRowsId.add(row.id);
+          return true;
+        }
+        return false;
+      });
+    }
+
+    return rows.map(row => row.getValue(columnId));
+  }, [table.getCoreRowModel().flatRows, table.getPaginationRowModel().flatRows, columns]);
 
   // Use aggregation methods directly from the aggregation config
   const getAggregation = (columnId: string, type: AggregationType, values: any[]): React.ReactNode => {
@@ -22,16 +43,12 @@ export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
 
     // Find the aggregation config for this type
     const aggregationConfig = footerAggregations.find(agg => agg.type === type);
-    
     // If we have an aggregation method for this type, use it
     if (aggregationConfig?.aggregationMethod) {
       return aggregationConfig.aggregationMethod(columnId, values, table);
     }
-    
-    // Fallback to basic handling if no specific method is found
     const column = table.getColumn(columnId);
     if (!column) return null;
-    
     return null;
   };
 
@@ -47,21 +64,7 @@ export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
         >
           {columns.map((column, colIndex) => {
             const columnId = column.id;
-            const isTotal = aggregation?.isTotal; 
-            
-            // todo: the flatRows is not the same as the rows
-            const pageLeafRows = table.getRowModel().flatRows.filter(row => !row.getIsGrouped());
-            const allLeafRows = table.getCoreRowModel().flatRows.filter(row => !row.getIsGrouped());
-
-            console.log(allLeafRows.length, 'allLeafRows')
-            console.log(pageLeafRows.length, 'pageLeafRows')
-            
-            const rows = isTotal ? allLeafRows : pageLeafRows;
-
-            const values = rows.map(row => {
-              const value = row.getValue(columnId);
-              return value;
-            });
+            const values = getColumnValues(columnId, aggregation.isTotal);
             const content = getAggregation(columnId, aggregation.type, values);
             return (
               <TableCell
