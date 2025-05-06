@@ -23,10 +23,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { UseRowEditReturn } from "../hooks/use-row-edit";
 
-import type { UseRowEditReturn } from "./hooks/use-row-edit";
-
-// Helper function to determine if a field should be editable
 const isEditableField = (key: string): boolean => {
   const nonEditableFields = ['id', 'date', 'regions', 'tags', 'bigNumber', 'btcAmount'];
   return !nonEditableFields.includes(key);
