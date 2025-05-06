@@ -12,7 +12,7 @@ export interface AggregationConfig<TData> {
   label: string;
   icon: React.ReactElement;
   aggregationMethod?: (columnId: string, values: any[], table: Table<TData>) => React.ReactNode;
-  isTotal?: boolean;
+  isTotal?: boolean; // Whether to use all rows (true) or just paginated leaf rows (false)
 }
 
 const createMockContext = (table: Table<unknown>, columnId: string, type: string, value: any) => {

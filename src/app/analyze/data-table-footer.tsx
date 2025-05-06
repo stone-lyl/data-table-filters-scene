@@ -37,13 +37,10 @@ export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
     return rows.map(row => row.getValue(columnId));
   }, [table.getCoreRowModel().flatRows, table.getPaginationRowModel().flatRows, columns]);
 
-  // Use aggregation methods directly from the aggregation config
   const getAggregation = (columnId: string, type: AggregationType, values: any[]): React.ReactNode => {
     if (values.length === 0) return null;
-
-    // Find the aggregation config for this type
     const aggregationConfig = footerAggregations.find(agg => agg.type === type);
-    // If we have an aggregation method for this type, use it
+
     if (aggregationConfig?.aggregationMethod) {
       return aggregationConfig.aggregationMethod(columnId, values, table);
     }

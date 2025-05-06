@@ -49,6 +49,21 @@ const mockTable = {
     rows: testData.map((item, index) => ({
       id: `row-${index}`,
       getValue: (key: string) => item[key as keyof typeof item],
+      subRows: [],
+    })),
+  }),
+  getCoreRowModel: () => ({
+    flatRows: testData.map((item, index) => ({
+      id: `row-${index}`,
+      getValue: (key: string) => item[key as keyof typeof item],
+      subRows: [],
+    })),
+  }),
+  getPaginationRowModel: () => ({
+    flatRows: testData.map((item, index) => ({
+      id: `row-${index}`,
+      getValue: (key: string) => item[key as keyof typeof item],
+      subRows: [],
     })),
   }),
   getVisibleFlatColumns: () => [
@@ -106,8 +121,8 @@ describe('DataTableFooter', () => {
     expect(sumAmountCell).toBeInTheDocument();
     expect(countAmountCell).toBeInTheDocument();
     
-    console.log('Sum amount cell:', sumAmountCell.textContent);
-    console.log('Count amount cell:', countAmountCell.textContent);
+    // console.log('Sum amount cell:', sumAmountCell.textContent);
+    // console.log('Count amount cell:', countAmountCell.textContent);
     
     expect(sumRow.textContent?.length).toBeGreaterThan(0);
     expect(countRow.textContent?.length).toBeGreaterThan(0);
@@ -119,6 +134,8 @@ describe('DataTableFooter', () => {
       footerAggregations: [],
       table: {
         getRowModel: () => ({ rows: [] }),
+        getCoreRowModel: () => ({ flatRows: [] }),
+        getPaginationRowModel: () => ({ flatRows: [] }),
         getVisibleFlatColumns: () => [],
         getColumn: () => null,
       }
