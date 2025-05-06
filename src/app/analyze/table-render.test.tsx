@@ -91,7 +91,7 @@ vi.mock('@tanstack/react-table', () => ({
   flexRender: vi.fn((content) => content)
 }));
 
-describe.only('TableRender', () => {
+describe('TableRender', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
