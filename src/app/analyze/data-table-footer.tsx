@@ -12,7 +12,7 @@ export interface DataTableFooterProps<TData> {
 
 export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
   const { footerAggregations = [], table } = useDataTable();
-  const pageRows = table.getRowModel().rows;
+
   const columns = table.getVisibleFlatColumns();
 
 
@@ -47,9 +47,21 @@ export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
         >
           {columns.map((column, colIndex) => {
             const columnId = column.id;
+            const isTotal = aggregation?.isTotal; 
+            
+            // todo: the flatRows is not the same as the rows
+            const pageLeafRows = table.getRowModel().flatRows.filter(row => !row.getIsGrouped());
+            const allLeafRows = table.getCoreRowModel().flatRows.filter(row => !row.getIsGrouped());
 
-            // Get values for this column
-            const values = pageRows.map(row => row.getValue(columnId));
+            console.log(allLeafRows.length, 'allLeafRows')
+            console.log(pageLeafRows.length, 'pageLeafRows')
+            
+            const rows = isTotal ? allLeafRows : pageLeafRows;
+
+            const values = rows.map(row => {
+              const value = row.getValue(columnId);
+              return value;
+            });
             const content = getAggregation(columnId, aggregation.type, values);
             return (
               <TableCell

@@ -12,6 +12,7 @@ export interface AggregationConfig<TData> {
   label: string;
   icon: React.ReactElement;
   aggregationMethod?: (columnId: string, values: any[], table: Table<TData>) => React.ReactNode;
+  isTotal?: boolean;
 }
 
 const createMockContext = (table: Table<unknown>, columnId: string, type: string, value: any) => {
@@ -165,24 +166,28 @@ export const defaultAggregations: AggregationConfig<unknown>[] = [
     type: 'count', 
     label: 'Count', 
     icon: <Calculator className="h-4 w-4 text-muted-foreground" />,
-    aggregationMethod: countAggregation
+    aggregationMethod: countAggregation,
+    isTotal: false
   },
   { 
     type: 'average', 
     label: 'Avg', 
     icon: <ArrowDownUp className="h-4 w-4 text-muted-foreground" />,
-    aggregationMethod: averageAggregation
+    aggregationMethod: averageAggregation,
+    isTotal: false
   },
   { 
     type: 'sum', 
     label: 'Sum', 
     icon: <Plus className="h-4 w-4 text-muted-foreground" />,
-    aggregationMethod: sumAggregation
+    aggregationMethod: sumAggregation,
+    isTotal: false
   },
   { 
     type: 'percentage', 
     label: 'Percentage', 
     icon: <Percent className="h-4 w-4 text-muted-foreground" />,
-    aggregationMethod: percentageAggregation
+    aggregationMethod: percentageAggregation,
+    isTotal: false
   }
 ];

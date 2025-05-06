@@ -108,6 +108,7 @@ export function AnalyticsTableCore<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    paginateExpandedRows: false,
     state: { columnFilters, sorting, columnVisibility, pagination, grouping, expanded },
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
