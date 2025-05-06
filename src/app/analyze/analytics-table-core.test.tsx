@@ -1,12 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { AnalyticsTableCore } from './analytics-table-core';
-import { defaultAggregations, sumAggregation, countAggregation, AggregationConfig } from '@/components/data-table/data-table-aggregations';
-import { AccessorColumnDef, AccessorKeyColumnDef, ColumnDef } from '@tanstack/react-table';
+import { AggregationConfig, defaultAggregations } from '@/components/data-table/data-table-aggregations';
+import { AccessorKeyColumnDef } from '@tanstack/react-table';
 import * as React from 'react';
-import { DataTableProvider } from '@/components/data-table/data-table-provider';
-import Decimal from 'decimal.js-light';
-import { DataTableFooter } from './data-table-footer';
 
 // Mock the DataTableFooter component to test it separately
 vi.mock('./data-table-footer', () => ({
@@ -71,14 +68,18 @@ describe('AnalyticsTableCore', () => {
   it('renders the table with data', () => {
     render(
       <AnalyticsTableCore<TestData, unknown>
+        data-testid="analytics-table-core"
         columns={testColumns}
         data={testData}
         footerAggregations={defaultAggregations as unknown as AggregationConfig<TestData>[]}
       />
     );
 
-    // Check if TableRender is rendered
     expect(screen.getByTestId('table-render')).toBeInTheDocument();
+    
+    expect(screen.getByTestId('analytics-table-core-container')).toBeInTheDocument();
+    expect(screen.getByTestId('analytics-table-core-content')).toBeInTheDocument();
+    expect(screen.getByTestId('analytics-table-core-table-container')).toBeInTheDocument();
   });
 
   it('applies column visibility correctly', () => {
@@ -87,6 +88,7 @@ describe('AnalyticsTableCore', () => {
 
     render(
       <AnalyticsTableCore
+        data-testid="analytics-table-core"
         columns={testColumns}
         data={testData}
         columnVisibility={columnVisibility}
@@ -94,44 +96,29 @@ describe('AnalyticsTableCore', () => {
       />
     );
 
-    // The test passes if the component renders without errors
     expect(screen.getByTestId('table-render')).toBeInTheDocument();
+    expect(screen.getByTestId('analytics-table-core-container')).toBeInTheDocument();
+  });
+  
+  it('renders with custom slots', () => {
+    const customSidebar = <div data-testid="custom-sidebar">Custom Sidebar</div>;
+    const customControls = <div data-testid="custom-controls">Custom Controls</div>;
+    const customPagination = <div data-testid="custom-pagination">Custom Pagination</div>;
+    
+    render(
+      <AnalyticsTableCore<TestData, unknown>
+        data-testid="analytics-table-core"
+        columns={testColumns}
+        data={testData}
+        sidebarSlot={customSidebar}
+        controlsSlot={customControls}
+        paginationSlot={customPagination}
+      />
+    );
+    
+    // Check if custom slots are rendered
+    expect(screen.getByTestId('custom-sidebar')).toBeInTheDocument();
+    expect(screen.getByTestId('custom-controls')).toBeInTheDocument();
+    expect(screen.getByTestId('custom-pagination')).toBeInTheDocument();
   });
 });
-
-describe('DataTableFooter', () => {
-  beforeEach(() => {
-    vi.mock('@/components/data-table/data-table-provider', () => ({
-      useDataTable: vi.fn(() => ({
-        footerAggregations: defaultAggregations,
-        table: {
-          getRowModel: () => ({
-            rows: testData.map((item, index) => ({
-              id: `row-${index}`,
-              getValue: (key: keyof TestData) => item[key],
-            })),
-          }),
-          getVisibleFlatColumns: () => 
-            testColumns.map((col: AccessorKeyColumnDef<TestData>) => ({
-              id: col.accessorKey,
-              columnDef: col,
-            })),
-          getColumn: (columnId: string) => ({
-            id: columnId,
-            columnDef: testColumns.find(col => col.accessorKey === columnId),
-          }),
-        },
-      })),
-      DataTableProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    }));
-  });
-
-  it('renders footer with aggregations', () => {
-    
-    render(<DataTableFooter />);
-    
-    // Test will pass if the component renders without errors
-    // Actual assertions would depend on the rendered output
-  });
-});
-

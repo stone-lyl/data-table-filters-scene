@@ -166,6 +166,7 @@ export function AnalyticsTableCore<TData, TValue>({
   return (
     <>
       <DataTableProvider
+        data-testid="data-table-provider"
         columnFilters={columnFilters}
         columnVisibility={columnVisibility}
         columns={columns}
@@ -180,14 +181,15 @@ export function AnalyticsTableCore<TData, TValue>({
         table={table}
       >
 
-        <div className="flex h-full w-full flex-col gap-3 sm:flex-row">
+        <div data-testid="analytics-table-core-container" className="flex h-full w-full flex-col gap-3 sm:flex-row">
           {sidebarSlot}
 
-          <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
+          <div data-testid="analytics-table-core-content" className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
             {controlsSlot}
 
-            <div className={cn("rounded-md border", tableClassName)}>
+            <div data-testid="analytics-table-core-table-container" className={cn("rounded-md border", tableClassName)}>
               <TableRender<TData>
+                data-testid="table-render"
                 onRow={rowEventHandlers}
                 onHeaderRow={headerRowEventHandlers}
               />

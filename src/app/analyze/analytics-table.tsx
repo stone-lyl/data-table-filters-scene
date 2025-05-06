@@ -34,7 +34,6 @@ export function AnalyticsTable({
   data: propData,
   search,
 }: AnalyticsTableProps) {
-  'use no memo';
   const [data, setData] = useState<ColumnSchema[]>(propData || initialData as ColumnSchema[]);
   
   // Moved from analytics-table-core.tsx
@@ -56,32 +55,34 @@ export function AnalyticsTable({
 
   const customSidebar = (
     <div
+      data-testid="analytics-table-sidebar"
       className={cn(
         "hidden w-full p-1 sm:block sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-64 md:max-w-64",
         "group-data-[expanded=false]/controls:hidden",
       )}
     >
-      <DataTableFilterControls />
+      <DataTableFilterControls data-testid="data-table-filter-controls" />
     </div>
   );
 
   // Example custom controls slot with ColumnInfoTooltip and RowEditModal
   const customControls = (
     <>
-      <DataTableFilterCommand searchParamsParser={searchParamsParser} />
-      <DataTableToolbar />
-      <DataTableFooterButtons />
-      <DataTableGroupButtons />
-      <ColumnInfoTooltip columnTooltip={columnTooltip} />
-      <RowEditModal rowEdit={rowEdit} />
+      <DataTableFilterCommand data-testid="data-table-filter-command" searchParamsParser={searchParamsParser} />
+      <DataTableToolbar data-testid="data-table-toolbar" />
+      <DataTableFooterButtons data-testid="data-table-footer-buttons" />
+      <DataTableGroupButtons data-testid="data-table-group-buttons" />
+      <ColumnInfoTooltip data-testid="column-info-tooltip" columnTooltip={columnTooltip} />
+      <RowEditModal data-testid="row-edit-modal" rowEdit={rowEdit} />
     </>
   );
 
   // Example custom pagination slot
-  const customPagination = <DataTablePagination />;
+  const customPagination = <DataTablePagination data-testid="data-table-pagination" />;
 
   return (
     <AnalyticsTableCore<ColumnSchema, unknown>
+      data-testid="analytics-table"
       columns={columns}
       data={data}
       onDataChange={setData}

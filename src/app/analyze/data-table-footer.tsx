@@ -32,18 +32,14 @@ export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
     const column = table.getColumn(columnId);
     if (!column) return null;
     
-    // For count type, always return the count regardless of column type
-    if (type === 'count') {
-      return values.length;
-    }
-    
     return null;
   };
 
   return (
-    <TableFooter className="bg-muted/50">
+    <TableFooter data-testid="table-footer" className="bg-muted/50">
       {footerAggregations.map((aggregation, index) => (
         <TableRow
+          data-testid={`footer-row-${aggregation.type}`}
           key={`${aggregation.type}-row`}
           className={cn(
             index === 0 ? 'border-t' : ''
@@ -55,9 +51,9 @@ export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
             // Get values for this column
             const values = pageRows.map(row => row.getValue(columnId));
             const content = getAggregation(columnId, aggregation.type, values);
-
             return (
               <TableCell
+                data-testid={`footer-cell-${aggregation.type}-${columnId}`}
                 key={`${aggregation.type}-${columnId}`}
                 className={cn("font-medium")}
               >
