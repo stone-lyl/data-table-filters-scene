@@ -147,7 +147,7 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
       cell: ({ getValue }) => {
         const value = getValue();
         if (key.toLowerCase().includes('date') || key.toLowerCase().includes('current_date')) {
-          return format(new Date(value as string), "LLL dd, yyyy");
+          return format(new Date(value as string), "yyyy/MM/dd");
         }
         return value?.toString() || '';
       },

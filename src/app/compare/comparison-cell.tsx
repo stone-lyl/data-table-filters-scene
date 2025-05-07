@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
 
 export type FormatType = "currency" | "percentage" | "number" | "custom";
 export type ComparisonType = "absolute" | "percentage" | "both";
@@ -156,7 +157,7 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
     
     return (
       <div className="text-xs text-gray-500 mt-1">
-        {previousDate && <div>Prev: {previousDate}</div>}
+        {previousDate && <div>Prev: {format(new Date(previousDate), "yyyy/MM/dd")}</div>}
       </div>
     );
   };
@@ -183,19 +184,19 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="font-medium">Current:</span>
-              <span>{prefix}{formatBigNumber(current.toString())}</span>
+              <span>{prefix}{formatBigNumber(current.toFixed(decimals).toString())}</span>
             </div>
             {previous && (
               <div className="flex justify-between">
                 <span className="font-medium">Previous:</span>
-                <span>{prefix}{formatBigNumber(previous.toString())}</span>
+                <span>{prefix}{formatBigNumber(previous.toFixed(decimals).toString())}</span>
               </div>
             )}
             {change && (
               <div className="flex justify-between">
                 <span className="font-medium">Change:</span>
                 <span className={textColor}>
-                  {isPositive ? "+" : "-"}{prefix}{formatBigNumber(change.abs().toString())}
+                  {isPositive ? "+" : "-"}{prefix}{formatBigNumber(change.abs().toFixed(decimals).toString())}
                 </span>
               </div>
             )}
@@ -203,20 +204,20 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
               <div className="flex justify-between">
                 <span className="font-medium">% Change:</span>
                 <Badge variant={isPositive ? "destructive" : "secondary"} className="ml-2">
-                  {isPositive ? "+" : "-"}{formatBigNumber(changePercentage.abs().toString())}%
+                  {isPositive ? "+" : "-"}{formatBigNumber(changePercentage.abs().toFixed(decimals).toString())}%
                 </Badge>
               </div>
             )}
             {currentDate && (
               <div className="flex justify-between">
                 <span className="font-medium">Current Date:</span>
-                <span>{currentDate}</span>
+                <span>{format(new Date(currentDate), "yyyy/MM/dd")}</span>
               </div>
             )}
             {previousDate && (
               <div className="flex justify-between">
                 <span className="font-medium">Previous Date:</span>
-                <span>{previousDate}</span>
+                <span>{format(new Date(previousDate), "yyyy/MM/dd")}</span>
               </div>
             )}
           </div>

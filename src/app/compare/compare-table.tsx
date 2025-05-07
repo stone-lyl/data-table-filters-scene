@@ -27,7 +27,6 @@ export default function CompareTable() {
     [currentYear, lastYear]
   );
   
-  // Add columnVisibility state for the table
   const [columnVisibility, setColumnVisibility] = 
     useLocalStorage<VisibilityState>("compare-table-visibility", defaultColumnVisibility);
   const currentYearTableName = 'currentYear';

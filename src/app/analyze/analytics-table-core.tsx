@@ -96,9 +96,6 @@ export function AnalyticsTableCore<TData, TValue>({
   const [footerAggregations, setFooterAggregations] =
     React.useState<AggregationConfig<TData>[]>(defaultFooterAggregations || []);
   
-  // Using columnVisibility and setSearch from props instead of internal state
-
-  // Function to handle data changes
   const handleDataChange = (newData: TData[]) => {
     if (onDataChange) {
       onDataChange(newData);
