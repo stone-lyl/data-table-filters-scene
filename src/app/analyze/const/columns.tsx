@@ -269,7 +269,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     },
     aggregationFn: customSum,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="earning" />
+      <DataTableColumnHeader column={column} title="Earning" />
     ),
     cell: ({ row }) => {
       const earning = row.getValue("earning") as number;
