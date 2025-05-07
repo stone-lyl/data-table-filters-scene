@@ -265,7 +265,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     accessorKey: "earning",
     meta: {
       fieldType: 'measure',
-     
     },
     aggregationFn: customSum,
     header: ({ column }) => (

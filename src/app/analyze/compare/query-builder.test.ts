@@ -51,7 +51,7 @@ describe('query-builder', () => {
           { tableName: 'sales', columnName: 'region' },
           { tableName: 'sales', columnName: 'date' }
         ],
-        measures: [
+        fields: [
           { name: 'total_sales', expression: 'SUM("sales"."amount")' },
           { name: 'avg_sales', expression: 'AVG("sales"."amount")' }
         ]
@@ -76,7 +76,7 @@ describe('query-builder', () => {
         segments: [
           { name: 'month', expression: 'DATE_TRUNC(\'month\', "sales"."date")' }
         ],
-        measures: [
+        fields: [
           { name: 'total_sales', expression: 'SUM("sales"."amount")' }
         ]
       };

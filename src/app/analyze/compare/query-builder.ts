@@ -48,7 +48,7 @@ export function buildQuery(options: QueryOptions) {
     outputColumns.push(new OutputColumn(seg.expression, seg.name));
   });
 
-  options.measures.forEach((m) => {
+  options.fields.forEach((m) => {
     outputColumns.push(new OutputColumn(m.expression, m.name));
   });
 

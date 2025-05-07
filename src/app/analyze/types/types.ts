@@ -45,15 +45,5 @@ export interface QueryOptions {
    * create segments from these expressions
    */
   segments?: GenericColumnDefinition[];
-  measures: GenericColumnDefinition[];
-  
-  windows?: {
-    name: string;
-    partitionBy: ColumnReference[];
-    // orderBy: ColumnReference[];
-    /**
-     * https://duckdb.org/docs/stable/sql/functions/window_functions#framing
-     */
-    frame: string;
-  }[];
+  fields: GenericColumnDefinition[];
 }

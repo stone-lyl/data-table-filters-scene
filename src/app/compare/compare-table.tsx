@@ -17,10 +17,10 @@ import {
 
 export default function CompareTable() {
   const [currentYear] = useState(() =>
-    generateSalesDataset({ count: 5000, from: '2024-01-01', to: '2024-12-31' })
+    generateSalesDataset({ count: 5000, from: '2024-01-01', to: '2024-6-30' })
   );
   const [lastYear] = useState(() =>
-    generateSalesDataset({ count: 5000, from: '2023-01-01', to: '2023-12-31' })
+    generateSalesDataset({ count: 5000, from: '2023-01-01', to: '2023-6-30' })
   );
   const datasets = useMemo(
     () => ({ currentYear, lastYear }),
@@ -30,6 +30,12 @@ export default function CompareTable() {
   const [columnVisibility, setColumnVisibility] = 
     useLocalStorage<VisibilityState>("compare-table-visibility", defaultColumnVisibility);
   const currentYearTableName = 'currentYear';
+  const lastYearTableName = 'lastYear';
+  /**
+   * 声明一个 totalAmount 字段，它是一个通过 SUM 函数聚合的度量值
+   * @param table 表名
+   * @returns 
+   */
   const totalAmount = (table: string) => ({
     name: 'totalAmount',
     expression: Aggregations.sum({
@@ -37,6 +43,11 @@ export default function CompareTable() {
       columnName: 'totalAmount',
     }),
   });
+  /**
+   * 声明一个 totalQuantity 字段，它是一个通过 SUM 函数聚合的度量值
+   * @param table 表名
+   * @returns 
+   */
   const totalQuantity = (table: string) => ({
     name: 'totalQuantity',
     expression: Aggregations.sum({
@@ -44,30 +55,35 @@ export default function CompareTable() {
       columnName: 'quantity',
     }),
   });
+  /**
+   * 指定了 table 明细表的分组维度
+   * @param table 表名
+   * @returns 
+   */
   const groupDims = (table: string) => [
     { tableName: table, columnName: 'storeRegion' },
     { tableName: table, columnName: 'paymentMethod' },
   ];
 
+  /**
+   * 构建 lastYear 表的查询
+   * @returns 
+   */
   const lastYearQuery = buildQuery({
-    dataset: 'lastYear',
-    groupDimensions: groupDims('lastYear'),
+    dataset: lastYearTableName,
+    groupDimensions: groupDims(lastYearTableName),
     segments: [
       {
-        name: 'current_date',
+        name: 'yearMonth',
         expression: `datetrunc('month', "date"::timestamp)`
       }
     ],
-    measures: [
-      totalAmount('lastYear'),
-      totalQuantity('lastYear'),
+    fields: [
+      totalAmount(lastYearTableName),
+      totalQuantity(lastYearTableName),
       {
         name: 'periodKey',
-        expression: 'date_add("current_date", INTERVAL 1 YEAR)',
-      },
-      {
-        name: 'periodDate',
-        expression: `"current_date"`,
+        expression: 'date_add("yearMonth", INTERVAL 1 YEAR)',
       },
     ],
   });
@@ -76,21 +92,21 @@ export default function CompareTable() {
     groupDimensions: groupDims(currentYearTableName),
     segments: [
       {
-        name: 'current_date',
-        expression: `datetrunc('month', "currentYear"."date"::timestamp)`
+        name: 'yearMonth',
+        expression: `datetrunc('month', "${currentYearTableName}"."date"::timestamp)`
       }
     ],
-    measures: [
+    fields: [
       totalAmount(currentYearTableName),
       totalQuantity(currentYearTableName),
-      { name: 'periodKey', expression: `"current_date"` },
+      { name: 'periodKey', expression: `"yearMonth"` },
       {
         name: 'lastMonthQuantity',
         expression: windowFunctions.lag('"totalQuantity"', 1, null, {
           partitionBy: groupDims(currentYearTableName).map(
             (it) => it.columnName
           ),
-          orderBy: 'current_date',
+          orderBy: 'yearMonth',
         }),
       },
     ],
@@ -105,7 +121,7 @@ export default function CompareTable() {
       query: lastYearQuery,
       pick: {
         prefix: 'c_',
-        columns: ['totalAmount', 'totalQuantity', 'periodDate'],
+        columns: ['totalAmount', 'totalQuantity', 'yearMonth'],
       },
     },
     using: [...groupDims('').map((it) => it.columnName), 'periodKey'],

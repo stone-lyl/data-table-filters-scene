@@ -2,7 +2,6 @@
 
 import { DataTableProvider } from "@/components/data-table/data-table-provider";
 import type { DataTableFilterField } from "@/components/data-table/types";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { AggregationConfig } from "../../components/data-table/data-table-aggregations";
 import { TableRender } from "./table-render";
 import type {
@@ -14,9 +13,6 @@ import type {
   VisibilityState,
   GroupingState,
   ExpandedState,
-  Row,
-  Header,
-  Updater,
   OnChangeFn,
 } from "@tanstack/react-table";
 import {
@@ -31,12 +27,10 @@ import {
   getGroupedRowModel,
   getExpandedRowModel,
 } from "@tanstack/react-table";
-import { useQueryStates } from "nuqs";
 import * as React from "react";
-import { searchParamsParser } from "./const/search-params";
 import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "./types/event-handlers";
-import { cn } from "@/lib/utils";
 
+// todo prop add js doc
 export interface AnalyticsTableCoreProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];

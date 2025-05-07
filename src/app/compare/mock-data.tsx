@@ -77,10 +77,10 @@ function generateSalesRecord(options: {
 export const defaultColumnVisibility = {
   storeRegion: true,
   paymentMethod: true,
-  current_date: true,
+  yearMonth: true,
   totalAmount: true,
   totalQuantity: true,
-  c_periodDate: true,
+  c_yearMonth: true,
   c_totalAmount: true,
   c_totalQuantity: true,
   lastMonthQuantity: false,
@@ -97,6 +97,7 @@ export function generateSalesDataset(
   );
 }
 
+// columns based on the data todo: hard code
 export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] {
   if (data.length === 0) return [];
 
@@ -146,7 +147,7 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
       ...column,
       cell: ({ getValue }) => {
         const value = getValue();
-        if (key.toLowerCase().includes('date') || key.toLowerCase().includes('current_date')) {
+        if (key.toLowerCase().includes('date') || key.toLowerCase().includes('yearmonth')) {
           return format(new Date(value as string), "yyyy/MM/dd");
         }
         return value?.toString() || '';
@@ -173,12 +174,12 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
         let previousDate: string | undefined;
         
         try {
-          if (row.getValue('current_date')) {
-            currentDate = format(new Date(row.getValue('current_date') as string), "LLL dd, yyyy");
+          if (row.getValue('yearMonth')) {
+            currentDate = format(new Date(row.getValue('yearMonth') as string), "LLL dd, yyyy");
           }
           
-          if (row.getValue('c_periodDate')) {
-            previousDate = format(new Date(row.getValue('c_periodDate') as string), "LLL dd, yyyy");
+          if (row.getValue('c_yearMonth')) {
+            previousDate = format(new Date(row.getValue('c_yearMonth') as string), "LLL dd, yyyy");
           }
         } catch (error) {
           console.warn('Error formatting dates:', error);

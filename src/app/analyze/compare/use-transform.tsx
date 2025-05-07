@@ -52,16 +52,16 @@ async function transformData(datasets: Record<string, unknown[]>, sql: string) {
   const logger = new duckdb.ConsoleLogger();
   const db = new duckdb.AsyncDuckDB(logger, worker);
   await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
-  // Select a bundle based on browser checks
-  const encoder = new globalThis.TextEncoder();
   const c = await db.connect();
-
+  
+  const encoder = new globalThis.TextEncoder();
   for (const datasetsKey in datasets) {
     const data = datasets[datasetsKey];
     await importJsonArray(encoder, data, db, c, datasetsKey);
   }
 
   const result = await c.query(sql);
+  // convert arrow types to js types
   const jsResult = result.toArray().map((it) => {
     const json = it.toJSON();
     for (const jsonKey in json) {
@@ -71,7 +71,6 @@ async function transformData(datasets: Record<string, unknown[]>, sql: string) {
           json[jsonKey] = util.bigNumToNumber(element);
         }
       }
-      // todo: handle other arrow types
     }
     return json;
   });
