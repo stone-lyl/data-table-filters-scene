@@ -19,11 +19,13 @@ import { cn } from "@/lib/utils";
 interface TableRenderProps<TData> {
   onRow?: RowEventHandlersFn<TData>;
   onHeaderRow?: HeaderRowEventHandlersFn<TData>;
+  tableClassName?: string;
 }
 
 export function TableRender<TData>({
   onRow,
-  onHeaderRow
+  onHeaderRow,
+  tableClassName
 }: TableRenderProps<TData>) {
 
   const { table } = useDataTable();
@@ -33,7 +35,7 @@ export function TableRender<TData>({
     <Table
       data-testid="analytics-table-main"
       className="border-separate border-spacing-0"
-      containerClassName="max-h-[70vh]"
+      containerClassName={tableClassName}
     >
       <TableHeader
         data-testid="table-header"

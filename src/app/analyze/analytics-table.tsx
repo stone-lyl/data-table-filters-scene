@@ -83,7 +83,7 @@ export function AnalyticsTable({
     <div data-testid="analytics-table">
       <AnalyticsTableCore<ColumnSchema, unknown>
         columns={columns}
-        tableClassName="overflow-auto max-h-[850px]"
+        tableClassName="overflow-auto max-h-[850px] rounded-md border"
         data={data}
         onDataChange={setData}
         filterFields={filterFields}
