@@ -5,7 +5,7 @@ import { useState } from "react";
 import { columns } from "./const/columns";
 import { data as initialData } from "./const/data";
 import { filterFields } from "./const/constants";
-import { AnalyticsTableCore } from "./analytics-table-core";
+import { AnalyticsTableCoreClient } from "./analytics-table-core";
 import { searchParamsParser } from "./const/search-params";
 import { AggregationConfig, defaultAggregations } from "../../components/data-table/data-table-aggregations";
 import { useLocalStorage } from "@/hooks/use-local-storage";
@@ -81,7 +81,7 @@ export function AnalyticsTable({
 
   return (
     <div data-testid="analytics-table">
-      <AnalyticsTableCore<ColumnSchema, unknown>
+      <AnalyticsTableCoreClient<ColumnSchema, unknown>
         columns={columns}
         tableClassName="overflow-auto max-h-[850px] rounded-md border"
         data={data}

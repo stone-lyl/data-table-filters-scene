@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { defaultColumnVisibility, generateColumns, generateSalesDataset } from './mock-data';
 import { useTransform } from '../analyze/compare/use-transform';
-import { AnalyticsTableCore } from '../analyze/analytics-table-core';
+import { AnalyticsTableCoreClient } from '../analyze/analytics-table-core';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
 import { DataTableGroupButtons } from '@/components/data-table/data-table-group-buttons';
 import { useLocalStorage } from '@/hooks/use-local-storage';
@@ -129,7 +129,7 @@ export default function CompareTable() {
   return (
     <div className="p-4">
       <h3 className="mb-4 text-lg font-medium">DuckDB Data Analysis</h3>
-      <AnalyticsTableCore
+      <AnalyticsTableCoreClient
         columns={columns}
         data={data}
         pageSize={1000}

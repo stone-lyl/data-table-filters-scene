@@ -204,3 +204,24 @@ export function AnalyticsTableCore<TData, TValue>({
     </>
   );
 }
+
+// https://github.com/TanStack/table/issues/5026#issuecomment-2734176414
+function ClientOnly({ children }: { children: React.ReactNode }) {
+  const [hasMounted, setHasMounted] = React.useState(false);
+
+  React.useEffect(() => { 
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) return null;
+
+  return children;
+}
+
+export function AnalyticsTableCoreClient<TData, TValue>(props: AnalyticsTableCoreProps<TData, TValue>) {
+  return (
+    <ClientOnly>
+      <AnalyticsTableCore {...props} />
+    </ClientOnly>
+  )
+}
