@@ -428,16 +428,28 @@ function GuideBadgeLink({ className }: { className?: string }) {
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <p className="font-medium">Documentation</p>
-      <NextLink href="/guide" className="group inline-flex items-center gap-1 text-sm text-foreground hover:underline">
-        <Badge
-          variant="outline"
-          className="border-border bg-background pr-1.5"
-        >
-          View Guide{" "}
-          <ArrowRight className="relative mb-[1px] inline h-3 w-0 transition-all group-hover:w-3" />
-          <ChevronRight className="relative mb-[1px] inline h-3 w-3 transition-all group-hover:w-0" />
-        </Badge>
-      </NextLink>
+      <div className="flex flex-col gap-2">
+        <NextLink href="/guide" className="group inline-flex items-center gap-1 text-sm text-foreground hover:underline">
+          <Badge
+            variant="outline"
+            className="border-border bg-background pr-1.5"
+          >
+            View Guide{" "}
+            <ArrowRight className="relative mb-[1px] inline h-3 w-0 transition-all group-hover:w-3" />
+            <ChevronRight className="relative mb-[1px] inline h-3 w-3 transition-all group-hover:w-0" />
+          </Badge>
+        </NextLink>
+        <NextLink href="/analyze-doc" className="group inline-flex items-center gap-1 text-sm text-foreground hover:underline">
+          <Badge
+            variant="outline"
+            className="border-border bg-background pr-1.5"
+          >
+            Analytics Table Docs{" "}
+            <ArrowRight className="relative mb-[1px] inline h-3 w-0 transition-all group-hover:w-3" />
+            <ChevronRight className="relative mb-[1px] inline h-3 w-3 transition-all group-hover:w-0" />
+          </Badge>
+        </NextLink>
+      </div>
     </div>
   );
 }

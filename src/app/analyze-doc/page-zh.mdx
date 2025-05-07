@@ -1,0 +1,245 @@
+# 数据分析表格文档
+
+<span className="text-muted-foreground font-medium">更新日期: {new Date().toLocaleDateString("zh-CN", { month: "long", day: "numeric", year: "numeric" })}</span>
+
+`AnalyticsTableCore` 是一个强大而灵活的核心组件，用于在 React 应用程序中构建数据分析表格。它为创建功能丰富、交互式的数据表格提供了基础，支持过滤、排序、分组和分页等高级功能。
+
+## 主要特性
+
+- **固定表头和表尾**：在滚动浏览大型数据集时保持重要信息可见
+- **聚合计算**：对数据进行求和、计数、平均值等度量计算
+- **数据分组**：对相关数据进行层次分析
+- **高级过滤**：使用复杂条件过滤数据
+- **列自定义**：显示/隐藏列并根据需要调整大小
+- **状态持久化**：在本地存储中维护列可见性
+- **URL 同步**：将过滤器状态与 URL 参数同步
+- **可扩展性**：支持行和表头的自定义事件处理
+
+## 概述
+
+`AnalyticsTableCore` 组件作为数据表格的基础层，处理状态管理、表格配置和布局。它底层使用 TanStack Table 库（前身为 React Table），并提供了全面的 API 来构建可定制的数据表格。
+
+## 架构
+
+该组件遵循基于插槽的架构，允许灵活组合：
+
+```
+AnalyticsTableCore
+├── DataTableProvider (上下文提供者)
+│   ├── sidebarSlot (自定义侧边栏)
+│   ├── controlsSlot (自定义控件)
+│   ├── TableRender (表格渲染)
+│   └── paginationSlot (自定义分页)
+```
+
+## 实现
+
+分析表格由几个关键组件构建：
+
+```tsx
+// 渲染分析表格的主组件
+<AnalyticsTable search={search} />
+
+// 带聚合功能的核心表格功能
+<AnalyticsTableCore
+  columns={columns}
+  data={data}
+  footerAggregations={aggregations}
+  tableClassName="overflow-auto max-h-[850px] rounded-md border"
+/>
+
+// 带固定表头和表尾的表格渲染
+<TableRender
+  onRow={rowEventHandlers}
+  onHeaderRow={headerRowEventHandlers}
+/>
+
+// 带聚合的表尾
+<DataTableFooter sticky={true} />
+```
+
+## 状态管理
+
+`AnalyticsTableCore` 管理多个状态：
+
+- **列过滤器**：控制数据行的过滤
+- **排序**：管理列排序顺序
+- **分组**：处理按列分组的行
+- **展开**：跟踪哪些分组行已展开
+- **分页**：管理当前页面和页面大小
+- **列可见性**：控制哪些列可见（在 localStorage 中持久化）
+- **表尾聚合**：管理表尾中的聚合计算
+
+## URL 同步
+
+该组件自动将列过滤器与 URL 搜索参数同步，实现：
+
+- 可共享的过滤视图
+- 在不同过滤状态之间的浏览器历史导航
+- 页面刷新后过滤器持久化
+
+## 聚合配置
+
+通过 `footerAggregations` 属性配置聚合：
+
+```tsx
+const defaultAggregations = [
+  {
+    type: "sum",
+    label: "总和",
+    aggregationMethod: (columnId, values, table) => {
+      // 自定义聚合逻辑
+      return sum(values);
+    }
+  },
+  {
+    type: "count",
+    label: "计数",
+    aggregationMethod: (columnId, values, table) => {
+      return values.length;
+    }
+  }
+];
+```
+
+## 列配置
+
+可以为分析配置具有特殊属性的列：
+
+```tsx
+{
+  accessorKey: "amount",
+  meta: {
+    fieldType: 'measure',
+  },
+  aggregationFn: customSum,
+  header: ({ column }) => (
+    <DataTableColumnHeader column={column} title="金额" />
+  ),
+  cell: ({ row }) => {
+    const amount = row.getValue("amount") as number;
+    return formatCurrency(amount);
+  }
+}
+```
+
+## 属性
+
+`AnalyticsTableCore` 组件接受以下属性：
+
+### 必需属性
+
+`AnalyticsTableCore` 组件需要这些属性：
+
+```
+属性        类型                          描述
+--------   ---------------------------   --------------------------------------
+columns    ColumnDef<TData, TValue>[]    表格的列定义数组
+data       TData[]                       表格中显示的数据对象数组
+```
+
+### 可选属性
+
+这些属性是可选的，提供额外功能：
+
+```
+属性                   类型                            默认值         描述
+--------------------  ------------------------------  -----------   ---------------------------------
+onDataChange          (data: TData[]) => void         undefined     数据更改时的回调函数
+defaultColumnFilters  ColumnFiltersState              []            初始列过滤器状态
+defaultGrouping       GroupingState                   []            初始分组状态
+filterFields          DataTableFilterField<TData>[]   []            可以过滤的字段
+footerAggregations    AggregationConfig<TData>[]      []            表尾聚合配置
+sidebarSlot           React.ReactNode                 undefined     自定义侧边栏组件
+controlsSlot          React.ReactNode                 undefined     自定义控件组件
+paginationSlot        React.ReactNode                 undefined     自定义分页组件
+```
+
+## 示例：创建完整的分析表格
+
+```tsx
+import { AnalyticsTableCore } from "./analytics-table-core";
+import { columns } from "./columns";
+import { data } from "./data";
+import { filterFields } from "./constants";
+import { DataTableFilterControls } from "@/components/data-table/data-table-filter-controls";
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
+import { DataTablePagination } from "@/components/data-table/data-table-pagination";
+
+export function AnalyticsTable() {
+  // 带过滤控件的自定义侧边栏
+  const sidebar = (
+    <div className="w-64 p-4">
+      <DataTableFilterControls />
+    </div>
+  );
+  
+  // 带工具栏的自定义控件
+  const controls = <DataTableToolbar />;
+  
+  // 自定义分页
+  const pagination = <DataTablePagination />;
+  
+  return (
+    <AnalyticsTableCore
+      columns={columns}
+      data={data}
+      filterFields={filterFields}
+      sidebarSlot={sidebar}
+      controlsSlot={controls}
+      paginationSlot={pagination}
+    />
+  );
+}
+```
+
+## 高级用法：自定义事件处理程序
+
+您可以为行和表头行添加自定义事件处理程序：
+
+```tsx
+export function AnalyticsTableWithEvents() {
+  // 行点击处理程序
+  const rowEventHandlers = (row) => ({
+    onClick: () => {
+      console.log("行被点击:", row.original);
+    },
+  });
+  
+  // 表头点击处理程序
+  const headerRowEventHandlers = (headers, index) => ({
+    onClick: () => {
+      console.log("表头被点击:", headers[index].id);
+    },
+  });
+  
+  return (
+    <AnalyticsTableCore
+      columns={columns}
+      data={data}
+      rowEventHandlers={rowEventHandlers}
+      headerRowEventHandlers={headerRowEventHandlers}
+    />
+  );
+}
+```
+
+## 最佳实践
+
+- **数据准备**：在分析前清理和规范化数据
+- **列选择**：只显示相关列，避免信息过载
+- **聚合选择**：选择提供有意义见解的聚合
+- **分组策略**：以突出重要模式的方式对数据进行分组
+- **过滤组合**：结合使用过滤器缩小到特定见解
+
+## 相关组件
+
+- `TableRender`：处理表格结构的实际渲染
+- `DataTableProvider`：为子组件提供表格上下文
+- `AnalyticsTable`：使用预定义插槽的 AnalyticsTableCore 的高级组件
+
+## 注意事项
+
+- 该组件使用 `getFacetedUniqueValues` 的自定义实现来处理字符串数组，但这可能不适用于所有数据类型。
+- 列可见性状态在 localStorage 中持久化，键为 "data-table-visibility"。
+- 该组件设计为与 `DataTableProvider` 上下文一起使用，以与子组件共享状态。
