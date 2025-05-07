@@ -30,9 +30,7 @@ const isEditableField = (key: string): boolean => {
   return !nonEditableFields.includes(key);
 };
 
-// Helper function to get field label from camelCase
 const getFieldLabel = (key: string): string => {
-  // Convert camelCase to Title Case with spaces
   return key
     .replace(/([A-Z])/g, ' $1')
     .replace(/^./, (str) => str.toUpperCase());

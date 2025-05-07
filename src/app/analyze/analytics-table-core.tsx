@@ -124,6 +124,8 @@ export function AnalyticsTableCore<TData, TValue>({
     getGroupedRowModel: getGroupedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
+    enableRowPinning: true,
+    enablePinning: true,
     // REMINDER: it doesn't support array of strings (WARNING: might not work for other types)
     getFacetedUniqueValues: (table: TTable<TData>, columnId: string) => () => {
       const facets = getFacetedUniqueValues<TData>()(table, columnId)();

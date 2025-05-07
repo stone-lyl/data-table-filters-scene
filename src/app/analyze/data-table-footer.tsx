@@ -7,10 +7,10 @@ import { AggregationType } from "../../components/data-table/data-table-aggregat
 import { useDataTable } from "@/components/data-table/data-table-provider";
 
 export interface DataTableFooterProps<TData> {
-  // No props needed anymore as we use aggregation methods directly
+  sticky?: boolean;
 }
 
-export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
+export function DataTableFooter<TData>({ sticky }: DataTableFooterProps<TData>) {
   const { footerAggregations = [], table } = useDataTable();
 
   const columns = table.getVisibleFlatColumns();
@@ -50,14 +50,15 @@ export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
   };
 
   return (
-    <TableFooter data-testid="table-footer" className="bg-muted/50">
+    <TableFooter 
+      data-testid="table-footer" 
+      className={cn("bg-background", sticky ? 'sticky bottom-0 z-20' : '')} 
+    >
       {footerAggregations.map((aggregation, index) => (
         <TableRow
           data-testid={`footer-row-${aggregation.type}`}
           key={`${aggregation.type}-row`}
-          className={cn(
-            index === 0 ? 'border-t' : ''
-          )}
+          className={cn("bg-muted/50 hover:bg-muted/50 border-t")}
         >
           {columns.map((column, colIndex) => {
             const columnId = column.id;
@@ -67,7 +68,7 @@ export function DataTableFooter<TData>(_props: DataTableFooterProps<TData>) {
               <TableCell
                 data-testid={`footer-cell-${aggregation.type}-${columnId}`}
                 key={`${aggregation.type}-${columnId}`}
-                className={cn("font-medium")}
+                className={cn("font-medium relative select-none truncate border-t border-border")}
               >
                 <div className="flex flex-col gap-1">
                   <div className="flex text-xs text-muted-foreground uppercase">
