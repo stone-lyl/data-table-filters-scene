@@ -150,7 +150,6 @@ export function TableRender<TData>({
       </TableBody>
       <DataTableFooter
         data-testid="data-table-footer"
-        sticky={true}
       />
     </Table>
   );

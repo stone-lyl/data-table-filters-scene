@@ -7,10 +7,9 @@ import { AggregationType } from "../../components/data-table/data-table-aggregat
 import { useDataTable } from "@/components/data-table/data-table-provider";
 
 export interface DataTableFooterProps<TData> {
-  sticky?: boolean;
 }
 
-export function DataTableFooter<TData>({ sticky }: DataTableFooterProps<TData>) {
+export function DataTableFooter<TData>({ }: DataTableFooterProps<TData>) {
   const { footerAggregations = [], table } = useDataTable();
 
   const columns = table.getVisibleFlatColumns();
@@ -52,7 +51,7 @@ export function DataTableFooter<TData>({ sticky }: DataTableFooterProps<TData>) 
   return (
     <TableFooter 
       data-testid="table-footer" 
-      className={cn("bg-background", sticky ? 'sticky bottom-0 z-20' : '')} 
+      className={cn("bg-background sticky bottom-0 z-20")} 
     >
       {footerAggregations.map((aggregation, index) => (
         <TableRow
