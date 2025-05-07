@@ -46,9 +46,7 @@ export interface QueryOptions {
    */
   segments?: GenericColumnDefinition[];
   measures: GenericColumnDefinition[];
-  /**
-   * todo
-   */
+  
   windows?: {
     name: string;
     partitionBy: ColumnReference[];

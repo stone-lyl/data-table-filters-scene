@@ -79,7 +79,6 @@ describe('AnalyticsTableCore', () => {
     
     expect(screen.getByTestId('analytics-table-core-container')).toBeInTheDocument();
     expect(screen.getByTestId('analytics-table-core-content')).toBeInTheDocument();
-    expect(screen.getByTestId('analytics-table-core-table-container')).toBeInTheDocument();
   });
 
   it('applies column visibility correctly', () => {

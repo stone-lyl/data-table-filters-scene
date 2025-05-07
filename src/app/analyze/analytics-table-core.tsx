@@ -190,14 +190,12 @@ export function AnalyticsTableCore<TData, TValue>({
           <div data-testid="analytics-table-core-content" className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
             {controlsSlot}
 
-            <div data-testid="analytics-table-core-table-container">
               <TableRender<TData>
                 data-testid="table-render"
                 onRow={rowEventHandlers}
                 onHeaderRow={headerRowEventHandlers}
                 tableClassName={tableClassName}
               />
-            </div>
 
             {paginationSlot}
           </div>

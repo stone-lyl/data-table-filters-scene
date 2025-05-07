@@ -104,11 +104,9 @@ describe('DataTableFooter', () => {
   it('renders the footer with sum and count aggregations', () => {
     render(<DataTableFooter data-testid="data-table-footer" />);
     
-    // Check if the footer is rendered
     const footer = screen.getByTestId('table-footer');
     expect(footer).toBeInTheDocument();
     
-    // Check if the footer rows for each aggregation type are rendered
     const sumRow = screen.getByTestId('footer-row-sum');
     const countRow = screen.getByTestId('footer-row-count');
     
@@ -120,12 +118,6 @@ describe('DataTableFooter', () => {
     
     expect(sumAmountCell).toBeInTheDocument();
     expect(countAmountCell).toBeInTheDocument();
-    
-    // console.log('Sum amount cell:', sumAmountCell.textContent);
-    // console.log('Count amount cell:', countAmountCell.textContent);
-    
-    expect(sumRow.textContent?.length).toBeGreaterThan(0);
-    expect(countRow.textContent?.length).toBeGreaterThan(0);
   });
 
   it('renders the footer with no aggregations', () => {
@@ -143,10 +135,8 @@ describe('DataTableFooter', () => {
     
     const { container } = render(<DataTableFooter data-testid="data-table-footer" />);
     
-    // The test passes if the component renders without errors
     expect(screen.getByTestId('table-footer')).toBeInTheDocument();
     
-    // There should be no footer rows
     const footerRows = container.querySelectorAll('[data-testid^="footer-row-"]');
     expect(footerRows.length).toBe(0);
   });
@@ -162,10 +152,12 @@ describe('DataTableFooter', () => {
     
     const sumAmountCell = screen.getByTestId('footer-cell-sum-amount');
     const countAmountCell = screen.getByTestId('footer-cell-count-amount');
-
-    expect(sumAmountCell).toBeInTheDocument();
-    expect(countAmountCell).toBeInTheDocument();
   
+    const sumRow = screen.getByTestId('footer-row-sum');
+    const countRow = screen.getByTestId('footer-row-count');
+
+    expect(sumRow.textContent).toBe('Sum600');
+    expect(countRow.textContent).toBe('Count333');
     expect(sumAmountCell.textContent).toBe('600');
     expect(countAmountCell.textContent).toBe('3');
   });
