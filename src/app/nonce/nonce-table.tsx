@@ -19,7 +19,6 @@ export interface NonceTableProps {
 }
 
 export function NonceTable({ initialData = [] }: NonceTableProps) {
-  console.log('nonce page getHashingDataQuery', getHashingDataQuery());
   const { resultSet, isLoading, error, progress } = useCubeQuery(getHashingDataQuery());
   // State for nonce data
   const [nonceData, setNonceData] = useState<NonceRecord[]>(initialData || []);
