@@ -13,79 +13,78 @@ export default function Home() {
         <Hero />
       </div>
       <div className="border-b border-dashed border-border" />
-      <div className="grid gap-8 xl:grid-cols-2 xl:gap-12">
+      
+      {/* Main features grid */}
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4 xl:gap-8">
+        {/* Default Table */}
         <NextLink href="/default" className="group flex flex-col gap-2.5">
-          <div className="flex flex-col justify-center rounded-lg border border-border/70 bg-muted/40 px-5 py-6 group-hover:border-border group-hover:bg-muted/50 md:px-10 md:py-12 xl:aspect-video">
-            <div className="flex w-full flex-col gap-2.5 transition-all duration-300 group-hover:scale-[1.02]">
-              <div className="flex flex-1 flex-row items-end gap-2.5">
-                <div className="-my-2 hidden sm:block">
-                  <Controls className="w-24" />
-                </div>
-                <div className="flex flex-1 flex-col gap-2">
-                  <CommandInput />
-                  <Toolbar />
-                  <DefaultTable />
-                  <Pagination />
-                </div>
-              </div>
-            </div>
+          <div className="flex aspect-video flex-col justify-center rounded-lg border border-border/70 bg-muted/40 p-4 transition-all duration-200 group-hover:border-border group-hover:bg-muted/50 group-hover:shadow-sm">
+            <DefaultTable />
           </div>
-          <div className="px-2.5 py-2">
-            <p className="font-medium group-hover:underline">
-              Default Data-Table
-            </p>
-            <p className="text-sm text-muted-foreground">
-              A{" "}
-              <span className="underline decoration-yellow-500 decoration-wavy underline-offset-2">
-                simple
-              </span>{" "}
-              data-table with a{" "}
-              <span className="font-medium text-foreground">client-side</span>{" "}
-              filter and pagination.
-            </p>
+          <div className="px-2 py-1.5">
+            <p className="font-medium group-hover:underline">Default Table</p>
+            <p className="text-xs text-muted-foreground">Client-side filtering and pagination</p>
           </div>
         </NextLink>
-        <div className="relative">
-          <GuideBadgeLink className="absolute -top-3 right-3" />
-          <NextLink href="/infinite" className="group flex flex-col gap-2.5">
-            <div className="flex flex-col justify-center rounded-lg border border-border/70 bg-muted/40 px-5 py-6 group-hover:border-border group-hover:bg-muted/50 md:px-10 md:py-12 xl:aspect-video">
-              <div className="flex w-full flex-row items-end gap-2.5 transition-all duration-300 group-hover:scale-[1.02] sm:divide-x">
-                <div className="hidden sm:block">
-                  <Controls className="w-24 border-b border-transparent" />
-                </div>
-                <div className="flex flex-1 flex-col gap-2">
-                  <div className="flex flex-col gap-2 px-2.5">
-                    <CommandInput />
-                    <Timeline />
-                    <Toolbar />
-                  </div>
-                  <GridTable className="border-l-1 md:border-l-0" />
+
+        {/* Infinite Table */}
+        <NextLink href="/infinite" className="group flex flex-col gap-2.5">
+          <div className="flex aspect-video flex-col justify-center rounded-lg border border-border/70 bg-muted/40 p-4 transition-all duration-200 group-hover:border-border group-hover:bg-muted/50 group-hover:shadow-sm">
+            <GridTable className="scale-[0.85]" />
+          </div>
+          <div className="px-2 py-1.5">
+            <p className="font-medium group-hover:underline">Infinite Table</p>
+            <p className="text-xs text-muted-foreground">Server-side filtering with infinite scroll</p>
+          </div>
+        </NextLink>
+
+        {/* Analytics Table */}
+        <NextLink href="/analyze" className="group flex flex-col gap-2.5">
+          <div className="flex aspect-video flex-col justify-center rounded-lg border border-border/70 bg-muted/40 p-4 transition-all duration-200 group-hover:border-border group-hover:bg-muted/50 group-hover:shadow-sm">
+            <div className="flex h-full flex-col">
+              <div className="flex-1 overflow-hidden rounded-md border border-border bg-card">
+                <div className="bg-muted/50 p-1 text-xs font-medium">Analytics</div>
+                <div className="grid grid-cols-3 gap-px bg-muted/30 p-2 text-center text-xs">
+                  <div className="rounded bg-card p-1">Metrics</div>
+                  <div className="rounded bg-card p-1">Aggregations</div>
+                  <div className="rounded bg-card p-1">Filters</div>
                 </div>
               </div>
             </div>
-            <div className="px-2.5 py-2">
-              <p className="font-medium group-hover:underline">
-                Infinite Data-Table
-              </p>
-              <p className="text-sm text-muted-foreground">
-                A{" "}
-                <span className="underline decoration-blue-500 decoration-wavy underline-offset-2">
-                  cooked
-                </span>{" "}
-                infinite scroll data-table with a{" "}
-                <span className="font-medium text-foreground">server-side</span>{" "}
-                filter, row selection and live mode.
-              </p>
+          </div>
+          <div className="px-2 py-1.5">
+            <p className="font-medium group-hover:underline">Analytics Table</p>
+            <p className="text-xs text-muted-foreground">Advanced analytics with sticky headers and footers</p>
+          </div>
+        </NextLink>
+
+        {/* Compare Table */}
+        <NextLink href="/compare" className="group flex flex-col gap-2.5">
+          <div className="flex aspect-video flex-col justify-center rounded-lg border border-border/70 bg-muted/40 p-4 transition-all duration-200 group-hover:border-border group-hover:bg-muted/50 group-hover:shadow-sm">
+            <div className="flex h-full flex-col">
+              <div className="flex-1 overflow-hidden rounded-md border border-border bg-card">
+                <div className="bg-muted/50 p-1 text-xs font-medium">Comparison</div>
+                <div className="grid grid-cols-2 gap-px bg-muted/30 p-2 text-center text-xs">
+                  <div className="rounded bg-card p-1">Dataset A</div>
+                  <div className="rounded bg-card p-1">Dataset B</div>
+                </div>
+              </div>
             </div>
-          </NextLink>
-        </div>
+          </div>
+          <div className="px-2 py-1.5">
+            <p className="font-medium group-hover:underline">Compare Data</p>
+            <p className="text-xs text-muted-foreground">Side-by-side data comparison</p>
+          </div>
+        </NextLink>
       </div>
+
       <div className="px-2.5 py-2">
         <div className="grid gap-8 xl:grid-cols-2 xl:gap-12">
-          <Changelog />
           <Examples />
+          <GuideBadgeLink className="self-start" />
         </div>
       </div>
+      
       <div className="border-b border-dashed border-border" />
       <SocialsFooter />
     </div>
@@ -315,33 +314,23 @@ function Pagination() {
 
 function Hero() {
   return (
-    <div className="flex flex-col-reverse items-start justify-between gap-8 sm:flex-row">
+    <div className="flex flex-col-reverse items-start justify-between gap-6 sm:flex-row">
       <div className="max-w-4xl">
-        <h1 className="mb-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
-          Powerful <span className="text-nowrap">Data-Table</span> for React
+        <h1 className="mb-3 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          Data Tables for React
         </h1>
-        {/* REMINDER: text-balance produces layout shifts on iOS here - maybe due to arrow svg? */}
-        <p className="max-w-[650px] text-lg text-muted-foreground">
-          Extensible, fast, and easy-to-use filters with{" "}
-          <Link href="https://tanstack.com/table" className="text-nowrap">
-            tanstack table
-          </Link>
-          ,{" "}
-          <Link href="https://ui.shadcn.com" className="text-nowrap">
-            shadcn/ui
-          </Link>{" "}
-          and search params via <Link href="https://nuqs.47ng.com">nuqs</Link>.
-          Open Source on{" "}
-          <Link href="https://github.com/openstatusHQ/data-table-filters">
-            GitHub
-          </Link>
-          .
+        <p className="max-w-[650px] text-muted-foreground">
+          Fast, flexible data tables with{" "}
+          <Link href="https://tanstack.com/table">TanStack Table</Link>,{" "}
+          <Link href="https://ui.shadcn.com">shadcn/ui</Link> and{" "}
+          <Link href="https://nuqs.47ng.com">nuqs</Link> for search params.
+          <span className="block mt-1 text-sm">Multiple table variations for different use cases.</span>
         </p>
       </div>
       <NextLink
-        href="https://openstatus.dev"
+        href="https://github.com/openstatusHQ/data-table-filters"
         target="_blank"
-        className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-dashed border-border bg-white sm:h-12 sm:w-12"
+        className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-border bg-white sm:h-12 sm:w-12 hover:border-border/80"
       >
         <Image
           src="/logos/OpenStatus.png"
@@ -420,14 +409,16 @@ function Changelog() {
 function Examples() {
   return (
     <div className="flex flex-col gap-2">
-      <p className="font-medium">More Examples</p>
+      <p className="font-medium">Examples & Resources</p>
       <ul
         role="list"
         className="grid list-inside list-disc gap-2 marker:text-muted-foreground"
       >
-        <li>
-          <Link href="/light">OpenStatus Light Viewer</Link>
-        </li>
+        <li><Link href="/light">OpenStatus Light Viewer</Link></li>
+        <li><Link href="/default">Default Table</Link></li>
+        <li><Link href="/infinite">Infinite Scroll Table</Link></li>
+        <li><Link href="/analyze">Analytics Table</Link></li>
+        <li><Link href="/compare">Compare Data</Link></li>
       </ul>
     </div>
   );
@@ -435,15 +426,30 @@ function Examples() {
 
 function GuideBadgeLink({ className }: { className?: string }) {
   return (
-    <NextLink href="/guide" className={cn("group", className)}>
-      <Badge
-        variant="outline"
-        className="border-dashed border-border bg-background pr-1.5"
-      >
-        Guide{" "}
-        <ArrowRight className="relative mb-[1px] inline h-3 w-0 transition-all group-hover:w-3" />
-        <ChevronRight className="relative mb-[1px] inline h-3 w-3 transition-all group-hover:w-0" />
-      </Badge>
-    </NextLink>
+    <div className={cn("flex flex-col gap-2", className)}>
+      <p className="font-medium">Documentation</p>
+      <div className="flex flex-col gap-2">
+        <NextLink href="/guide" className="group inline-flex items-center gap-1 text-sm text-foreground hover:underline">
+          <Badge
+            variant="outline"
+            className="border-border bg-background pr-1.5"
+          >
+            View Guide{" "}
+            <ArrowRight className="relative mb-[1px] inline h-3 w-0 transition-all group-hover:w-3" />
+            <ChevronRight className="relative mb-[1px] inline h-3 w-3 transition-all group-hover:w-0" />
+          </Badge>
+        </NextLink>
+        <NextLink href="/analyze-doc" className="group inline-flex items-center gap-1 text-sm text-foreground hover:underline">
+          <Badge
+            variant="outline"
+            className="border-border bg-background pr-1.5"
+          >
+            Analytics Table Docs{" "}
+            <ArrowRight className="relative mb-[1px] inline h-3 w-0 transition-all group-hover:w-3" />
+            <ChevronRight className="relative mb-[1px] inline h-3 w-3 transition-all group-hover:w-0" />
+          </Badge>
+        </NextLink>
+      </div>
+    </div>
   );
 }

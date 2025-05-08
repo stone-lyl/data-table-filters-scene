@@ -96,9 +96,6 @@ export function AnalyticsTableCore<TData, TValue>({
   const [footerAggregations, setFooterAggregations] =
     React.useState<AggregationConfig<TData>[]>(defaultFooterAggregations || []);
   
-  // Using columnVisibility and setSearch from props instead of internal state
-
-  // Function to handle data changes
   const handleDataChange = (newData: TData[]) => {
     if (onDataChange) {
       onDataChange(newData);
@@ -124,6 +121,8 @@ export function AnalyticsTableCore<TData, TValue>({
     getGroupedRowModel: getGroupedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
+    enableRowPinning: true,
+    enablePinning: true,
     // REMINDER: it doesn't support array of strings (WARNING: might not work for other types)
     getFacetedUniqueValues: (table: TTable<TData>, columnId: string) => () => {
       const facets = getFacetedUniqueValues<TData>()(table, columnId)();
@@ -188,13 +187,12 @@ export function AnalyticsTableCore<TData, TValue>({
           <div data-testid="analytics-table-core-content" className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
             {controlsSlot}
 
-            <div data-testid="analytics-table-core-table-container" className={cn("rounded-md border", tableClassName)}>
               <TableRender<TData>
                 data-testid="table-render"
                 onRow={rowEventHandlers}
                 onHeaderRow={headerRowEventHandlers}
+                tableClassName={tableClassName}
               />
-            </div>
 
             {paginationSlot}
           </div>
@@ -202,4 +200,25 @@ export function AnalyticsTableCore<TData, TValue>({
       </DataTableProvider>
     </>
   );
+}
+
+// https://github.com/TanStack/table/issues/5026#issuecomment-2734176414
+function ClientOnly({ children }: { children: React.ReactNode }) {
+  const [hasMounted, setHasMounted] = React.useState(false);
+
+  React.useEffect(() => { 
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) return null;
+
+  return children;
+}
+
+export function AnalyticsTableCoreClient<TData, TValue>(props: AnalyticsTableCoreProps<TData, TValue>) {
+  return (
+    <ClientOnly>
+      <AnalyticsTableCore {...props} />
+    </ClientOnly>
+  )
 }

@@ -30,7 +30,7 @@ vi.mock('./hooks/use-column-tooltip', () => ({
 
 // Mock child components to simplify testing
 vi.mock('./analytics-table-core', () => ({
-  AnalyticsTableCore: vi.fn(({ 'data-testid': dataTestId, sidebarSlot, controlsSlot, paginationSlot }) => (
+  AnalyticsTableCoreClient: vi.fn(({ 'data-testid': dataTestId, sidebarSlot, controlsSlot, paginationSlot }) => (
     <div data-testid={dataTestId}>
       AnalyticsTableCore Mock
       {sidebarSlot}
