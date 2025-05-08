@@ -10,11 +10,6 @@ import { useState } from "react";
 
 interface SidebarProps {
   nonceData: NonceRecord[];
-  summaryData: {
-    totalEarning: number;
-    totalCost: number;
-    profit: number;
-  };
 }
 
 interface CategoryProps {
@@ -59,7 +54,7 @@ function CheckboxGroup({ title, items }: { title: string; items: string[] }) {
   );
 }
 
-export function Sidebar({ nonceData, summaryData }: SidebarProps) {
+export function Sidebar({ nonceData }: SidebarProps) {
   return (
     <div className="w-full border-r border-gray-200 p-4 h-[calc(100vh-8rem)] overflow-y-auto">
       <div className="space-y-1">
