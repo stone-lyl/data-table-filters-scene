@@ -6,11 +6,11 @@ import { DataTableViewOptions } from '@/components/data-table/data-table-view-op
 import { DataTableGroupButtons } from '@/components/data-table/data-table-group-buttons';
 import { DataTablePagination } from '@/components/data-table/data-table-pagination';
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { VisibilityState, Table } from '@tanstack/react-table';
+import { VisibilityState } from '@tanstack/react-table';
 import { defaultColumnVisibility, generateColumns, NonceRecord } from './mock-data';
 import { Sidebar } from './components/sidebar';
 import { AggregationConfig, defaultAggregations } from '@/components/data-table/data-table-aggregations';
-import { Calculator, ArrowDownUp, Plus } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface NonceTableProps {
   initialData?: NonceRecord[];
@@ -47,46 +47,22 @@ export function NonceTable({ initialData }: NonceTableProps) {
       <DataTableViewOptions />
     </div>
   );
+  const customSidebar = (
+    <div
+      data-testid="analytics-table-sidebar"
+      className={cn(
+        "w-full p-1 sm:block sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-58 md:max-w-58",
+      )}
+    >
+      <Sidebar nonceData={nonceData} summaryData={summaryData} />
+    </div>
+  );
   
-  // Create custom pagination slot
-  const customPagination = <DataTablePagination />;
-  
-  // Define footer aggregations
-  // Cast the aggregation methods to the correct type to fix TypeScript errors
-  const sumAggregationMethod = defaultAggregations[2].aggregationMethod as unknown as (
-    columnId: string, 
-    values: any[], 
-    table: Table<NonceRecord>
-  ) => React.ReactNode;
-  
-  const avgAggregationMethod = defaultAggregations[1].aggregationMethod as unknown as (
-    columnId: string, 
-    values: any[], 
-    table: Table<NonceRecord>
-  ) => React.ReactNode;
-  
-  const footerAggregations: AggregationConfig<NonceRecord>[] = [
-    {
-      type: 'sum',
-      label: 'Sum',
-      icon: <Plus className="h-4 w-4 text-muted-foreground" />,
-      aggregationMethod: sumAggregationMethod,
-      isTotal: false
-    },
-    {
-      type: 'average',
-      label: 'Avg',
-      icon: <ArrowDownUp className="h-4 w-4 text-muted-foreground" />,
-      aggregationMethod: avgAggregationMethod,
-      isTotal: false
-    }
-  ];
-
   return (
     <div className="p-4">
       <h3 className="mb-4 text-lg font-medium">Mining Performance Dashboard</h3>
       <div className="flex gap-4">
-        <div className="flex-1">
+        <div className="flex-1 w-[calc(100%-24rem)]">
           <AnalyticsTableCoreClient
             columns={columns}
             data={nonceData}
@@ -96,13 +72,15 @@ export function NonceTable({ initialData }: NonceTableProps) {
             defaultGrouping={[]}
             filterFields={[]}
             controlsSlot={customControls}
-            paginationSlot={customPagination}
+            sidebarSlot={customSidebar}
+            paginationSlot={<DataTablePagination />}
+
             footerAggregations={defaultAggregations.slice(1,3) as unknown as AggregationConfig<NonceRecord>[]}
             columnVisibility={columnVisibility}
             setColumnVisibility={setColumnVisibility}
           />
         </div>
-        <Sidebar nonceData={nonceData} summaryData={summaryData} />
+        {/* <Sidebar nonceData={nonceData} summaryData={summaryData} /> */}
       </div>
     </div>
   );
