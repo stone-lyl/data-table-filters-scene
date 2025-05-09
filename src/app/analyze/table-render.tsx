@@ -35,7 +35,7 @@ export function TableRender<TData>({
     <Table
       data-testid="analytics-table-main"
       className="border-separate border-spacing-0"
-      containerClassName={tableClassName}
+      containerClassName={cn(tableClassName, "rounded-md border")}
     >
       <TableHeader
         data-testid="table-header"

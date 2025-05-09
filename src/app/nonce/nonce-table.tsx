@@ -12,8 +12,7 @@ import { Sidebar } from './components/sidebar';
 import { AggregationConfig, defaultAggregations } from '@/components/data-table/data-table-aggregations';
 import { cn } from '@/lib/utils';
 import { useCubeQuery } from '@cubejs-client/react';
-import { Query, ProgressResponse } from '@cubejs-client/core';
-import { createDefaultQuery } from './utils/query-builder';
+import { Query } from '@cubejs-client/core';
 
 export interface NonceTableProps {
   initialData?: NonceRecord[];
@@ -66,12 +65,6 @@ export function NonceTable({ initialData = [] }: NonceTableProps) {
     return <div className="p-4 text-red-500">{error.toString()}</div>;
   }
 
-  // These values will only be used for logging, not for rendering
-  const dataSource = resultSet?.tablePivot() || [];
-  const columns1 = resultSet?.tableColumns() || [];
-
-  // console.log('nonce page dataSource', dataSource);
-  // console.log('nonce page columns', columns1);
   return (
     <div className="p-4">
       <h3 className="mb-4 text-lg font-medium">Mining Performance Dashboard</h3>
