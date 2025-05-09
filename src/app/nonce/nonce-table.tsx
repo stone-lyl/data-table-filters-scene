@@ -1,77 +1,39 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AnalyticsTableCoreClient } from '../analyze/analytics-table-core';
-import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
-import { DataTableGroupButtons } from '@/components/data-table/data-table-group-buttons';
-import { DataTablePagination } from '@/components/data-table/data-table-pagination';
-import { useLocalStorage } from '@/hooks/use-local-storage';
-import { ColumnDef, VisibilityState } from '@tanstack/react-table';
-import { ColumnStruct, defaultColumnVisibility, generateColumns, NonceRecord } from './mock-data';
-import { Sidebar } from './components/sidebar';
-import { AggregationConfig, defaultAggregations } from '@/components/data-table/data-table-aggregations';
-import { cn } from '@/lib/utils';
-import { useCubeQuery } from '@cubejs-client/react';
-import { Query } from '@cubejs-client/core';
+import { useState } from "react";
+import { Query } from "@cubejs-client/core";
+import { VisibilityState } from "@tanstack/react-table";
+import { AnalyticsTableCoreClient } from "../analyze/analytics-table-core";
+import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
+import { DataTableGroupButtons } from "@/components/data-table/data-table-group-buttons";
+import { DataTablePagination } from "@/components/data-table/data-table-pagination";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { NonceRecord, defaultColumnVisibility } from "./mock-data";
+import { Sidebar } from "./components/sidebar";
+import { useCubeDataWithComparison } from "./hooks/use-cube-data";
+import { AggregationConfig, defaultAggregations } from "@/components/data-table/data-table-aggregations";
+import { cn } from "@/lib/utils";
 
 export interface NonceTableProps {
-  initialData?: NonceRecord[];
 }
 
-export function NonceTable({ initialData = [] }: NonceTableProps) {
+export function NonceTable() {
   // State for the query and comparison query
   const [query, setQuery] = useState<Query | null>(null);
   const [comparisonQuery, setComparisonQuery] = useState<Query | null>(null);
 
-  // Use the query from the sidebar or fallback to null
-  const { resultSet, isLoading, error, progress } = useCubeQuery(query || {});
+  // Use our custom hook to fetch and transform data
+  const { primary, comparison } = useCubeDataWithComparison(query, comparisonQuery);
   
-  // Use the comparison query if available
-  const { 
-    resultSet: comparisonResultSet, 
-    isLoading: isComparisonLoading, 
-    error: comparisonError 
-  } = useCubeQuery(comparisonQuery || {});
+  // Destructure the primary data
+  const { data: nonceData, columns, isLoading } = primary;
   
-  console.log('comparisonResultSet', comparisonResultSet?.tablePivot());
-  // Log the comparison results when they change
-  useEffect(() => {
-    if (comparisonResultSet && !isComparisonLoading && !comparisonError) {
-      console.log('Comparison results:', comparisonResultSet.tablePivot());
-    }
-  }, [comparisonResultSet, isComparisonLoading, comparisonError]);
-
-  // State for nonce data and comparison data
-  const [nonceData, setNonceData] = useState<NonceRecord[]>(initialData);
-  const [comparisonData, setComparisonData] = useState<NonceRecord[]>([]);
-
-  // Update data when query results change
-  useEffect(() => {
-    if (!resultSet || isLoading || error) return;
-    const data = resultSet.tablePivot();
-    setNonceData(data as unknown as NonceRecord[]);
-  }, [resultSet, isLoading, error]);
+  // Destructure the comparison data
+  const { data: comparisonData } = comparison;
   
-  // Update comparison data when comparison query results change
-  useEffect(() => {
-    if (!comparisonResultSet || isComparisonLoading || comparisonError) {
-      setComparisonData([]);
-      return;
-    }
-    const data = comparisonResultSet.tablePivot();
-    setComparisonData(data as unknown as NonceRecord[]);
-  }, [comparisonResultSet, isComparisonLoading, comparisonError]);
-
   // Column visibility state
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<VisibilityState>("nonce-table-visibility", defaultColumnVisibility);
-
-  // Generate columns based on the columnsStruct
-  const columns = useMemo(() => {
-    if (!resultSet || isLoading || error) return [];
-    const columns = resultSet.tableColumns();
-    return generateColumns(columns as unknown as ColumnStruct[]) as unknown as ColumnDef<NonceRecord, unknown>[];
-  }, [resultSet, isLoading, error]);
 
   // Create custom controls with DataTableViewOptions and DataTableGroupButtons
   const customControls = (
@@ -80,11 +42,6 @@ export function NonceTable({ initialData = [] }: NonceTableProps) {
       <DataTableViewOptions />
     </div>
   );
-
-  // Show error message if there's an error
-  if (error) {
-    return <div className="p-4 text-red-500">{error.toString()}</div>;
-  }
 
   return (
     <div className="p-4">
@@ -116,26 +73,7 @@ export function NonceTable({ initialData = [] }: NonceTableProps) {
             footerAggregations={defaultAggregations.slice(1, 3) as unknown as AggregationConfig<NonceRecord>[]}
             columnVisibility={columnVisibility}
             setColumnVisibility={setColumnVisibility}
-            isLoading={isLoading || !resultSet}
-            loadingComponent={
-              progress && progress.stage ? (
-                <div className="flex items-center justify-center w-full h-64">
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-                    <p className="text-gray-500">{progress.stage}</p>
-                    {/* Check if progress has a percent property using type assertion */}
-                    {(progress as any).percent != null && (
-                      <div className="w-64 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-blue-500" 
-                          style={{ width: `${(progress as any).percent * 100}%` }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : undefined
-            }
+            isLoading={isLoading}
           />
         </div>
       </div>

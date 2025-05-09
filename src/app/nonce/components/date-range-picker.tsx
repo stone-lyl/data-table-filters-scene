@@ -10,17 +10,15 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface DateRangePickerProps {
-  initialDateRange?: DateRange;
   onDateRangeChange: (dateRange: DateRange) => void;
 }
 
 export function DateRangePicker({ 
-  initialDateRange, 
   onDateRangeChange 
 }: DateRangePickerProps) {
   // Initialize date range state
   const [dateRange, setDateRange] = useState<DateRange | undefined>(
-    initialDateRange || {
+    {
       from: subDays(new Date(), 30),
       to: new Date()
     }

@@ -137,22 +137,6 @@ export function Sidebar({ nonceData, onQueryChange, onComparisonQueryChange }: S
       setQueryState(updateDateRange(queryState, [formattedFrom, formattedTo]));
     }
   };
-  
-  // Initialize date range from query or default to last 7 days
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
-    const defaultFrom = queryState?.timeDimensions?.[0]?.dateRange?.[0] 
-      ? new Date(queryState.timeDimensions[0].dateRange[0]) 
-      : subDays(new Date(), 7);
-    
-    const defaultTo = queryState?.timeDimensions?.[0]?.dateRange?.[1]
-      ? new Date(queryState.timeDimensions[0].dateRange[1])
-      : new Date();
-      
-    return {
-      from: defaultFrom,
-      to: defaultTo
-    };
-  });
 
   return (
     <div className="w-full border-r border-gray-200 p-4 h-[calc(100vh-8rem)] overflow-y-auto">
@@ -245,9 +229,7 @@ export function Sidebar({ nonceData, onQueryChange, onComparisonQueryChange }: S
           <div className="space-y-2">
             <p className="text-xs text-muted-foreground">timeDimensions</p>
             <DateRangePicker
-              initialDateRange={dateRange}
               onDateRangeChange={(range) => {
-                setDateRange(range);
                 handleDateRangeChange(range);
               }}
             />
