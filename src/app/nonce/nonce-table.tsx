@@ -19,20 +19,31 @@ export interface NonceTableProps {
 }
 
 export function NonceTable({ initialData = [] }: NonceTableProps) {
-  // State for the query
+  // State for the query and comparison query
   const [query, setQuery] = useState<Query | null>(null);
+  const [comparisonQuery, setComparisonQuery] = useState<Query | null>(null);
 
   // Use the query from the sidebar or fallback to null
   const { resultSet, isLoading, error, progress } = useCubeQuery(query || {});
+  
+  // Use the comparison query if available
+  const { 
+    resultSet: comparisonResultSet, 
+    isLoading: isComparisonLoading, 
+    error: comparisonError 
+  } = useCubeQuery(comparisonQuery || {});
+  
+  console.log('comparisonResultSet', comparisonResultSet?.tablePivot());
+  // Log the comparison results when they change
+  useEffect(() => {
+    if (comparisonResultSet && !isComparisonLoading && !comparisonError) {
+      console.log('Comparison results:', comparisonResultSet.tablePivot());
+    }
+  }, [comparisonResultSet, isComparisonLoading, comparisonError]);
 
-  // State for nonce data
-  const [nonceData, setNonceData] = useState<NonceRecord[]>(initialData || []);
-
-  // Handle query changes from the sidebar
-  const handleQueryChange = useCallback((newQuery: Query) => {
-    setQuery(newQuery);
-  }, []);
-  console.log('nonceTable query', query);
+  // State for nonce data and comparison data
+  const [nonceData, setNonceData] = useState<NonceRecord[]>(initialData);
+  const [comparisonData, setComparisonData] = useState<NonceRecord[]>([]);
 
   // Update data when query results change
   useEffect(() => {
@@ -40,6 +51,16 @@ export function NonceTable({ initialData = [] }: NonceTableProps) {
     const data = resultSet.tablePivot();
     setNonceData(data as unknown as NonceRecord[]);
   }, [resultSet, isLoading, error]);
+  
+  // Update comparison data when comparison query results change
+  useEffect(() => {
+    if (!comparisonResultSet || isComparisonLoading || comparisonError) {
+      setComparisonData([]);
+      return;
+    }
+    const data = comparisonResultSet.tablePivot();
+    setComparisonData(data as unknown as NonceRecord[]);
+  }, [comparisonResultSet, isComparisonLoading, comparisonError]);
 
   // Column visibility state
   const [columnVisibility, setColumnVisibility] =
@@ -75,7 +96,11 @@ export function NonceTable({ initialData = [] }: NonceTableProps) {
             "p-1 sm:block sm:min-w-58 sm:max-w-58 sm:self-start md:min-w-58 md:max-w-58",
           )}
         >
-          <Sidebar nonceData={nonceData} onQueryChange={handleQueryChange} />
+          <Sidebar 
+            nonceData={nonceData} 
+            onQueryChange={setQuery} 
+            onComparisonQueryChange={setComparisonQuery} 
+          />
         </div>
         <div className="flex-1 w-[calc(100%-24rem)]">
           <AnalyticsTableCoreClient
@@ -87,7 +112,6 @@ export function NonceTable({ initialData = [] }: NonceTableProps) {
             defaultGrouping={[]}
             filterFields={[]}
             controlsSlot={customControls}
-            // sidebarSlot={customSidebar}
             paginationSlot={<DataTablePagination />}
             footerAggregations={defaultAggregations.slice(1, 3) as unknown as AggregationConfig<NonceRecord>[]}
             columnVisibility={columnVisibility}

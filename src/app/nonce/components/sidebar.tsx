@@ -20,7 +20,7 @@ import {
   updateDateRange,
   createComparisonQuery,
   ExtendedQuery
-} from "../utils/query-builder";
+} from "../utils/cube-query-builder";
 import { Query, BinaryFilter } from "@cubejs-client/core";
 
 import { Category } from "./category";
@@ -29,9 +29,10 @@ import { CheckboxGroup } from "./checkbox-group";
 interface SidebarProps {
   nonceData: NonceRecord[];
   onQueryChange?: (query: Query) => void;
+  onComparisonQueryChange: (query: Query | null) => void;
 }
 
-export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
+export function Sidebar({ nonceData, onQueryChange, onComparisonQueryChange }: SidebarProps) {
   // Get measures and dimensions from sidebar meta
   const measures = getAvailableMeasures();
   const dimensions = getAvailableDimensions();
@@ -67,20 +68,17 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
   
   // Generate comparison query when comparison option changes
   useEffect(() => {
-    if (onQueryChange && selectedComparison) {
-      // Create and send the comparison query
-      const comparisonQuery = createComparisonQuery(queryState, selectedComparison.value);
-      
-      if (comparisonQuery) {
-        console.log('Comparison query:', comparisonQuery);
+      if (selectedComparison) {
+        // Create the comparison query
+        const comparisonQuery = createComparisonQuery(queryState, selectedComparison.value);
         
-        // todo : request the compare data
-        // Here you would typically send this query to your API
-        // For now, we'll just log it
-        // In a real implementation, you might want to add a callback prop for handling comparison queries
+        // Pass the comparison query to the parent component
+        onComparisonQueryChange(comparisonQuery);
+      } else {
+        // If no comparison is selected, pass null to clear the comparison
+        onComparisonQueryChange(null);
       }
-    }
-  }, [selectedComparison, queryState, onQueryChange]);
+  }, [selectedComparison, queryState, onComparisonQueryChange]);
 
   // Check if a measure is selected
   const isMeasureSelected = (measure: string) => {
