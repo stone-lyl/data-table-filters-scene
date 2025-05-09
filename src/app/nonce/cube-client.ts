@@ -7,5 +7,5 @@ export const getHashingDataQuery = (): Query => ({
   filters: [{ "member": "metrics.workspace_name", "operator": "equals", "values": ["hashing"] }],
   timeDimensions: [{ "dimension": "metrics.period", "granularity": "day", "dateRange": ["2025-04-08", "2025-05-07"] }],
   order: { "metrics.period": "desc" },
-  limit: 1000
+  limit: 100
 });

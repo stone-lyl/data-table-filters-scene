@@ -6,8 +6,8 @@ import { DataTableViewOptions } from '@/components/data-table/data-table-view-op
 import { DataTableGroupButtons } from '@/components/data-table/data-table-group-buttons';
 import { DataTablePagination } from '@/components/data-table/data-table-pagination';
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { VisibilityState } from '@tanstack/react-table';
-import { defaultColumnVisibility, generateColumns, NonceRecord } from './mock-data';
+import { ColumnDef, VisibilityState } from '@tanstack/react-table';
+import { ColumnStruct, defaultColumnVisibility, generateColumns, NonceRecord } from './mock-data';
 import { Sidebar } from './components/sidebar';
 import { AggregationConfig, defaultAggregations } from '@/components/data-table/data-table-aggregations';
 import { cn } from '@/lib/utils';
@@ -23,12 +23,21 @@ export function NonceTable({ initialData = [] }: NonceTableProps) {
   // State for nonce data
   const [nonceData, setNonceData] = useState<NonceRecord[]>(initialData || []);
   
+  useEffect(() => {
+    if (!resultSet || isLoading || error) return;
+    const data = resultSet.tablePivot();
+    setNonceData(data as unknown as NonceRecord[]);
+  }, [resultSet, isLoading, error]);
   // Column visibility state
   const [columnVisibility, setColumnVisibility] =
   useLocalStorage<VisibilityState>("nonce-table-visibility", defaultColumnVisibility);
 
-  // Generate columns based on the data
-  const columns = useMemo(() => generateColumns(nonceData), [nonceData]);
+  // Generate columns based on the columnsStruct
+  const columns = useMemo(() =>{
+    if (!resultSet || isLoading || error) return [];
+    const columns = resultSet.tableColumns();
+    return generateColumns(columns as unknown as ColumnStruct[]) as unknown as ColumnDef<NonceRecord, unknown>[];
+  } , [resultSet, isLoading, error]);
   
   // Create custom controls with DataTableViewOptions and DataTableGroupButtons
   const customControls = (
@@ -63,8 +72,10 @@ export function NonceTable({ initialData = [] }: NonceTableProps) {
   
   const dataSource = resultSet.tablePivot();
   const columns1 = resultSet.tableColumns();
-  console.log('nonce page dataSource', dataSource);
-  console.log('nonce page columns', columns1);
+
+
+  // console.log('nonce page dataSource', dataSource);
+  // console.log('nonce page columns', columns1);
   return (
       <div className="p-4">
         <h3 className="mb-4 text-lg font-medium">Mining Performance Dashboard</h3>
