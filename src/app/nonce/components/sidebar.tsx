@@ -14,11 +14,9 @@ import {
   getAvailableMeasures, 
   getAvailableDimensions, 
   getAvailableFarmNames, 
-  getAvailableComparisonTypes, 
   updateMeasures, 
   updateDimensions, 
   updateFilters, 
-  updateComparisons, 
   updateDateRange,
   createComparisonQuery,
   ExtendedQuery
@@ -39,13 +37,7 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
   const dimensions = getAvailableDimensions();
   const farmNames = getAvailableFarmNames();
   
-  // Time comparison options
-  const timeComparisonOptions: ComparisonOption[] = [
-    { id: 'previous_year', name: 'Previous Year', value: 'year' },
-    { id: 'previous_30_days', name: 'Previous 30 Days', value: '30days' },
-    { id: 'previous_7_days', name: 'Previous 7 Days', value: '7days' }
-  ];
-  
+
   // Group measures by folder
   const measuresByFolder = measures.reduce((acc, measure) => {
     const folder = measure.folder || 'Other';
@@ -82,6 +74,7 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
       if (comparisonQuery) {
         console.log('Comparison query:', comparisonQuery);
         
+        // todo : request the compare data
         // Here you would typically send this query to your API
         // For now, we'll just log it
         // In a real implementation, you might want to add a callback prop for handling comparison queries
@@ -135,11 +128,6 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
       'equals', 
       farms
     ));
-  };
-
-  // Handle comparison selection
-  const handleComparisonChange = (option: ComparisonOption | null) => {
-    setSelectedComparison(option);
   };
 
   // Handle date range change
@@ -246,9 +234,8 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
         >
           <div className="space-y-4">
             <TimeComparisonSelector
-              options={timeComparisonOptions}
               selectedOption={selectedComparison}
-              onSelect={handleComparisonChange}
+              onSelect={setSelectedComparison}
             />
           </div>
         </Category>

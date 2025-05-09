@@ -23,14 +23,18 @@ export type ComparisonOption = {
   value: string;
 };
 
-export interface TimeComparisonSelectorProps {
-  options: ComparisonOption[];
+interface TimeComparisonSelectorProps {
   onSelect: (option: ComparisonOption | null) => void;
   selectedOption: ComparisonOption | null;
 }
-
+     
+const timeComparisonOptions: ComparisonOption[] = [
+  { id: 'previous_year', name: 'Previous Year', value: 'year' },
+  { id: 'previous_30_days', name: 'Previous 30 Days', value: '30days' },
+  { id: 'previous_7_days', name: 'Previous 7 Days', value: '7days' }
+];
+  
 export function TimeComparisonSelector({
-  options,
   onSelect,
   selectedOption
 }: TimeComparisonSelectorProps) {
@@ -71,7 +75,7 @@ export function TimeComparisonSelector({
                 />
                 None
               </CommandItem>
-              {options.map((option) => (
+              {timeComparisonOptions.map((option) => (
                 <CommandItem
                   key={option.id}
                   value={option.id}
