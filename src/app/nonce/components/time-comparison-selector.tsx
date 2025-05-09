@@ -21,6 +21,7 @@ export type ComparisonOption = {
   id: string;
   name: string;
   value: string;
+  dateAdd: string;
 };
 
 interface TimeComparisonSelectorProps {
@@ -29,9 +30,9 @@ interface TimeComparisonSelectorProps {
 }
      
 const timeComparisonOptions: ComparisonOption[] = [
-  { id: 'previous_year', name: 'Previous Year', value: 'year' },
-  { id: 'previous_30_days', name: 'Previous 30 Days', value: '30days' },
-  { id: 'previous_7_days', name: 'Previous 7 Days', value: '7days' }
+  { id: 'previous_year', name: 'Previous Year', value: 'year', dateAdd: 'INTERVAL 1 YEAR' },
+  { id: 'previous_30_days', name: 'Previous 30 Days', value: '30days', dateAdd: 'INTERVAL 30 DAY' },
+  { id: 'previous_7_days', name: 'Previous 7 Days', value: '7days', dateAdd: 'INTERVAL 7 DAY' }
 ];
   
 export function TimeComparisonSelector({

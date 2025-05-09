@@ -55,8 +55,10 @@ export function buildQuery(options: QueryOptions) {
   return dedent`
     SELECT ${outputColumns.map((c) => c.toString()).join(', ')}
     FROM "${options.dataset}"
-    GROUP BY ${groupByColumns.join(', ')}
-    ORDER BY ${groupByColumns.join(', ')}
+    ${groupByColumns.length > 0
+  ? `    GROUP BY ${groupByColumns.join(', ')}
+    ORDER BY ${groupByColumns.join(', ')}`
+  : ''}
   `;
 }
 

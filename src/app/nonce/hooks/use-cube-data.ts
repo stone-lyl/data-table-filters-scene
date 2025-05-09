@@ -4,6 +4,9 @@ import { useCubeQuery } from '@cubejs-client/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { NonceRecord, ColumnStruct, generateColumns } from '../mock-data';
 import { buildQuery, createComparisonQuery, ExtendedQuery } from '../utils/cube-query-builder';
+import { generateComparisonQuery } from '../utils/generate-comparison-query';
+import { ComparisonOption } from '../components/time-comparison-selector';
+import { useTransform } from '@/app/analyze/compare/use-transform';
 
 interface UseCubeDataResult {
   data: NonceRecord[];
@@ -59,7 +62,7 @@ export function useCubeData(
  */
 export function useCubeDataWithComparison(
   queryState: ExtendedQuery | null,
-  selectedComparison: { value: string } | null
+  selectedComparison: ComparisonOption | null
 ) {
   // Build queries from state
   const [query, setQuery] = useState<Query | null>(null);
@@ -68,25 +71,56 @@ export function useCubeDataWithComparison(
   useEffect(() => {
     setComparisonQuery(queryState && selectedComparison ? 
       createComparisonQuery(queryState, selectedComparison.value) : null);
-    }, [queryState, selectedComparison]);
-    
-    useEffect(() => {
-      setQuery(queryState ? buildQuery(queryState) : null);
-    }, [queryState]);
-  console.log(query, 'query');
-  console.log(comparisonQuery, 'comparisonQuery');
+  }, [queryState, selectedComparison]);
+  
+  useEffect(() => {
+    setQuery(queryState ? buildQuery(queryState) : null);
+  }, [queryState]);
+
   // Get primary data
   const primary = useCubeData(query);
   
   // Get comparison data
   const comparison = useCubeData(comparisonQuery);
 
-  if (!primary.isLoading && !comparison.isLoading) {
-    // 
-  }
+  // Generate SQL query for joining the data
+  const joinQuery = useMemo(() => {
+    if (primary.data.length === 0 || comparison.data.length === 0) {
+      return '';
+    }
+    return generateComparisonQuery(
+      selectedComparison,
+      primary.data,
+      comparison.data
+    );
+  }, [primary.data, comparison.data, selectedComparison]);
+
+  // Create datasets for DuckDB
+  const datasets = useMemo(() => ({
+    primaryData: primary.data,
+    comparisonData: comparison.data
+  }), [primary.data, comparison.data]);
+
+  // Transform the data using DuckDB
+  const transformedData = useTransform(datasets, joinQuery);
+  
+console.log('transformedData', transformedData);
+  const joinedColumns = useMemo(() => {
+    if (primary.columns.length === 0 || comparison.columns.length === 0) {
+      return [];
+    }
+    
+    return [...primary.columns, ...comparison.columns];
+  }, [primary.columns, comparison.columns]);
+  const isJoinedLoading = primary.isLoading || comparison.isLoading || transformedData.length === 0;
   
   return {
     primary,
-    comparison
+    comparison,
+    joined: {
+      data: transformedData,
+      columns: joinedColumns,
+      isLoading: isJoinedLoading
+    }
   };
 }
