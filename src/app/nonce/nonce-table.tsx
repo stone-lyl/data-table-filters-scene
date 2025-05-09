@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnalyticsTableCoreClient } from '../analyze/analytics-table-core';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
 import { DataTableGroupButtons } from '@/components/data-table/data-table-group-buttons';
@@ -11,33 +11,47 @@ import { ColumnStruct, defaultColumnVisibility, generateColumns, NonceRecord } f
 import { Sidebar } from './components/sidebar';
 import { AggregationConfig, defaultAggregations } from '@/components/data-table/data-table-aggregations';
 import { cn } from '@/lib/utils';
-import { getHashingDataQuery } from './cube-client';
 import { useCubeQuery } from '@cubejs-client/react';
+import { Query } from '@cubejs-client/core';
+import { createDefaultQuery } from './utils/query-builder';
 
 export interface NonceTableProps {
   initialData?: NonceRecord[];
 }
 
 export function NonceTable({ initialData = [] }: NonceTableProps) {
-  const { resultSet, isLoading, error, progress } = useCubeQuery(getHashingDataQuery());
+  // State for the query
+  const [query, setQuery] = useState<Query | null>(createDefaultQuery());
+  
+  // Use the query from the sidebar or fallback to null
+  const { resultSet, isLoading, error, progress } = useCubeQuery(query || {});
+  
   // State for nonce data
   const [nonceData, setNonceData] = useState<NonceRecord[]>(initialData || []);
   
+  // Handle query changes from the sidebar
+  const handleQueryChange = useCallback((newQuery: Query) => {
+    setQuery(newQuery);
+  }, []);
+  console.log('nonceTable query', query);
+  
+  // Update data when query results change
   useEffect(() => {
     if (!resultSet || isLoading || error) return;
     const data = resultSet.tablePivot();
     setNonceData(data as unknown as NonceRecord[]);
   }, [resultSet, isLoading, error]);
+  
   // Column visibility state
   const [columnVisibility, setColumnVisibility] =
   useLocalStorage<VisibilityState>("nonce-table-visibility", defaultColumnVisibility);
 
   // Generate columns based on the columnsStruct
-  const columns = useMemo(() =>{
+  const columns = useMemo(() => {
     if (!resultSet || isLoading || error) return [];
     const columns = resultSet.tableColumns();
     return generateColumns(columns as unknown as ColumnStruct[]) as unknown as ColumnDef<NonceRecord, unknown>[];
-  } , [resultSet, isLoading, error]);
+  }, [resultSet, isLoading, error]);
   
   // Create custom controls with DataTableViewOptions and DataTableGroupButtons
   const customControls = (
@@ -54,7 +68,7 @@ export function NonceTable({ initialData = [] }: NonceTableProps) {
       "w-full p-1 sm:block sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-58 md:max-w-58",
     )}
     >
-      <Sidebar nonceData={nonceData} />
+      <Sidebar nonceData={nonceData} onQueryChange={handleQueryChange} />
     </div>
   );
   

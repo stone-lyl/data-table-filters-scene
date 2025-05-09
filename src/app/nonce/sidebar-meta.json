@@ -1,0 +1,792 @@
+[
+    {
+        "name":"metrics",
+        "type":"view",
+        "title":"Metrics",
+        "isVisible":true,
+        "public":true,
+        "description":"Metrics",
+        "meta":{
+            "custom_drill_members":[
+                "farm.name"
+            ]
+        },
+        "measures":[
+            {
+                "name":"metrics.cost_usd",
+                "title":"Metrics Cost (USD)",
+                "shortTitle":"Cost (USD)",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"currency",
+                        "unit":"USD"
+                    },
+                    "comparisons":[
+                        {
+                            "type":"weekly-moving-average",
+                            "member":"metrics.cost_usd_curr_week_avg"
+                        },
+                        {
+                            "type":"monthly-moving-average",
+                            "member":"metrics.cost_usd_curr_month_avg"
+                        }
+                    ]
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.earning_btc",
+                "title":"Metrics Earning (BTC)",
+                "shortTitle":"Earning (BTC)",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"currency",
+                        "unit":"BTC"
+                    },
+                    "comparisons":[
+                        {
+                            "type":"weekly-moving-average",
+                            "member":"metrics.earning_btc_curr_week_avg"
+                        },
+                        {
+                            "type":"monthly-moving-average",
+                            "member":"metrics.earning_btc_curr_month_avg"
+                        }
+                    ]
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.earning_usd",
+                "title":"Metrics Earning (USD)",
+                "shortTitle":"Earning (USD)",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"currency",
+                        "unit":"USD"
+                    },
+                    "comparisons":[
+                        {
+                            "type":"weekly-moving-average",
+                            "member":"metrics.earning_usd_curr_week_avg"
+                        },
+                        {
+                            "type":"monthly-moving-average",
+                            "member":"metrics.earning_usd_curr_month_avg"
+                        }
+                    ]
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.margin",
+                "title":"Metrics Margin",
+                "shortTitle":"Margin",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"avg",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"percentage",
+                        "unit":null
+                    },
+                    "comparisons":[
+                        {
+                            "type":"weekly-moving-average",
+                            "member":"metrics.margin_curr_week_avg"
+                        },
+                        {
+                            "type":"monthly-moving-average",
+                            "member":"metrics.margin_curr_month_avg"
+                        }
+                    ]
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.hashrate",
+                "title":"Metrics Hashrate",
+                "description":"The hashrate of the farm",
+                "shortTitle":"Hashrate",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"hashrate",
+                        "unit":"H/s"
+                    },
+                    "comparisons":[
+                        {
+                            "type":"weekly-moving-average",
+                            "member":"metrics.hashrate_curr_week_avg"
+                        },
+                        {
+                            "type":"monthly-moving-average",
+                            "member":"metrics.hashrate_curr_month_avg"
+                        }
+                    ]
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.online_hashrate",
+                "title":"Metrics Online Hashrate",
+                "shortTitle":"Online Hashrate",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"number",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"percentage",
+                        "unit":null
+                    },
+                    "comparisons":[
+                        {
+                            "type":"weekly-moving-average",
+                            "member":"metrics.online_hashrate_curr_week_avg"
+                        },
+                        {
+                            "type":"monthly-moving-average",
+                            "member":"metrics.online_hashrate_curr_month_avg"
+                        }
+                    ]
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.online_efficiency",
+                "title":"Metrics Online Efficiency",
+                "description":"Farm online efficiency",
+                "shortTitle":"Online Efficiency",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"number",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"percentage",
+                        "unit":null
+                    },
+                    "comparisons":[
+                        {
+                            "type":"weekly-moving-average",
+                            "member":"metrics.online_efficiency_curr_week_avg"
+                        },
+                        {
+                            "type":"monthly-moving-average",
+                            "member":"metrics.online_efficiency_curr_month_avg"
+                        }
+                    ]
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.online_miners",
+                "title":"Metrics Online Miners",
+                "description":"The number of online miners in the farm",
+                "shortTitle":"Online Miners",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.offline_miners",
+                "title":"Metrics Offline Miners",
+                "description":"The number of offline miners in the farm",
+                "shortTitle":"Offline Miners",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.cost_usd_curr_week_avg",
+                "title":"Metrics Cost USD 7D MA",
+                "shortTitle":"Cost USD 7D MA",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"currency",
+                        "unit":"USD"
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.cost_usd_curr_month_avg",
+                "title":"Metrics Cost USD 28D MA",
+                "shortTitle":"Cost USD 28D MA",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"currency",
+                        "unit":"USD"
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.earning_btc_curr_week_avg",
+                "title":"Metrics Earning BTC 7D MA",
+                "shortTitle":"Earning BTC 7D MA",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"currency",
+                        "unit":"BTC"
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.earning_btc_curr_month_avg",
+                "title":"Metrics Earning BTC 28D MA",
+                "shortTitle":"Earning BTC 28D MA",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"currency",
+                        "unit":"BTC"
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.earning_usd_curr_week_avg",
+                "title":"Metrics Earning USD 7D MA",
+                "shortTitle":"Earning USD 7D MA",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"currency",
+                        "unit":"USD"
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.earning_usd_curr_month_avg",
+                "title":"Metrics Earning USD 28D MA",
+                "shortTitle":"Earning USD 28D MA",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"currency",
+                        "unit":"USD"
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.margin_curr_week_avg",
+                "title":"Metrics Margin Current Week AVG",
+                "shortTitle":"Margin Current Week AVG",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"avg",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"percentage",
+                        "unit":null
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.margin_curr_month_avg",
+                "title":"Metrics Margin Current Month AVG",
+                "shortTitle":"Margin Current Month AVG",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"avg",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"percentage",
+                        "unit":null
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.hashrate_curr_week_avg",
+                "title":"Metrics Hashrate Current Week AVG",
+                "shortTitle":"Hashrate Current Week AVG",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"hashrate",
+                        "unit":"H/s"
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.hashrate_curr_month_avg",
+                "title":"Metrics Hashrate Current Month AVG",
+                "shortTitle":"Hashrate Current Month AVG",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"sum",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"hashrate",
+                        "unit":"H/s"
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.online_hashrate_curr_week_avg",
+                "title":"Metrics Online Hashrate Current Week AVG",
+                "shortTitle":"Online Hashrate Current Week AVG",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"number",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"percentage",
+                        "unit":null
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.online_hashrate_curr_month_avg",
+                "title":"Metrics Online Hashrate Current Month AVG",
+                "shortTitle":"Online Hashrate Current Month AVG",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"number",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"percentage",
+                        "unit":null
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.online_efficiency_curr_week_avg",
+                "title":"Metrics Online Efficiency Current Week AVG",
+                "shortTitle":"Online Efficiency Current Week AVG",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"number",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"percentage",
+                        "unit":null
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            },
+            {
+                "name":"metrics.online_efficiency_curr_month_avg",
+                "title":"Metrics Online Efficiency Current Month AVG",
+                "shortTitle":"Online Efficiency Current Month AVG",
+                "cumulativeTotal":false,
+                "cumulative":false,
+                "type":"number",
+                "aggType":"number",
+                "drillMembers":[
+                    
+                ],
+                "drillMembersGrouped":{
+                    "measures":[
+                        
+                    ],
+                    "dimensions":[
+                        
+                    ]
+                },
+                "meta":{
+                    "format":{
+                        "type":"percentage",
+                        "unit":null
+                    }
+                },
+                "isVisible":true,
+                "public":true
+            }
+        ],
+        "dimensions":[
+            {
+                "name":"metrics.period",
+                "title":"Metrics Period",
+                "type":"time",
+                "shortTitle":"Period",
+                "suggestFilterValues":true,
+                "isVisible":true,
+                "public":true,
+                "primaryKey":false,
+                "aliasMember":"fm.period",
+                "granularities":[
+                    {
+                        "name":"day",
+                        "title":"Day",
+                        "interval":"1 day"
+                    }
+                ]
+            },
+            {
+                "name":"metrics.farm_name",
+                "title":"Metrics Farm Name",
+                "type":"string",
+                "shortTitle":"Farm Name",
+                "suggestFilterValues":true,
+                "isVisible":true,
+                "public":true,
+                "primaryKey":false,
+                "aliasMember":"fm.farm_name"
+            },
+            {
+                "name":"metrics.workspace_name",
+                "title":"Metrics Workspace Name",
+                "type":"string",
+                "shortTitle":"Workspace Name",
+                "suggestFilterValues":true,
+                "isVisible":true,
+                "public":true,
+                "primaryKey":false,
+                "aliasMember":"fm.workspace_name"
+            }
+        ],
+        "segments":[
+            
+        ],
+        "hierarchies":[
+            
+        ],
+        "folders":[
+            {
+                "name":"Finance",
+                "members":[
+                    "metrics.earning_btc",
+                    "metrics.earning_usd",
+                    "metrics.cost_usd",
+                    "metrics.margin"
+                ]
+            },
+            {
+                "name":"Operation",
+                "members":[
+                    "metrics.hashrate",
+                    "metrics.online_hashrate",
+                    "metrics.online_efficiency",
+                    "metrics.online_miners",
+                    "metrics.offline_miners"
+                ]
+            }
+        ]
+    }
+]

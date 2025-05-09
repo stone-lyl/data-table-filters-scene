@@ -14,6 +14,7 @@ import {
   buildQuery,
   windowFunctions,
 } from '../analyze/compare/query-builder';
+import { DataTablePagination } from '@/components/data-table/data-table-pagination';
 
 export default function CompareTable() {
   const [currentYear] = useState(() =>
@@ -147,7 +148,6 @@ export default function CompareTable() {
       <AnalyticsTableCoreClient
         columns={columns}
         data={data}
-        pageSize={1000}
         tableClassName="h-[calc(100vh-16rem)] overflow-y-scroll"
         defaultColumnFilters={[]}
         defaultGrouping={[]}
@@ -155,6 +155,7 @@ export default function CompareTable() {
         controlsSlot={customControls}
         columnVisibility={columnVisibility}
         setColumnVisibility={setColumnVisibility}
+        paginationSlot={<DataTablePagination />}
       />
     </div>
   );

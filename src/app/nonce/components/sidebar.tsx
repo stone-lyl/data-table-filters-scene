@@ -3,13 +3,28 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { NonceRecord } from "../mock-data";
-import { ChevronDown, Filter, BarChart2, ArrowLeftRight } from "lucide-react";
+import { ChevronDown, Filter, BarChart2, ArrowLeftRight, Calendar } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { 
+  buildQuery, 
+  createDefaultQuery, 
+  getAvailableMeasures, 
+  getAvailableDimensions,
+  getAvailableFarmNames,
+  getAvailableComparisonTypes,
+  updateMeasures,
+  updateDimensions,
+  updateFilters,
+  updateComparisons,
+  ExtendedQuery
+} from "../utils/query-builder";
+import { Query, BinaryFilter } from "@cubejs-client/core";
 
 interface SidebarProps {
   nonceData: NonceRecord[];
+  onQueryChange?: (query: Query) => void;
 }
 
 interface CategoryProps {
@@ -38,15 +53,34 @@ function Category({ title, children, icon, defaultOpen = false }: CategoryProps)
   );
 }
 
-function CheckboxGroup({ title, items }: { title: string; items: string[] }) {
+interface CheckboxGroupProps {
+  title: string;
+  items: Array<{ id: string; name: string; }>;
+  selectedItems: string[];
+  onChange: (selectedIds: string[]) => void;
+}
+
+function CheckboxGroup({ title, items, selectedItems, onChange }: CheckboxGroupProps) {
+  const handleCheckboxChange = (id: string, checked: boolean) => {
+    if (checked) {
+      onChange([...selectedItems, id]);
+    } else {
+      onChange(selectedItems.filter(item => item !== id));
+    }
+  };
+
   return (
     <div className="space-y-1">
       <p className="text-xs text-muted-foreground">{title}</p>
       {items.map((item) => (
-        <div key={item} className="flex items-center space-x-2">
-          <Checkbox id={item.replace(/\s+/g, '-').toLowerCase()} />
-          <Label htmlFor={item.replace(/\s+/g, '-').toLowerCase()} className="text-sm">
-            {item}
+        <div key={item.id} className="flex items-center space-x-2">
+          <Checkbox 
+            id={item.id} 
+            checked={selectedItems.includes(item.id)}
+            onCheckedChange={(checked) => handleCheckboxChange(item.id, checked === true)}
+          />
+          <Label htmlFor={item.id} className="text-sm">
+            {item.name}
           </Label>
         </div>
       ))}
@@ -54,7 +88,96 @@ function CheckboxGroup({ title, items }: { title: string; items: string[] }) {
   );
 }
 
-export function Sidebar({ nonceData }: SidebarProps) {
+export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
+  // Get measures and dimensions from sidebar meta
+  const measures = getAvailableMeasures();
+  const dimensions = getAvailableDimensions();
+  const farmNames = getAvailableFarmNames();
+  const comparisonTypes = getAvailableComparisonTypes();
+  
+  // Group measures by folder
+  const measuresByFolder = measures.reduce((acc, measure) => {
+    const folder = measure.folder || 'Other';
+    if (!acc[folder]) {
+      acc[folder] = [];
+    }
+    acc[folder].push({
+      id: measure.name,
+      name: measure.shortTitle
+    });
+    return acc;
+  }, {} as Record<string, Array<{ id: string; name: string; }>>);
+
+  // State for query
+  const [queryState, setQueryState] = useState<ExtendedQuery>(createDefaultQuery());
+
+  console.log(queryState, 'queryState ??')
+  // Update query when selections change
+  useEffect(() => {
+    if (onQueryChange) {
+      const query = buildQuery(queryState);
+      onQueryChange(query);
+    }
+  }, [queryState, onQueryChange]);
+
+  // Check if a measure is selected
+  const isMeasureSelected = (measure: string) => {
+    return queryState.measures?.includes(measure) || false;
+  };
+
+  // Check if a dimension is selected
+  const isDimensionSelected = (dimension: string) => {
+    return queryState.dimensions?.includes(dimension) || false;
+  };
+
+  // Check if a farm is selected
+  const isFarmSelected = (farm: string) => {
+    const farmFilter = queryState.filters?.find(
+      f => (f as BinaryFilter).member === 'metrics.workspace_name'
+    ) as BinaryFilter | undefined;
+    return farmFilter ? farmFilter.values.includes(farm) : false;
+  };
+
+  // Check if a comparison type is selected
+  const isComparisonSelected = (comparisonType: string) => {
+    return queryState.comparisons?.includes(comparisonType) || false;
+  };
+
+  // Handle measure selection
+  const handleMeasureChange = (folder: string, selectedIds: string[]) => {
+    // Get all currently selected measures from other folders
+    const currentMeasures = queryState.measures || [];
+    const otherFolderMeasures = Object.entries(measuresByFolder)
+      .filter(([folderName]) => folderName !== folder)
+      .flatMap(([_, items]) => items.map(item => item.id))
+      .filter(id => currentMeasures.includes(id));
+    
+    // Combine with newly selected measures from this folder
+    const newMeasures = [...otherFolderMeasures, ...selectedIds];
+    
+    setQueryState(updateMeasures(queryState, newMeasures));
+  };
+
+  // Handle breakdown selection
+  const handleBreakdownChange = (selectedIds: string[]) => {
+    setQueryState(updateDimensions(queryState, selectedIds));
+  };
+
+  // Handle farm filter selection
+  const handleFarmChange = (farms: string[]) => {
+    setQueryState(updateFilters(
+      queryState, 
+      'metrics.workspace_name', 
+      'equals', 
+      farms
+    ));
+  };
+
+  // Handle comparison selection
+  const handleComparisonChange = (selectedIds: string[]) => {
+    setQueryState(updateComparisons(queryState, selectedIds));
+  };
+
   return (
     <div className="w-full border-r border-gray-200 p-4 h-[calc(100vh-8rem)] overflow-y-auto">
       <div className="space-y-1">
@@ -68,14 +191,37 @@ export function Sidebar({ nonceData }: SidebarProps) {
           defaultOpen={true}
         >
           <div className="space-y-4">
-            <CheckboxGroup 
-              title="Finance" 
-              items={["Cost (USD)", "Earning (BTC)", "Earning (USD)", "Margin"]} 
-            />
-            <CheckboxGroup 
-              title="Operation" 
-              items={["Hashrate", "Online Hashrate", "Online Efficiency", "Online Miners", "Offline Miners"]} 
-            />
+            {Object.entries(measuresByFolder).map(([folder, items]) => {
+              const currentMeasures = queryState.measures || [];
+              const selectedIds = items
+                .filter(item => currentMeasures.includes(item.id))
+                .map(item => item.id);
+              
+              return (
+                <div key={folder} className="space-y-1">
+                  <div className="font-medium">{folder}</div>
+                  <div className="pl-4 space-y-1">
+                    {items.map(item => (
+                      <div key={item.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`measure-${item.id}`}
+                          checked={isMeasureSelected(item.id)}
+                          onCheckedChange={(checked) => {
+                            const newSelectedIds = checked
+                              ? [...selectedIds, item.id]
+                              : selectedIds.filter(id => id !== item.id);
+                            handleMeasureChange(folder, newSelectedIds);
+                          }}
+                        />
+                        <Label htmlFor={`measure-${item.id}`} className="text-sm">
+                          {item.name}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </Category>
         
@@ -84,10 +230,12 @@ export function Sidebar({ nonceData }: SidebarProps) {
           icon={<ArrowLeftRight className="h-4 w-4" />}
         >
           <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox id="farm-name" />
-              <Label htmlFor="farm-name" className="text-sm">Farm Name</Label>
-            </div>
+            <CheckboxGroup
+              title="Dimensions"
+              items={dimensions.map(dim => ({ id: dim.name, name: dim.shortTitle }))}
+              selectedItems={queryState.dimensions || []}
+              onChange={handleBreakdownChange}
+            />
           </div>
         </Category>
         
@@ -96,20 +244,20 @@ export function Sidebar({ nonceData }: SidebarProps) {
           icon={<Filter className="h-4 w-4" />}
         >
           <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">Farm Name</p>
-            <div className="space-y-1">
-              {["GA - LN", "Kuching - MY", "Paris - TN"].map((farm) => (
-                <div key={farm} className="flex items-center space-x-2">
-                  <Checkbox id={`farm-${farm.replace(/\s+/g, '-').toLowerCase()}`} />
-                  <Label 
-                    htmlFor={`farm-${farm.replace(/\s+/g, '-').toLowerCase()}`} 
-                    className="text-sm"
-                  >
-                    {farm}
-                  </Label>
-                </div>
-              ))}
-            </div>
+            <CheckboxGroup
+              title="Farm Name"
+              items={farmNames.map(farm => ({ 
+                id: farm, 
+                name: farm 
+              }))}
+              selectedItems={queryState.filters
+                ? (queryState.filters.find(filter => 
+                    (filter as BinaryFilter).member === 'metrics.workspace_name'
+                  ) as BinaryFilter | undefined)?.values || []
+                : []}
+              
+              onChange={handleFarmChange}
+            />
           </div>
         </Category>
         
@@ -118,45 +266,23 @@ export function Sidebar({ nonceData }: SidebarProps) {
           icon={<ArrowLeftRight className="h-4 w-4" />}
         >
           <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Checkbox id="previous-period" />
-                <Label htmlFor="previous-period" className="text-sm">Previous Period</Label>
-              </div>
-            </div>
-            
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Moving Average</p>
-              <div className="space-y-1">
-                {["7D MA", "28D MA"].map((period) => (
-                  <div key={period} className="flex items-center space-x-2">
-                    <Checkbox id={`ma-${period.replace(/\s+/g, '-').toLowerCase()}`} />
-                    <Label 
-                      htmlFor={`ma-${period.replace(/\s+/g, '-').toLowerCase()}`} 
-                      className="text-sm"
-                    >
-                      {period}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Reference Line</p>
-              <div className="space-y-1">
-                {["Max", "Min", "Average"].map((line) => (
-                  <div key={line} className="flex items-center space-x-2">
-                    <Checkbox id={`ref-${line.toLowerCase()}`} />
-                    <Label 
-                      htmlFor={`ref-${line.toLowerCase()}`} 
-                      className="text-sm"
-                    >
-                      {line}
-                    </Label>
-                  </div>
-                ))}
-              </div>
+            <CheckboxGroup
+              title="Comparisons"
+              items={comparisonTypes}
+              selectedItems={queryState.comparisons || []}
+              onChange={handleComparisonChange}
+            />
+          </div>
+        </Category>
+
+        <Category 
+          title="Time Range" 
+          icon={<Calendar className="h-4 w-4" />}
+        >
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground">Date Range</p>
+            <div className="text-sm">
+              {/* {queryState?.timeDimensions?.[0]?.dateRange[0]} to {queryState?.timeDimensions?.[0]?.dateRange[1]} */}
             </div>
           </div>
         </Category>
