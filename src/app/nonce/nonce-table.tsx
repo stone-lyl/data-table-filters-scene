@@ -72,7 +72,7 @@ export function NonceTable({ initialData = [] }: NonceTableProps) {
         <div
           data-testid="analytics-table-sidebar"
           className={cn(
-            "w-full p-1 sm:block sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-58 md:max-w-58",
+            "p-1 sm:block sm:min-w-56 sm:max-w-56 sm:self-start md:min-w-58 md:max-w-58",
           )}
         >
           <Sidebar nonceData={nonceData} onQueryChange={handleQueryChange} />
