@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from "react";
-import { Query } from "@cubejs-client/core";
 import { VisibilityState } from "@tanstack/react-table";
 import { AnalyticsTableCoreClient } from "../analyze/analytics-table-core";
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
@@ -13,17 +12,19 @@ import { Sidebar } from "./components/sidebar";
 import { useCubeDataWithComparison } from "./hooks/use-cube-data";
 import { AggregationConfig, defaultAggregations } from "@/components/data-table/data-table-aggregations";
 import { cn } from "@/lib/utils";
+import { ExtendedQuery } from "./utils/cube-query-builder";
+import { ComparisonOption } from "./components/time-comparison-selector";
 
 export interface NonceTableProps {
 }
 
 export function NonceTable() {
-  // State for the query and comparison query
-  const [query, setQuery] = useState<Query | null>(null);
-  const [comparisonQuery, setComparisonQuery] = useState<Query | null>(null);
+  // State for the query state and comparison selection
+  const [queryState, setQueryState] = useState<ExtendedQuery | null>(null);
+  const [selectedComparison, setSelectedComparison] = useState<ComparisonOption | null>(null);
 
-  // Use our custom hook to fetch and transform data
-  const { primary, comparison } = useCubeDataWithComparison(query, comparisonQuery);
+  // Use our custom hook to fetch and transform data based on query state and comparison
+  const { primary, comparison } = useCubeDataWithComparison(queryState, selectedComparison);
   
   // Destructure the primary data
   const { data: nonceData, columns, isLoading } = primary;
@@ -55,8 +56,8 @@ export function NonceTable() {
         >
           <Sidebar 
             nonceData={nonceData} 
-            onQueryChange={setQuery} 
-            onComparisonQueryChange={setComparisonQuery} 
+            onQueryStateChange={setQueryState} 
+            onComparisonChange={setSelectedComparison} 
           />
         </div>
         <div className="flex-1 w-[calc(100%-24rem)]">

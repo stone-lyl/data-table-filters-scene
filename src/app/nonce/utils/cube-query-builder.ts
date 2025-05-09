@@ -29,7 +29,6 @@ export const createDefaultQuery = (): ExtendedQuery => {
 // Get all available measures from sidebar meta
 export const getAvailableMeasures = () => {
   const metaData = sidebarMeta[0];
-  console.log(metaData, 'metaData')
   return metaData.measures.filter(measure => measure.isVisible).map(measure => ({
     name: measure.name,
     title: measure.title,

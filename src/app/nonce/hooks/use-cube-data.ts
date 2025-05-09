@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Query } from '@cubejs-client/core';
+import { Query, BinaryFilter } from '@cubejs-client/core';
 import { useCubeQuery } from '@cubejs-client/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { NonceRecord, ColumnStruct, generateColumns } from '../mock-data';
+import { buildQuery, createComparisonQuery, ExtendedQuery } from '../utils/cube-query-builder';
 
 interface UseCubeDataResult {
   data: NonceRecord[];
@@ -51,15 +52,29 @@ export function useCubeData(
 }
 
 /**
- * Custom hook to fetch and transform both primary and comparison data from Cube.js
- * @param query The primary Cube.js query
- * @param comparisonQuery The comparison Cube.js query
+ * Custom hook to fetch and transform data based on query state and comparison selection
+ * @param queryState The extended query state
+ * @param selectedComparison The selected comparison option
  * @returns Object containing primary and comparison data, columns, and loading states
  */
 export function useCubeDataWithComparison(
-  query: Query | null,
-  comparisonQuery: Query | null,
+  queryState: ExtendedQuery | null,
+  selectedComparison: { value: string } | null
 ) {
+  // Build queries from state
+  const [query, setQuery] = useState<Query | null>(null);
+  const [comparisonQuery, setComparisonQuery] = useState<Query | null>(null);
+
+  useEffect(() => {
+    setComparisonQuery(queryState && selectedComparison ? 
+      createComparisonQuery(queryState, selectedComparison.value) : null);
+    }, [queryState, selectedComparison]);
+    
+    useEffect(() => {
+      setQuery(queryState ? buildQuery(queryState) : null);
+    }, [queryState]);
+  console.log(query, 'query');
+  console.log(comparisonQuery, 'comparisonQuery');
   // Get primary data
   const primary = useCubeData(query);
   
@@ -67,8 +82,7 @@ export function useCubeDataWithComparison(
   const comparison = useCubeData(comparisonQuery);
 
   if (!primary.isLoading && !comparison.isLoading) {
-    console.log('primary', primary);
-    console.log('comparison', comparison);
+    // 
   }
   
   return {

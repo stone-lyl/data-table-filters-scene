@@ -9,7 +9,6 @@ import { format, subDays, addDays, subYears } from "date-fns";
 import { DateRangePicker } from "./date-range-picker";
 import { TimeComparisonSelector, ComparisonOption } from "./time-comparison-selector";
 import { 
-  buildQuery, 
   createDefaultQuery, 
   getAvailableMeasures, 
   getAvailableDimensions, 
@@ -18,7 +17,6 @@ import {
   updateDimensions, 
   updateFilters, 
   updateDateRange,
-  createComparisonQuery,
   ExtendedQuery
 } from "../utils/cube-query-builder";
 import { Query, BinaryFilter } from "@cubejs-client/core";
@@ -28,11 +26,11 @@ import { CheckboxGroup } from "./checkbox-group";
 
 interface SidebarProps {
   nonceData: NonceRecord[];
-  onQueryChange?: (query: Query) => void;
-  onComparisonQueryChange: (query: Query | null) => void;
+  onQueryStateChange?: (queryState: ExtendedQuery) => void;
+  onComparisonChange?: (comparison: ComparisonOption | null) => void;
 }
 
-export function Sidebar({ nonceData, onQueryChange, onComparisonQueryChange }: SidebarProps) {
+export function Sidebar({ nonceData, onQueryStateChange, onComparisonChange }: SidebarProps) {
   // Get measures and dimensions from sidebar meta
   const measures = getAvailableMeasures();
   const dimensions = getAvailableDimensions();
@@ -52,55 +50,23 @@ export function Sidebar({ nonceData, onQueryChange, onComparisonQueryChange }: S
     return acc;
   }, {} as Record<string, Array<{ id: string; name: string; }>>);
 
-  // State for query
   const [queryState, setQueryState] = useState<ExtendedQuery>(createDefaultQuery());
-  // State for selected comparison option
   const [selectedComparison, setSelectedComparison] = useState<ComparisonOption | null>(null);
 
-  console.log(queryState, 'queryState ??')
-  // Update query when selections change
   useEffect(() => {
-    if (onQueryChange) {
-      const query = buildQuery(queryState);
-      onQueryChange(query);
+    if (onQueryStateChange) {
+      onQueryStateChange(queryState);
     }
-  }, [queryState, onQueryChange]);
+  }, [queryState, onQueryStateChange]);
   
-  // Generate comparison query when comparison option changes
+  // Pass comparison selection to parent when it changes
   useEffect(() => {
-      if (selectedComparison) {
-        // Create the comparison query
-        const comparisonQuery = createComparisonQuery(queryState, selectedComparison.value);
-        
-        // Pass the comparison query to the parent component
-        onComparisonQueryChange(comparisonQuery);
-      } else {
-        // If no comparison is selected, pass null to clear the comparison
-        onComparisonQueryChange(null);
-      }
-  }, [selectedComparison, queryState, onComparisonQueryChange]);
+    if (onComparisonChange) {
+      onComparisonChange(selectedComparison);
+    }
+  }, [selectedComparison, onComparisonChange]);
 
-  // Check if a measure is selected
-  const isMeasureSelected = (measure: string) => {
-    return queryState.measures?.includes(measure) || false;
-  };
-
-  // Check if a dimension is selected
-  const isDimensionSelected = (dimension: string) => {
-    return queryState.dimensions?.includes(dimension) || false;
-  };
-
-  // Check if a farm is selected
-  const isFarmSelected = (farm: string) => {
-    const farmFilter = queryState.filters?.find(
-      f => (f as BinaryFilter).member === 'metrics.workspace_name'
-    ) as BinaryFilter | undefined;
-    return farmFilter ? farmFilter.values.includes(farm) : false;
-  };
-
-  // Handle measure selection
   const handleMeasureChange = (folder: string, selectedIds: string[]) => {
-    // Get all currently selected measures from other folders
     const currentMeasures = queryState.measures || [];
     const otherFolderMeasures = Object.entries(measuresByFolder)
       .filter(([folderName]) => folderName !== folder)
