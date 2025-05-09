@@ -5,20 +5,22 @@ import { Filter, BarChart2, ArrowLeftRight, Calendar as CalendarIcon } from "luc
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
-import { format, subDays } from "date-fns";
+import { format, subDays, addDays, subYears } from "date-fns";
 import { DateRangePicker } from "./date-range-picker";
+import { TimeComparisonSelector, ComparisonOption } from "./time-comparison-selector";
 import { 
   buildQuery, 
   createDefaultQuery, 
   getAvailableMeasures, 
-  getAvailableDimensions,
-  getAvailableFarmNames,
-  getAvailableComparisonTypes,
-  updateMeasures,
-  updateDimensions,
-  updateFilters,
-  updateComparisons,
+  getAvailableDimensions, 
+  getAvailableFarmNames, 
+  getAvailableComparisonTypes, 
+  updateMeasures, 
+  updateDimensions, 
+  updateFilters, 
+  updateComparisons, 
   updateDateRange,
+  createComparisonQuery,
   ExtendedQuery
 } from "../utils/query-builder";
 import { Query, BinaryFilter } from "@cubejs-client/core";
@@ -36,7 +38,13 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
   const measures = getAvailableMeasures();
   const dimensions = getAvailableDimensions();
   const farmNames = getAvailableFarmNames();
-  const comparisonTypes = getAvailableComparisonTypes();
+  
+  // Time comparison options
+  const timeComparisonOptions: ComparisonOption[] = [
+    { id: 'previous_year', name: 'Previous Year', value: 'year' },
+    { id: 'previous_30_days', name: 'Previous 30 Days', value: '30days' },
+    { id: 'previous_7_days', name: 'Previous 7 Days', value: '7days' }
+  ];
   
   // Group measures by folder
   const measuresByFolder = measures.reduce((acc, measure) => {
@@ -53,6 +61,8 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
 
   // State for query
   const [queryState, setQueryState] = useState<ExtendedQuery>(createDefaultQuery());
+  // State for selected comparison option
+  const [selectedComparison, setSelectedComparison] = useState<ComparisonOption | null>(null);
 
   console.log(queryState, 'queryState ??')
   // Update query when selections change
@@ -62,6 +72,22 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
       onQueryChange(query);
     }
   }, [queryState, onQueryChange]);
+  
+  // Generate comparison query when comparison option changes
+  useEffect(() => {
+    if (onQueryChange && selectedComparison) {
+      // Create and send the comparison query
+      const comparisonQuery = createComparisonQuery(queryState, selectedComparison.value);
+      
+      if (comparisonQuery) {
+        console.log('Comparison query:', comparisonQuery);
+        
+        // Here you would typically send this query to your API
+        // For now, we'll just log it
+        // In a real implementation, you might want to add a callback prop for handling comparison queries
+      }
+    }
+  }, [selectedComparison, queryState, onQueryChange]);
 
   // Check if a measure is selected
   const isMeasureSelected = (measure: string) => {
@@ -79,11 +105,6 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
       f => (f as BinaryFilter).member === 'metrics.workspace_name'
     ) as BinaryFilter | undefined;
     return farmFilter ? farmFilter.values.includes(farm) : false;
-  };
-
-  // Check if a comparison type is selected
-  const isComparisonSelected = (comparisonType: string) => {
-    return queryState.comparisons?.includes(comparisonType) || false;
   };
 
   // Handle measure selection
@@ -117,8 +138,8 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
   };
 
   // Handle comparison selection
-  const handleComparisonChange = (selectedIds: string[]) => {
-    setQueryState(updateComparisons(queryState, selectedIds));
+  const handleComparisonChange = (option: ComparisonOption | null) => {
+    setSelectedComparison(option);
   };
 
   // Handle date range change
@@ -209,7 +230,7 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
                 name: farm 
               }))}
               selectedItems={queryState.filters
-                ? (queryState.filters.find(filter => 
+                ? (queryState.filters.find((filter: any) => 
                     (filter as BinaryFilter).member === 'metrics.workspace_name'
                   ) as BinaryFilter | undefined)?.values || []
                 : []}
@@ -224,11 +245,10 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
           icon={<ArrowLeftRight className="h-4 w-4" />}
         >
           <div className="space-y-4">
-            <CheckboxGroup
-              title="Comparisons"
-              items={comparisonTypes}
-              selectedItems={queryState.comparisons || []}
-              onChange={handleComparisonChange}
+            <TimeComparisonSelector
+              options={timeComparisonOptions}
+              selectedOption={selectedComparison}
+              onSelect={handleComparisonChange}
             />
           </div>
         </Category>

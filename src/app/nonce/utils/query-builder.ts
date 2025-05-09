@@ -1,9 +1,9 @@
 import { Query, Filter, BinaryFilter, BinaryOperator, TimeDimensionGranularity } from '@cubejs-client/core';
 import sidebarMeta from '../sidebar-meta.json';
+import { format, subDays, subYears } from 'date-fns';
 
 // Define additional properties we need to track that aren't in the Query type
 export interface ExtendedQuery extends Query {
-  comparisons?: string[];
   breakdowns?: string[];
 }
 
@@ -11,7 +11,6 @@ const defaultQuery: ExtendedQuery = {
   measures: ['metrics.cost_usd'],
   dimensions: [],
   filters: [{ member: 'metrics.workspace_name', operator: 'equals', values: ['hashing'] }],
-  // comparisons: [],
   // breakdowns: [],
   timeDimensions: [{
     dimension: 'metrics.period',
@@ -26,7 +25,6 @@ const defaultQuery: ExtendedQuery = {
 export const createDefaultQuery = (): ExtendedQuery => {
   return { ...defaultQuery };
 };
-
 
 // Get all available measures from sidebar meta
 export const getAvailableMeasures = () => {
@@ -98,24 +96,6 @@ export const buildQuery = (extendedQuery: ExtendedQuery): Query => {
     query.order = { [extendedQuery.timeDimensions[0].dimension]: 'desc' };
   }
 
-  // Add comparison measures if needed
-  if (extendedQuery.comparisons && extendedQuery.comparisons.length > 0 && query.measures) {
-    // Find all measures that have the selected comparison types
-    const measuresWithComparisons = getAvailableMeasures();
-    
-    extendedQuery.measures?.forEach(measure => {
-      const measureMeta = measuresWithComparisons.find(m => m.name === measure);
-      if (measureMeta && measureMeta.comparisons) {
-        measureMeta.comparisons.forEach(comparison => {
-          if (extendedQuery.comparisons?.includes(comparison.type) && query.measures) {
-            if (!query.measures.includes(comparison.member)) {
-              query.measures.push(comparison.member);
-            }
-          }
-        });
-      }
-    });
-  }
 
   return query;
 };
@@ -159,14 +139,6 @@ export const updateFilters = (
   };
 };
 
-// Update query with selected comparisons
-export const updateComparisons = (query: ExtendedQuery, selectedComparisons: string[]): ExtendedQuery => {
-  return {
-    ...query,
-    comparisons: selectedComparisons
-  };
-};
-
 // Update query with date range
 export const updateDateRange = (
   query: ExtendedQuery, 
@@ -184,4 +156,72 @@ export const updateDateRange = (
     ...query,
     timeDimensions: updatedTimeDimensions
   };
+};
+
+
+/**
+ * Creates a comparison query with a different date range but the same filters, dimensions, etc.
+ * @param originalQuery - The original query state
+ * @param comparisonType - The type of comparison to make ('year', '30days', or '7days')
+ * @returns A new query for comparison or null if the comparison can't be made
+ */
+export const createComparisonQuery = (
+  originalQuery: ExtendedQuery, 
+  comparisonType: string
+): Query | null => {
+  // Check if we have a valid time dimension with date range
+  if (!originalQuery.timeDimensions || 
+      !originalQuery.timeDimensions[0] || 
+      !originalQuery.timeDimensions[0].dateRange || 
+      originalQuery.timeDimensions[0].dateRange.length !== 2) {
+    return null;
+  }
+  
+  // Get the current date range
+  const currentDateRange = originalQuery.timeDimensions[0].dateRange;
+  
+  // Parse the current date range
+  const currentFrom = new Date(currentDateRange[0]);
+  const currentTo = new Date(currentDateRange[1]);
+  
+  // Calculate the comparison date range based on the selected option
+  let comparisonFrom: Date;
+  let comparisonTo: Date;
+  
+  switch (comparisonType) {
+    case 'year':
+      comparisonFrom = subYears(currentFrom, 1);
+      comparisonTo = subYears(currentTo, 1);
+      break;
+    case '30days':
+      comparisonFrom = subDays(currentFrom, 30);
+      comparisonTo = subDays(currentTo, 30);
+      break;
+    case '7days':
+      comparisonFrom = subDays(currentFrom, 7);
+      comparisonTo = subDays(currentTo, 7);
+      break;
+    default:
+      return null;
+  }
+  
+  // Format the dates for the query
+  const comparisonDateRange: [string, string] = [
+    format(comparisonFrom, 'yyyy-MM-dd'),
+    format(comparisonTo, 'yyyy-MM-dd')
+  ];
+
+  // Create a new query with the same structure but different date range
+  const comparisonQuery = {
+    ...originalQuery,
+    timeDimensions: [
+      {
+        ...originalQuery.timeDimensions[0],
+        dateRange: comparisonDateRange
+      }
+    ]
+  };
+  
+  // Convert to a standard Cube.js query
+  return buildQuery(comparisonQuery);
 };
