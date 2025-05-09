@@ -7,8 +7,7 @@ export interface ExtendedQuery extends Query {
   breakdowns?: string[];
 }
 
-// Default query state
-export const defaultQuery: ExtendedQuery = {
+const defaultQuery: ExtendedQuery = {
   measures: ['metrics.cost_usd'],
   dimensions: [],
   filters: [{ member: 'metrics.workspace_name', operator: 'equals', values: ['hashing'] }],
@@ -22,6 +21,12 @@ export const defaultQuery: ExtendedQuery = {
   limit: 100,
   order: { "metrics.period": "desc" },
 };
+
+// Create a new query with default values
+export const createDefaultQuery = (): ExtendedQuery => {
+  return { ...defaultQuery };
+};
+
 
 // Get all available measures from sidebar meta
 export const getAvailableMeasures = () => {
@@ -114,12 +119,6 @@ export const buildQuery = (extendedQuery: ExtendedQuery): Query => {
 
   return query;
 };
-
-// Create a new query with default values
-export const createDefaultQuery = (): ExtendedQuery => {
-  return { ...defaultQuery };
-};
-
 // Update query with selected measures
 export const updateMeasures = (query: ExtendedQuery, selectedMeasures: string[]): ExtendedQuery => {
   return {

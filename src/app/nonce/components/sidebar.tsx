@@ -73,7 +73,7 @@ function CheckboxGroup({ title, items, selectedItems, onChange }: CheckboxGroupP
     <div className="space-y-1">
       <p className="text-xs text-muted-foreground">{title}</p>
       {items.map((item) => (
-        <div key={item.id} className="flex items-center space-x-2">
+        <div key={item.id} className="flex items-start space-x-1 pt-1">
           <Checkbox 
             id={item.id} 
             checked={selectedItems.includes(item.id)}
@@ -201,23 +201,12 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
                 <div key={folder} className="space-y-1">
                   <div className="font-medium">{folder}</div>
                   <div className="pl-4 space-y-1">
-                    {items.map(item => (
-                      <div key={item.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`measure-${item.id}`}
-                          checked={isMeasureSelected(item.id)}
-                          onCheckedChange={(checked) => {
-                            const newSelectedIds = checked
-                              ? [...selectedIds, item.id]
-                              : selectedIds.filter(id => id !== item.id);
-                            handleMeasureChange(folder, newSelectedIds);
-                          }}
-                        />
-                        <Label htmlFor={`measure-${item.id}`} className="text-sm">
-                          {item.name}
-                        </Label>
-                      </div>
-                    ))}
+                    <CheckboxGroup
+                      title="Measures"
+                      items={items}
+                      selectedItems={selectedIds}
+                      onChange={(newSelectedIds) => handleMeasureChange(folder, newSelectedIds)}
+                    />
                   </div>
                 </div>
               );
