@@ -72,7 +72,7 @@ export function NonceTable({ initialData = [] }: NonceTableProps) {
         <div
           data-testid="analytics-table-sidebar"
           className={cn(
-            "p-1 sm:block sm:min-w-56 sm:max-w-56 sm:self-start md:min-w-58 md:max-w-58",
+            "p-1 sm:block sm:min-w-58 sm:max-w-58 sm:self-start md:min-w-58 md:max-w-58",
           )}
         >
           <Sidebar nonceData={nonceData} onQueryChange={handleQueryChange} />
@@ -82,7 +82,7 @@ export function NonceTable({ initialData = [] }: NonceTableProps) {
             columns={columns || []}
             data={nonceData}
             pageSize={20}
-            tableClassName="h-[calc(100vh-16rem)] overflow-y-scroll"
+            tableClassName="max-h-[calc(100vh-16rem)] overflow-y-scroll"
             defaultColumnFilters={[]}
             defaultGrouping={[]}
             filterFields={[]}

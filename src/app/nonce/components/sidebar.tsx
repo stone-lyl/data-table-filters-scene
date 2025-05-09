@@ -1,12 +1,12 @@
 'use client';
 
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { NonceRecord } from "../mock-data";
-import { ChevronDown, Filter, BarChart2, ArrowLeftRight, Calendar } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Filter, BarChart2, ArrowLeftRight, Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { DateRange } from "react-day-picker";
+import { format, subDays } from "date-fns";
+import { DateRangePicker } from "./date-range-picker";
 import { 
   buildQuery, 
   createDefaultQuery, 
@@ -18,74 +18,17 @@ import {
   updateDimensions,
   updateFilters,
   updateComparisons,
+  updateDateRange,
   ExtendedQuery
 } from "../utils/query-builder";
 import { Query, BinaryFilter } from "@cubejs-client/core";
 
+import { Category } from "./category";
+import { CheckboxGroup } from "./checkbox-group";
+
 interface SidebarProps {
   nonceData: NonceRecord[];
   onQueryChange?: (query: Query) => void;
-}
-
-interface CategoryProps {
-  title: string;
-  children: React.ReactNode;
-  icon?: React.ReactNode;
-  defaultOpen?: boolean;
-}
-
-function Category({ title, children, icon, defaultOpen = false }: CategoryProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  
-  return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border-b border-gray-200 py-2">
-      <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
-        <div className="flex items-center gap-2">
-          {icon}
-          <span className="text-sm font-medium">{title}</span>
-        </div>
-        <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
-      </CollapsibleTrigger>
-      <CollapsibleContent className="pt-1 pb-3">
-        {children}
-      </CollapsibleContent>
-    </Collapsible>
-  );
-}
-
-interface CheckboxGroupProps {
-  title: string;
-  items: Array<{ id: string; name: string; }>;
-  selectedItems: string[];
-  onChange: (selectedIds: string[]) => void;
-}
-
-function CheckboxGroup({ title, items, selectedItems, onChange }: CheckboxGroupProps) {
-  const handleCheckboxChange = (id: string, checked: boolean) => {
-    if (checked) {
-      onChange([...selectedItems, id]);
-    } else {
-      onChange(selectedItems.filter(item => item !== id));
-    }
-  };
-
-  return (
-    <div className="space-y-1">
-      <p className="text-xs text-muted-foreground">{title}</p>
-      {items.map((item) => (
-        <div key={item.id} className="flex items-start space-x-1 pt-1">
-          <Checkbox 
-            id={item.id} 
-            checked={selectedItems.includes(item.id)}
-            onCheckedChange={(checked) => handleCheckboxChange(item.id, checked === true)}
-          />
-          <Label htmlFor={item.id} className="text-sm">
-            {item.name}
-          </Label>
-        </div>
-      ))}
-    </div>
-  );
 }
 
 export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
@@ -178,6 +121,32 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
     setQueryState(updateComparisons(queryState, selectedIds));
   };
 
+  // Handle date range change
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    if (range?.from && range?.to) {
+      const formattedFrom = format(range.from, 'yyyy-MM-dd');
+      const formattedTo = format(range.to, 'yyyy-MM-dd');
+      
+      setQueryState(updateDateRange(queryState, [formattedFrom, formattedTo]));
+    }
+  };
+  
+  // Initialize date range from query or default to last 7 days
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    const defaultFrom = queryState?.timeDimensions?.[0]?.dateRange?.[0] 
+      ? new Date(queryState.timeDimensions[0].dateRange[0]) 
+      : subDays(new Date(), 7);
+    
+    const defaultTo = queryState?.timeDimensions?.[0]?.dateRange?.[1]
+      ? new Date(queryState.timeDimensions[0].dateRange[1])
+      : new Date();
+      
+    return {
+      from: defaultFrom,
+      to: defaultTo
+    };
+  });
+
   return (
     <div className="w-full border-r border-gray-200 p-4 h-[calc(100vh-8rem)] overflow-y-auto">
       <div className="space-y-1">
@@ -266,13 +235,17 @@ export function Sidebar({ nonceData, onQueryChange }: SidebarProps) {
 
         <Category 
           title="Time Range" 
-          icon={<Calendar className="h-4 w-4" />}
+          icon={<CalendarIcon className="h-4 w-4" />}
         >
           <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">Date Range</p>
-            <div className="text-sm">
-              {/* {queryState?.timeDimensions?.[0]?.dateRange[0]} to {queryState?.timeDimensions?.[0]?.dateRange[1]} */}
-            </div>
+            <p className="text-xs text-muted-foreground">timeDimensions</p>
+            <DateRangePicker
+              initialDateRange={dateRange}
+              onDateRangeChange={(range) => {
+                setDateRange(range);
+                handleDateRangeChange(range);
+              }}
+            />
           </div>
         </Category>
       </div>
