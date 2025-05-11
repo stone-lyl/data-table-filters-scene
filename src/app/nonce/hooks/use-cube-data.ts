@@ -27,7 +27,7 @@ export function useCubeData(
   const [data, setData] = useState<NonceRecord[]>([]);
   
   // Use the Cube.js query hook
-  const { resultSet, isLoading, error, progress } = useCubeQuery(query || {});
+  const { resultSet, isLoading, error } = useCubeQuery(query || {});
 
   // Update data when query results change
   useEffect(() => {
@@ -71,27 +71,31 @@ export function useCubeDataWithComparison(
     return queryState ? buildQuery(queryState) : null;
   }, [queryState]);
 
+  const isCompare = useMemo(() => {
+    return queryState && selectedComparison;
+  }, [queryState, selectedComparison]);
+
   const comparisonQuery = useMemo(() => {
-    if (queryState && selectedComparison) {
-      return createComparisonQuery(queryState, selectedComparison.value);
+    if (isCompare) {
+      return createComparisonQuery(queryState!, selectedComparison!.value);
     }
     return null;
-  }, [queryState, selectedComparison]);
+  }, [queryState, selectedComparison, isCompare]);
 
   const primary = useCubeData(query);
   
   const comparison = useCubeData(comparisonQuery);
 
   const joinQuery = useMemo(() => {
-    if (primary.data.length === 0 || comparison.data.length === 0) {
-      return '';
+    if (!isCompare) {
+      return null;
     }
     return generateComparisonQuery(
-      selectedComparison,
-      primary.data,
-      comparison.data
+      selectedComparison!,
+      primary.columns,
+      comparison.columns
     );
-  }, [primary.data, comparison.data, selectedComparison]);
+  }, [primary.columns, comparison.columns, selectedComparison, isCompare]);
 
   // Transform the data using SWR-based hook
   const datasets = {
@@ -101,15 +105,16 @@ export function useCubeDataWithComparison(
   const { data: transformedData, isLoading: isTransformedLoading } = useTransformedData({ datasets, joinQuery });
   
   const comparisonLoading = (() => {
-    if(selectedComparison) {
+    if(isCompare) {
       return comparison.isLoading || isTransformedLoading;
     }
     return false;
   })();
 
+  console.log('isCompare', isCompare, transformedData, primary.data);
   
   return {
-    data: joinQuery ? transformedData : primary.data,
+    data: isCompare ? transformedData : primary.data,
     columns: primary.columns,
     isLoading: primary.isLoading || comparisonLoading,
   };

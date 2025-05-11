@@ -14,18 +14,15 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
   const columns: ColumnDef<NonceRecord, unknown>[] = [];
   columnStructs.forEach(colStruct => {
     const accessorKey = colStruct.dataIndex;
-    // Create a formatter based on the column structure
-    console.log(colStruct.meta?.format)
     const valueFormatter = createFormatter({
       format: colStruct.meta?.format || { type: colStruct.type },
       accessorKey: accessorKey
     });
-    const id = accessorKey.replace(/\./g, '_');
     const columnDef: ColumnDef<NonceRecord, unknown> = {
-      id,
       accessorFn: (row) => {
         return row[accessorKey];
       },
+      id: accessorKey,
       header: ({ column }) => (
         <DataTableColumnHeader align={colStruct.type === 'number' ? 'end' : 'start'} column={column} title={colStruct.shortTitle || colStruct.title} />
       ),

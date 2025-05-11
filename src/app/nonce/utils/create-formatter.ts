@@ -1,4 +1,5 @@
 import { formatCurrency, formatBtcAmount, formatBigNumber } from '@/app/analyze/util/formatters';
+import { format as formatDate, parseISO } from 'date-fns';
 
 export type FormatterFn = (value: any) => string;
 
@@ -31,9 +32,6 @@ export const createFormatter = ({
     return chain(ctx, defaultHandler);
   };
 };
-
-
-import { format as formatDate, parseISO } from 'date-fns';
 
 // Currency handler
 export const currencyHandler: FormatterHandler = (ctx, next) => {

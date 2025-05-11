@@ -1,7 +1,7 @@
 'use client';
 
 import { buildJoinQuery, buildQuery } from '@/app/analyze/compare/query-builder';
-import { ColumnDef } from '@tanstack/react-table';
+import { AccessorColumnDef, ColumnDef } from '@tanstack/react-table';
 import { NonceRecord } from '../mock-data';
 import { ComparisonOption } from '../components/time-comparison-selector';
 
@@ -15,21 +15,17 @@ export const CompareTimeKey = 'metrics.period.day'
  * @returns SQL query
  */
 export function generateComparisonQuery(
-  comparisonOption: ComparisonOption | null,
-  primaryData: NonceRecord[],
-  comparisonData: NonceRecord[]
+  comparisonOption: ComparisonOption,
+  primaryColumns: ColumnDef<NonceRecord, unknown>[],
+  comparisonColumns: ColumnDef<NonceRecord, unknown>[]
 ): string {
-  if (!comparisonOption || primaryData.length === 0 || comparisonData.length === 0) {
-    return '';
-  }
-
   const comparisonQuery = buildQuery({
     dataset: 'comparisonData',
     groupDimensions: [],
     fields: [
-      ...getColumnNames(primaryData).map((it) => ({
-        name: it,
-        expression: `"${it}"`,
+      ...comparisonColumns.map((it: ColumnDef<NonceRecord, unknown>) => ({
+        name: it.id!,
+        expression: `"${it.id}"`,
       })),
       {
         name: 'periodKey',
@@ -42,9 +38,9 @@ export function generateComparisonQuery(
     dataset: 'primaryData',
     groupDimensions: [],
     fields: [
-      ...getColumnNames(comparisonData).map((it) => ({
-        name: it,
-        expression: `"${it}"`,
+      ...primaryColumns.map((it: ColumnDef<NonceRecord, unknown>) => ({
+        name: it.id!,
+        expression: `"${it.id}"`,
       })),
       {
         name: 'periodKey',
@@ -64,7 +60,7 @@ export function generateComparisonQuery(
       query: comparisonQuery,
       pick: {
         prefix: 'Pre_',
-        columns: getColumnNames(comparisonData)
+        columns: comparisonColumns.map(it => it.id!)
       }
     },
     using: ['periodKey'], // Join on the date field
@@ -72,16 +68,4 @@ export function generateComparisonQuery(
   });
 
   return joinQuery;
-}
-
-/**
- * Get column names from a dataset
- * @param data The dataset to get column names from
- * @returns Array of column names
- */
-function getColumnNames(data: any[]): string[] {
-  if (data.length === 0) return [];
-  
-  // Get all keys from the first object and filter out any that are not strings or numbers
-  return Object.keys(data[0]);
 }
