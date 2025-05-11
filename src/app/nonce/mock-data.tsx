@@ -168,6 +168,7 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
               currentDate={row.original['metrics.period.day'] as string}
               previousDate={row.original['Pre_metrics.period.day'] as string}
               showDate={true}
+              hidePercentage
             />
           );
         }

@@ -167,13 +167,13 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className={cn("flex flex-col text-xs tabular-nums", className)}>
+          <div className={cn("flex flex-col text-xs tabular-nums text-end", className)}>
             <div className="font-medium">
               {prefix}{formatValue(current)}
             </div>
             
             {change && (
-              <div className="pl-2 mt-1 space-y-0.5">
+              <div className="mt-1 space-y-0.5 text-end">
                 {renderComparison()}
               </div>
             )}
@@ -187,20 +187,20 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
             {previous && (
               <div className="flex justify-between">
                 <span className="font-medium">Previous:</span>
-                <span>{prefix}{formatBigNumber(previous.toFixed(decimals).toString())}</span>
+                <span>{prefix}{formatValue(previous)}</span>
               </div>
             )}
             {change && (
               <div className="flex justify-between">
                 <span className="font-medium">Change:</span>
                 <span className={textColor}>
-                  {isPositive ? "+" : "-"}{prefix}{formatBigNumber(change.abs().toFixed(decimals).toString())}
+                  {isPositive ? "+" : "-"}{prefix}{formatValue(change.abs())}
                 </span>
               </div>
             )}
             <div className="flex justify-between">
               <span className="font-medium">Current:</span>
-              <span>{prefix}{formatBigNumber(current.toFixed(decimals).toString())}</span>
+              <span>{prefix}{formatValue(current)}</span>
             </div>
             {changePercentage && (
               <div className="flex justify-between">
@@ -258,9 +258,9 @@ export const AmountComparisonCell: React.FC<{
   const customComparisonFormatter = (change: number, changePercentage: number) => {
     return (
       <div className="space-y-1">
-        <div className="flex items-center gap-2">
+        <div>
           <span className={change > 0 ? "text-[#ec4899]" : "text-[#10b981]"}>
-            {change > 0 ? "+" : "-"}${formatter(Math.abs(change))}
+            {change > 0 ? "+" : "-"}{formatter(Math.abs(change))}
           </span>
           {!hidePercentage && (
             <span className={changePercentage > 0 ? "text-[#ec4899]" : "text-[#10b981]"}>  
@@ -279,7 +279,6 @@ export const AmountComparisonCell: React.FC<{
       formatType="custom"
       customFormatter={formatter}
       comparisonType="both"
-      prefix="$"
       showArrows={true}
       showDate={showDate}
       currentDate={currentDate}

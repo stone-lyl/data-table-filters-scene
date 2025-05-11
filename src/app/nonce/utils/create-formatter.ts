@@ -28,7 +28,7 @@ export const createFormatter = ({
       if (unit === 'BTC') {
         return `${formatBtcAmount(numValue.toString())} BTC`;
       } else {
-        return `${formatCurrency(numValue)}`;
+        return `$${formatCurrency(numValue)}`;
       }
     } else if (accessorKey.includes('hashrate')) {
       return `${numValue} TH/s`;
