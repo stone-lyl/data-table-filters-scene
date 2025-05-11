@@ -2,7 +2,7 @@
 
 import { buildJoinQuery, buildQuery } from '@/app/analyze/compare/query-builder';
 import { AccessorColumnDef, ColumnDef } from '@tanstack/react-table';
-import { NonceRecord } from '../mock-data';
+import { NonceRecord } from '../types';
 import { ComparisonOption } from '../components/time-comparison-selector';
 
 export const CompareTimeKey = 'metrics.period.day'

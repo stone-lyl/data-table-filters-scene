@@ -7,7 +7,7 @@ import { DataTableViewOptions } from "@/components/data-table/data-table-view-op
 import { DataTableGroupButtons } from "@/components/data-table/data-table-group-buttons";
 import { DataTablePagination } from "@/components/data-table/data-table-pagination";
 import { useLocalStorage } from "@/hooks/use-local-storage";
-import { NonceRecord, defaultColumnVisibility } from "./mock-data";
+import { NonceRecord } from "./types";
 import { Sidebar } from "./components/sidebar";
 import { useCubeDataWithComparison } from "./hooks/use-cube-data";
 import { AggregationConfig, defaultAggregations } from "@/components/data-table/data-table-aggregations";
@@ -28,7 +28,7 @@ export function NonceTable() {
   
   // Column visibility state
   const [columnVisibility, setColumnVisibility] =
-    useLocalStorage<VisibilityState>("nonce-table-visibility", defaultColumnVisibility);
+    useLocalStorage<VisibilityState>("nonce-table-visibility", {});
 
   // Create custom controls with DataTableViewOptions and DataTableGroupButtons
   const customControls = (
@@ -38,6 +38,7 @@ export function NonceTable() {
     </div>
   );
 
+  console.log(queryState, 'queryState')
   return (
     <div className="p-4">
       <h3 className="mb-4 text-lg font-medium">Mining Performance Dashboard</h3>
@@ -60,7 +61,7 @@ export function NonceTable() {
             data={data}
             tableClassName="max-h-[calc(100vh-10rem)] overflow-y-scroll"
             defaultColumnFilters={[]}
-            defaultGrouping={[]}
+            defaultGrouping={queryState?.dimensions || []}
             filterFields={[]}
             controlsSlot={customControls}
             paginationSlot={<DataTablePagination />}

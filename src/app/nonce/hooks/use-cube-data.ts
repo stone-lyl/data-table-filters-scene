@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Query, BinaryFilter } from '@cubejs-client/core';
 import { useCubeQuery } from '@cubejs-client/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { NonceRecord, ColumnStruct } from '../mock-data';
+import { NonceRecord, ColumnStruct } from '../types';
 import { generateColumns } from '../generate-columns';
 import { buildQuery, createComparisonQuery, ExtendedQuery } from '../utils/cube-query-builder';
 import { generateComparisonQuery } from '../utils/generate-comparison-query';

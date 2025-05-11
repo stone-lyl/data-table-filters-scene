@@ -39,10 +39,10 @@ export const getAvailableMeasures = () => {
   }));
 };
 
-// Get all available dimensions from sidebar meta
 export const getAvailableDimensions = () => {
   const metaData = sidebarMeta[0];
-  return metaData.dimensions.filter(dimension => dimension.isVisible).map(dimension => ({
+  // only the farm_name to be visible in nonce
+  return metaData.dimensions.slice(1, 2).filter(dimension => dimension.isVisible).map(dimension => ({
     name: dimension.name,
     title: dimension.title,
     shortTitle: dimension.shortTitle,
@@ -52,8 +52,6 @@ export const getAvailableDimensions = () => {
 
 // Get all available farm names for filtering
 export const getAvailableFarmNames = () => {
-  // This would typically come from an API call or the meta data
-  // For now, we'll return a static list
   return ["GA - LN", "Kuching - MY", "Paris - TN"];
 };
 
@@ -66,18 +64,6 @@ export const getFolderForMeasure = (measureName: string) => {
     }
   }
   return null;
-};
-
-// Get available comparison types
-export const getAvailableComparisonTypes = () => {
-  return [
-    { id: 'previous-period', name: 'Previous Period' },
-    { id: '7d-ma', name: '7D MA' },
-    { id: '28d-ma', name: '28D MA' },
-    { id: 'max', name: 'Max' },
-    { id: 'min', name: 'Min' },
-    { id: 'average', name: 'Average' }
-  ];
 };
 
 // Build a Cube.js query from the extended query
@@ -94,7 +80,7 @@ export const buildQuery = (extendedQuery: ExtendedQuery): Query => {
   if (extendedQuery.timeDimensions && extendedQuery.timeDimensions.length > 0) {
     query.order = { [extendedQuery.timeDimensions[0].dimension]: 'desc' };
   }
-  
+
   return query;
 };
 // Update query with selected measures

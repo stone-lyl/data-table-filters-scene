@@ -2,7 +2,7 @@ import { DataTableColumnHeader } from '@/components/data-table/data-table-column
 import type { ColumnDef } from '@tanstack/react-table';
 import { customSum } from '../analyze/util/customAggregationFn';
 import { AmountComparisonCell } from '../compare/comparison-cell';
-import { ColumnStruct, NonceRecord, defaultColumnVisibility } from './mock-data';
+import { ColumnStruct, NonceRecord } from './types';
 import { createFormatter } from './utils/create-formatter';
 
 /**
@@ -64,14 +64,6 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
     }
 
     columns.push(columnDef);
-  });
-
-  // Sort columns according to defaultColumnVisibility order
-  columns.sort((a, b) => {
-    const aIndex = Object.keys(defaultColumnVisibility).indexOf(a.id as string);
-    const bIndex = Object.keys(defaultColumnVisibility).indexOf(b.id as string);
-
-    return aIndex - bIndex;
   });
 
   return columns;
