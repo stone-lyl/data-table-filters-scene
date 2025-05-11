@@ -5,6 +5,7 @@ import { AccessorColumnDef, ColumnDef } from '@tanstack/react-table';
 import { NonceRecord } from '../types';
 import { ComparisonOption } from '../components/time-comparison-selector';
 
+export const ComparePrefix = 'Pre_'
 export const CompareTimeKey = 'metrics.period.day'
 /**
  * Generate a SQL query to join primary and comparison data
@@ -59,7 +60,7 @@ export function generateComparisonQuery(
       name: 'comparison-data',
       query: comparisonQuery,
       pick: {
-        prefix: 'Pre_',
+        prefix: ComparePrefix,
         columns: comparisonColumns.map(it => it.id!)
       }
     },

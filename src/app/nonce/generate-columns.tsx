@@ -4,6 +4,7 @@ import { customSum } from '../analyze/util/customAggregationFn';
 import { AmountComparisonCell } from '../compare/comparison-cell';
 import { ColumnStruct, NonceRecord } from './types';
 import { createFormatter } from './utils/create-formatter';
+import { ComparePrefix } from './utils/generate-comparison-query';
 
 /**
  * Generate columns based on columnsStruct
@@ -12,6 +13,7 @@ import { createFormatter } from './utils/create-formatter';
  */
 export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceRecord, unknown>[] {
   const columns: ColumnDef<NonceRecord, unknown>[] = [];
+  console.log(columnStructs, 'columnStructs')
   columnStructs.forEach(colStruct => {
     const accessorKey = colStruct.dataIndex;
     const valueFormatter = createFormatter({
@@ -28,7 +30,7 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
       ),
       aggregationFn: customSum,
       meta: {
-        fieldType: colStruct.type === 'time' ? 'dimension' : 'measure',
+        fieldType: colStruct.type === 'number' ? 'measure' : 'dimension',
       },
     };
 
@@ -42,11 +44,8 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
     } else if (colStruct.type === 'number') {
 
       columnDef.cell = ({ cell, row, column }) => {
-        // if row['Pre_<accessorKey>'] exist and the field type is measure,
-        // then display a compare cell,
-        // else display a normal cell
         const value = cell.getValue();
-        const compareValue = row.original['Pre_' + accessorKey];
+        const compareValue = row.original[`${ComparePrefix}${accessorKey}`];
         if (compareValue != null && column.columnDef.meta?.fieldType === 'measure') {
           return (
             <AmountComparisonCell
@@ -54,7 +53,7 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
               currentAmount={value as number}
               previousAmount={compareValue as number}
               currentDate={row.original['metrics.period.day'] as string}
-              previousDate={row.original['Pre_metrics.period.day'] as string}
+              previousDate={row.original[`${ComparePrefix}metrics.period.day`] as string}
               showDate={true}
               hidePercentage />
           );

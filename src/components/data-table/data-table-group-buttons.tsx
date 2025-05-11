@@ -12,14 +12,10 @@ export function DataTableGroupButtons() {
   const groupableColumns = React.useMemo(() => {
     return table.getAllColumns().filter(column => {
       const fieldType = column.columnDef.meta?.fieldType as FieldType | undefined;
-      console.log(fieldType, 'fieldType')
-      console.log(column.id, 'column.id')
-      return column.getCanGroup() && fieldType === 'dimension' && column.getIsVisible() && columnVisibility[column.id];
+      return column.getCanGroup() && fieldType === 'dimension' && column.getIsVisible();
     });
   }, [table.getAllColumns(), columnVisibility]);
 
-  console.log(groupableColumns, 'groupableColumns')
-  console.log(grouping, 'grouping')
   if (groupableColumns.length === 0) {
     return null;
   }

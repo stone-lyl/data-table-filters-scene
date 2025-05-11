@@ -62,6 +62,15 @@ export interface AnalyticsTableCoreProps<TData, TValue> {
   // Custom loading component
   loadingComponent?: React.ReactNode;
 }
+const DefaultLoadingComponent = () => (
+  <div className="flex items-center justify-center w-full h-64">
+    <div className="flex flex-col items-center space-y-4">
+      <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+      <p className="text-gray-500">Loading data...</p>
+    </div>
+  </div>
+);
+
 
 export function AnalyticsTableCore<TData, TValue>({
   columns,
@@ -95,13 +104,14 @@ export function AnalyticsTableCore<TData, TValue>({
   });
   const [footerAggregations, setFooterAggregations] =
     React.useState<AggregationConfig<TData>[]>(defaultFooterAggregations || []);
-  
+
   const handleDataChange = (newData: TData[]) => {
     if (onDataChange) {
       onDataChange(newData);
     }
   };
 
+  console.log(grouping, 'analytics-table-core: grouping');
   const table = useReactTable({
     data,
     columns,
@@ -163,29 +173,12 @@ export function AnalyticsTableCore<TData, TValue>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnFilters]);
 
-  // Determine if we should show the loading state
-  const shouldShowLoading = isLoading || (columns.length === 0 && data.length === 0);
+  const shouldShowLoading = React.useMemo(() => {
+    return isLoading || (columns.length === 0 && data.length === 0);
+  }, [isLoading, columns.length, data.length]);
 
-  // Default loading component if none is provided
-  const defaultLoadingComponent = (
-    <div className="flex items-center justify-center w-full h-64">
-      <div className="flex flex-col items-center space-y-4">
-        <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-        <p className="text-gray-500">Loading data...</p>
-      </div>
-    </div>
-  );
+  const defaultLoadingComponent = <DefaultLoadingComponent />;
 
-  // Show loading state if needed
-  if (shouldShowLoading) {
-    return (
-      <div data-testid="analytics-table-loading" className="flex h-full w-full flex-col gap-3 sm:flex-row">
-        <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
-          {loadingComponent || defaultLoadingComponent}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -211,13 +204,20 @@ export function AnalyticsTableCore<TData, TValue>({
           <div data-testid="analytics-table-core-content" className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
             {controlsSlot}
 
+            {shouldShowLoading ? (
+              <div data-testid="analytics-table-loading" className="flex h-full w-full flex-col gap-3 sm:flex-row">
+                <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
+                  {loadingComponent || defaultLoadingComponent}
+                </div>
+              </div>
+            ) : (
               <TableRender<TData>
                 data-testid="table-render"
                 onRow={rowEventHandlers}
                 onHeaderRow={headerRowEventHandlers}
                 tableClassName={tableClassName}
               />
-
+            )}
             {paginationSlot}
           </div>
         </div>
@@ -230,7 +230,7 @@ export function AnalyticsTableCore<TData, TValue>({
 function ClientOnly({ children }: { children: React.ReactNode }) {
   const [hasMounted, setHasMounted] = React.useState(false);
 
-  React.useEffect(() => { 
+  React.useEffect(() => {
     setHasMounted(true);
   }, []);
 
