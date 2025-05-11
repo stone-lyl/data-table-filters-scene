@@ -31,9 +31,9 @@ export const createFormatter = ({
         return `$${formatCurrency(numValue)}`;
       }
     } else if (accessorKey.includes('hashrate')) {
-      return `${numValue} TH/s`;
+      return `${(numValue * 100).toFixed(2)}%`;
     } else if (accessorKey.includes('efficiency')) {
-      return `${numValue}%`;
+      return `${numValue.toFixed(2)}%`;
     } else {
       // Default number formatting
       return formatBigNumber(numValue.toString());
