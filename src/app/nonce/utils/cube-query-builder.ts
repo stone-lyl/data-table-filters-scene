@@ -94,8 +94,7 @@ export const buildQuery = (extendedQuery: ExtendedQuery): Query => {
   if (extendedQuery.timeDimensions && extendedQuery.timeDimensions.length > 0) {
     query.order = { [extendedQuery.timeDimensions[0].dimension]: 'desc' };
   }
-
-
+  
   return query;
 };
 // Update query with selected measures
