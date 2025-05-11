@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { Query, BinaryFilter } from '@cubejs-client/core';
 import { useCubeQuery } from '@cubejs-client/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { NonceRecord, ColumnStruct, generateColumns } from '../mock-data';
+import { NonceRecord, ColumnStruct } from '../mock-data';
+import { generateColumns } from '../generate-columns';
 import { buildQuery, createComparisonQuery, ExtendedQuery } from '../utils/cube-query-builder';
 import { generateComparisonQuery } from '../utils/generate-comparison-query';
 import { ComparisonOption } from '../components/time-comparison-selector';
@@ -39,6 +40,7 @@ export function useCubeData(
   const columns = useMemo(() => {
     if (!resultSet || isLoading || error) return [];
     const columnStructs = resultSet.tableColumns();
+    console.log('columnStructs',columnStructs);
     return generateColumns(columnStructs as unknown as ColumnStruct[]) as unknown as ColumnDef<NonceRecord, unknown>[];
   }, [resultSet, isLoading, error]);
 

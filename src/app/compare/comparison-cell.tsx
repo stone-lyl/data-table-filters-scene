@@ -6,9 +6,7 @@ import { formatCurrency, formatBigNumber } from "../analyze/util/formatters";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
-import { FormatterFn } from "../nonce/utils/create-formatter";
+import { createFormatter, FormatterFn } from "../nonce/utils/create-formatter";
 
 export type FormatType = "currency" | "percentage" | "number" | "custom";
 export type ComparisonType = "absolute" | "percentage" | "both";
@@ -56,11 +54,17 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
   // Convert values to Decimal for precise calculations
   const current = new Decimal(currentValue);
   const previous = previousValue !== undefined ? new Decimal(previousValue) : null;
+  const dateFormatter = createFormatter({
+    format: { type: 'time' },
+  });
+  const percentageFormatter = createFormatter({
+    format: { type: 'percentage' },
+  });
   
   // Calculate change and change percentage
   const change = previous ? current.minus(previous) : null;
   const changePercentage = previous && !previous.isZero() 
-    ? change!.dividedBy(previous).times(100) 
+    ? change!.dividedBy(previous)
     : null;
   
   // Determine if the change is positive, negative, or neutral
@@ -84,7 +88,7 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
       case "currency":
         return formatCurrency(value.toNumber());
       case "percentage":
-        return `${value.toFixed(decimals)}%`;
+        return percentageFormatter(value.toNumber());
       case "number":
       default:
         return value.toFixed(decimals);
@@ -101,7 +105,7 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
 
   // Format the change percentage
   const formatChangePercentage = (value: Decimal): string => {
-    return `${value.toFixed(decimals)}%`;
+    return percentageFormatter(value.toNumber());
   };
 
   // Get the appropriate arrow symbol
@@ -157,7 +161,7 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
     
     return (
       <div className="text-xs text-gray-500 mt-1">
-        {previousDate && <div>Prev: {format(new Date(previousDate), "yyyy/MM/dd")}</div>}
+        {previousDate && <div>Prev: {dateFormatter(previousDate)}</div>}
       </div>
     );
   };
@@ -212,13 +216,13 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
             {currentDate && (
               <div className="flex justify-between">
                 <span className="font-medium">Current Date:</span>
-                <span>{format(new Date(currentDate), "yyyy/MM/dd")}</span>
+                <span>{dateFormatter(currentDate)}</span>
               </div>
             )}
             {previousDate && (
               <div className="flex justify-between">
                 <span className="font-medium">Previous Date:</span>
-                <span>{format(new Date(previousDate), "yyyy/MM/dd")}</span>
+                <span>{dateFormatter(previousDate)}</span>
               </div>
             )}
           </div>
