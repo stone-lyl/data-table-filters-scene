@@ -41,7 +41,6 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
   previousValue,
   formatType = "currency",
   comparisonType = "both",
-  prefix = "",
   decimals = 2,
   showArrows = true,
   positiveColor = "text-[#ec4899]", // Pink
@@ -169,7 +168,7 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
         <TooltipTrigger asChild>
           <div className={cn("flex flex-col text-xs tabular-nums text-end", className)}>
             <div className="font-medium">
-              {prefix}{formatValue(current)}
+              {formatValue(current)}
             </div>
             
             {change && (
@@ -187,20 +186,20 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
             {previous && (
               <div className="flex justify-between">
                 <span className="font-medium">Previous:</span>
-                <span>{prefix}{formatValue(previous)}</span>
+                <span>{formatValue(previous)}</span>
               </div>
             )}
             {change && (
               <div className="flex justify-between">
                 <span className="font-medium">Change:</span>
                 <span className={textColor}>
-                  {isPositive ? "+" : "-"}{prefix}{formatValue(change.abs())}
+                  {isPositive ? "+" : "-"}{formatValue(change.abs())}
                 </span>
               </div>
             )}
             <div className="flex justify-between">
               <span className="font-medium">Current:</span>
-              <span>{prefix}{formatValue(current)}</span>
+              <span>{formatValue(current)}</span>
             </div>
             {changePercentage && (
               <div className="flex justify-between">

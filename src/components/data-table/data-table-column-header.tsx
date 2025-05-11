@@ -8,16 +8,18 @@ import { cn } from "@/lib/utils";
 interface DataTableColumnHeaderProps<TData, TValue> extends ButtonProps {
   column: Column<TData, TValue>;
   title: string;
+  align?: 'start' | 'center' | 'end';
 }
 
 export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
   className,
+  align = 'start',
   ...props
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
-    return <div className={cn(className)}>{title}</div>;
+    return <div className={cn(className, `text-${align}`)}>{title}</div>;
   }
 
   return (
@@ -33,7 +35,7 @@ export function DataTableColumnHeader<TData, TValue>({
       )}
       {...props}
     >
-      <span>{title}</span>
+      <span className={`w-full text-${align}`}>{title}</span>
       <span className="flex flex-col">
         <ChevronUp
           className={cn(

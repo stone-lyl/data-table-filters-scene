@@ -128,7 +128,7 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
         return row[accessorKey];
       },
       header: ({column}) => (
-        <DataTableColumnHeader column={column} title={colStruct.shortTitle || colStruct.title} />
+        <DataTableColumnHeader align={colStruct.type === 'number' ? 'end' : 'start'} column={column} title={colStruct.shortTitle || colStruct.title} />
       ),
       aggregationFn: customSum,
       meta: {
@@ -172,7 +172,7 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
             />
           );
         }
-        return formatter(value);
+        return <div className='text-end'>{formatter(value)}</div>;
       };
     }
     
