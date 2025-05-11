@@ -54,6 +54,7 @@ export const getAvailableDimensions = () => {
 export const getAvailableFarmNames = () => {
   return ["GA - LN", "Kuching - MY", "Paris - TN"];
 };
+export const FarmNameInfo = sidebarMeta[0].dimensions[1];
 
 // Get folder for a measure
 export const getFolderForMeasure = (measureName: string) => {
@@ -66,6 +67,7 @@ export const getFolderForMeasure = (measureName: string) => {
   return null;
 };
 
+// todo: 这些 query 相关的内容，需要收敛到一起
 // Build a Cube.js query from the extended query
 export const buildQuery = (extendedQuery: ExtendedQuery): Query => {
   const query: Query = {
@@ -117,6 +119,14 @@ export const updateFilters = (
     updatedFilters.push({ member, operator, values });
   }
   
+  return {
+    ...query,
+    filters: updatedFilters
+  };
+};
+
+export const removeFilter = (query: ExtendedQuery, member: string): ExtendedQuery => {
+  const updatedFilters = query.filters?.filter((filter: Filter) => (filter as BinaryFilter).member !== member) || [];
   return {
     ...query,
     filters: updatedFilters

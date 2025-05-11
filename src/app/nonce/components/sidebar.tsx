@@ -2,10 +2,9 @@
 
 import { NonceRecord } from "../types";
 import { Filter, BarChart2, ArrowLeftRight, Calendar as CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
-import { format, subDays, addDays, subYears } from "date-fns";
+import { format } from "date-fns";
 import { DateRangePicker } from "./date-range-picker";
 import { TimeComparisonSelector, ComparisonOption } from "./time-comparison-selector";
 import {
@@ -17,12 +16,16 @@ import {
   updateDimensions,
   updateFilters,
   updateDateRange,
-  ExtendedQuery
+  ExtendedQuery,
+  FarmNameInfo,
+  removeFilter
 } from "../utils/cube-query-builder";
-import { Query, BinaryFilter } from "@cubejs-client/core";
 
 import { Category } from "./category";
 import { CheckboxGroup } from "./checkbox-group";
+import { useDataTable } from "@/components/data-table/data-table-provider";
+import { CompareTimeKey } from "../utils/generate-comparison-query";
+import { BinaryFilter } from "@cubejs-client/core";
 
 interface SidebarProps {
   nonceData: NonceRecord[];
@@ -35,7 +38,7 @@ export function Sidebar({ nonceData, onQueryStateChange, onComparisonChange }: S
   const measures = getAvailableMeasures();
   const dimensions = getAvailableDimensions();
   const farmNames = getAvailableFarmNames();
-
+  const { table } = useDataTable();
 
   // Group measures by folder
   const measuresByFolder = measures.reduce((acc, measure) => {
@@ -82,13 +85,25 @@ export function Sidebar({ nonceData, onQueryStateChange, onComparisonChange }: S
   // Handle breakdown selection
   const handleBreakdownChange = (selectedIds: string[]) => {
     setQueryState(updateDimensions(queryState, selectedIds));
+    if (selectedIds.length === 0) {
+      setQueryState(removeFilter(queryState, FarmNameInfo.name));
+      table.setGrouping([]);
+    } else {
+      table.setGrouping([CompareTimeKey]);
+    }
   };
 
   // Handle farm filter selection
   const handleFarmChange = (farms: string[]) => {
+    // when the farms are empty, remove the farm filter
+    if (farms.length === 0) {
+      setQueryState(removeFilter(queryState, FarmNameInfo.name));
+      return;
+    }
+    // add the farm filter to the query state
     setQueryState(updateFilters(
       queryState,
-      'metrics.workspace_name',
+      FarmNameInfo.name,
       'equals',
       farms
     ));
@@ -103,6 +118,7 @@ export function Sidebar({ nonceData, onQueryStateChange, onComparisonChange }: S
       setQueryState(updateDateRange(queryState, [formattedFrom, formattedTo]));
     }
   };
+
 
   return (
     <div className="w-full border-r border-gray-200 p-4 h-[calc(100vh-8rem)] overflow-y-auto">
@@ -148,7 +164,7 @@ export function Sidebar({ nonceData, onQueryStateChange, onComparisonChange }: S
             <CheckboxGroup
               title="Dimensions"
               items={dimensions.map(dim => ({ id: dim.name, name: dim.shortTitle }))}
-              selectedItems={queryState.dimensions || []}
+              selectedItems={queryState?.dimensions || []}
               onChange={handleBreakdownChange}
             />
           </div>
@@ -162,17 +178,12 @@ export function Sidebar({ nonceData, onQueryStateChange, onComparisonChange }: S
             >
               <div className="space-y-2">
                 <CheckboxGroup
-                  title="Farm Name"
+                  title={FarmNameInfo.title}
                   items={farmNames.map(farm => ({
                     id: farm,
                     name: farm
                   }))}
-                  selectedItems={queryState.filters
-                    ? (queryState.filters.find((filter: any) =>
-                      (filter as BinaryFilter).member === 'metrics.workspace_name'
-                    ) as BinaryFilter | undefined)?.values || []
-                    : []}
-
+                  selectedItems={(queryState?.filters?.find(filter => (filter as BinaryFilter).member === FarmNameInfo.name) as BinaryFilter)?.values || []}
                   onChange={handleFarmChange}
                 />
               </div>
