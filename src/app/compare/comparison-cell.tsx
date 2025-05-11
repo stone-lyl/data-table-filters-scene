@@ -8,6 +8,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { FormatterFn } from "../nonce/utils/create-formatter";
 
 export type FormatType = "currency" | "percentage" | "number" | "custom";
 export type ComparisonType = "absolute" | "percentage" | "both";
@@ -182,10 +183,7 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
         </TooltipTrigger>
         <TooltipContent side="right" className="max-w-md">
           <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="font-medium">Current:</span>
-              <span>{prefix}{formatBigNumber(current.toFixed(decimals).toString())}</span>
-            </div>
+
             {previous && (
               <div className="flex justify-between">
                 <span className="font-medium">Previous:</span>
@@ -200,12 +198,16 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
                 </span>
               </div>
             )}
+            <div className="flex justify-between">
+              <span className="font-medium">Current:</span>
+              <span>{prefix}{formatBigNumber(current.toFixed(decimals).toString())}</span>
+            </div>
             {changePercentage && (
               <div className="flex justify-between">
                 <span className="font-medium">% Change:</span>
-                <Badge variant={isPositive ? "destructive" : "secondary"} className="ml-2">
+                <span className={textColor}>
                   {isPositive ? "+" : "-"}{formatBigNumber(changePercentage.abs().toFixed(decimals).toString())}%
-                </Badge>
+                </span>
               </div>
             )}
             {currentDate && (
@@ -239,6 +241,7 @@ export const AmountComparisonCell: React.FC<{
   className?: string;
   showTooltip?: boolean;
   hidePercentage?: boolean;
+  formatter?: FormatterFn;
 }> = ({
   currentAmount,
   previousAmount,
@@ -248,6 +251,7 @@ export const AmountComparisonCell: React.FC<{
   className,
   showTooltip = true,
   hidePercentage = false,
+  formatter = formatCurrency,
 }) => {
   
   // Create a custom comparison formatter that shows the period label if provided
@@ -256,7 +260,7 @@ export const AmountComparisonCell: React.FC<{
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <span className={change > 0 ? "text-[#ec4899]" : "text-[#10b981]"}>
-            {change > 0 ? "+" : "-"}${formatCurrency(Math.abs(change))}
+            {change > 0 ? "+" : "-"}${formatter(Math.abs(change))}
           </span>
           {!hidePercentage && (
             <span className={changePercentage > 0 ? "text-[#ec4899]" : "text-[#10b981]"}>  
@@ -272,7 +276,8 @@ export const AmountComparisonCell: React.FC<{
     <ComparisonCell
       currentValue={currentAmount}
       previousValue={previousAmount}
-      formatType="currency"
+      formatType="custom"
+      customFormatter={formatter}
       comparisonType="both"
       prefix="$"
       showArrows={true}

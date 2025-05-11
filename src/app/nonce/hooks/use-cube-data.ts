@@ -6,7 +6,7 @@ import { NonceRecord, ColumnStruct, generateColumns } from '../mock-data';
 import { buildQuery, createComparisonQuery, ExtendedQuery } from '../utils/cube-query-builder';
 import { generateComparisonQuery } from '../utils/generate-comparison-query';
 import { ComparisonOption } from '../components/time-comparison-selector';
-import { useTransform } from '@/app/analyze/compare/use-transform';
+import { transformData, useTransform } from '@/app/analyze/compare/use-transform';
 
 interface UseCubeDataResult {
   data: NonceRecord[];
@@ -67,6 +67,7 @@ export function useCubeDataWithComparison(
   // Build queries from state
   const [query, setQuery] = useState<Query | null>(null);
   const [comparisonQuery, setComparisonQuery] = useState<Query | null>(null);
+  const [transformedData, setTransformedData] = useState<NonceRecord[]>([]);
 
   useEffect(() => {
     setComparisonQuery(queryState && selectedComparison ? 
@@ -77,13 +78,10 @@ export function useCubeDataWithComparison(
     setQuery(queryState ? buildQuery(queryState) : null);
   }, [queryState]);
 
-  // Get primary data
   const primary = useCubeData(query);
   
-  // Get comparison data
   const comparison = useCubeData(comparisonQuery);
 
-  // Generate SQL query for joining the data
   const joinQuery = useMemo(() => {
     if (primary.data.length === 0 || comparison.data.length === 0) {
       return '';
@@ -95,26 +93,38 @@ export function useCubeDataWithComparison(
     );
   }, [primary.data, comparison.data, selectedComparison]);
 
-  // Create datasets for DuckDB
-  const datasets = useMemo(() => ({
-    primaryData: primary.data,
-    comparisonData: comparison.data
-  }), [primary.data, comparison.data]);
-
   // Transform the data using DuckDB
-  const transformedData = useTransform(datasets, joinQuery);
-  
-console.log('transformedData', transformedData);
-  const joinedColumns = useMemo(() => {
-    if (primary.columns.length === 0 || comparison.columns.length === 0) {
-      return [];
+  useEffect(() => {
+    if (!joinQuery) {
+      setTransformedData([]);
+      return;
+    };
+    const datasets = {
+      primaryData: primary.data,
+      comparisonData: comparison.data
     }
-    
-    return [...primary.columns, ...comparison.columns];
-  }, [primary.columns, comparison.columns]);
+    console.log('useCubeData datasets', datasets);
+    transformData(datasets, joinQuery).then((transformedData) => {
+      console.log('useCubeData transformedData', transformedData);
+      setTransformedData(transformedData);
+    });
+  }, [joinQuery, primary.data, comparison.data]);
+  
+  const joinedColumns = useMemo(() => {
+    if(primary.columns.length !== 0 && comparison.columns.length !== 0 && joinQuery) {
+      console.log('useCubeData primary.columns', primary.columns);
+      console.log('useCubeData comparison.columns', comparison.columns);
+      console.log('useCubeData joinQuery', joinQuery);
+      return [...primary.columns];
+    }
+    return [];
+  }, [primary.columns, comparison.columns, joinQuery]);
   const isJoinedLoading = primary.isLoading || comparison.isLoading || transformedData.length === 0;
   
   return {
+    data: joinQuery ? transformedData : primary.data,
+    columns: primary.columns,
+    isLoading: isJoinedLoading,
     primary,
     comparison,
     joined: {

@@ -44,7 +44,7 @@ const importJsonArray = async (
   return c;
 };
 
-async function transformData(datasets: Record<string, unknown[]>, sql: string) {
+export async function transformData(datasets: Record<string, unknown[]>, sql: string) {
   // Get the bundle using our initializeDuckDB helper
   const bundle = await initializeDuckDB();
   // Instantiate the asynchronous version of DuckDB-wasm

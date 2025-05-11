@@ -1,9 +1,10 @@
 import type { FieldType } from '@/components/data-table/types';
 import type { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { formatCurrency, formatBtcAmount, formatBigNumber } from '../analyze/util/formatters';
+import { createFormatter } from './utils/create-formatter';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import { customSum } from '../analyze/util/customAggregationFn';
+import { AmountComparisonCell } from '../compare/comparison-cell';
 
 export interface NonceRecord {
   // Cube.js data fields
@@ -121,7 +122,6 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
   columnStructs.forEach(colStruct => {
     const accessorKey = colStruct.dataIndex;
     const id = accessorKey.replace(/\./g, '_');
-    // console.log('id', id);
     const columnDef: ColumnDef<NonceRecord, unknown> = {
       id,
       accessorFn: (row) => {
@@ -134,7 +134,7 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
       meta: {
         fieldType: colStruct.type === 'time' ? 'dimension' : 'measure',
         // label: colStruct.title
-      }
+      },
     };
     
     // Add cell renderer based on column type
@@ -145,31 +145,33 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
         return format(new Date(value as string), "yyyy-MM-dd");
       };
     } else if (colStruct.type === 'number') {
-      // Handle number formatting based on meta format
-      const formatType = colStruct.meta?.format?.type;
+
+    
+      // Create a formatter based on the column structure
+      const formatter = createFormatter({
+        format: colStruct.meta?.format || { type: 'default' },
+        accessorKey: accessorKey
+      });
       
-      columnDef.cell = ({ cell }) => {
+      columnDef.cell = ({ cell, row, column }) => {
+        // if row['Pre_<accessorKey>'] exist and the field type is measure,
+        // then display a compare cell,
+        // else display a normal cell
         const value = cell.getValue();
-        if (value === null || value === undefined) return '';
-        
-        // Convert string values to numbers if needed
-        const numValue = typeof value === 'string' ? parseFloat(value) : value as number;
-        
-        if (formatType === 'currency') {
-          const unit = colStruct.meta?.format?.unit || 'USD';
-          if (unit === 'BTC') {
-            return `${formatBtcAmount(numValue.toString())} BTC`;
-          } else {
-            return `$${formatCurrency(numValue)}`;
-          }
-        } else if (accessorKey.includes('hashrate')) {
-          return `${numValue} TH/s`;
-        } else if (accessorKey.includes('efficiency')) {
-          return `${numValue}%`;
-        } else {
-          // Default number formatting
-          return formatBigNumber(numValue.toString());
+        const compareValue = row.original['Pre_' + accessorKey];
+        if (compareValue != null && column.columnDef.meta?.fieldType === 'measure') {
+          return (
+            <AmountComparisonCell
+              formatter={formatter}
+              currentAmount={value as number}
+              previousAmount={compareValue as number}
+              currentDate={row.original['metrics.period.day'] as string}
+              previousDate={row.original['Pre_metrics.period.day'] as string}
+              showDate={true}
+            />
+          );
         }
+        return formatter(value);
       };
     }
     

@@ -5,9 +5,11 @@ import { ColumnDef } from '@tanstack/react-table';
 import { NonceRecord } from '../mock-data';
 import { ComparisonOption } from '../components/time-comparison-selector';
 
+export const CompareTimeKey = 'metrics.period.day'
 /**
  * Generate a SQL query to join primary and comparison data
  * @param comparisonOption The type of comparison being made
+ * 
  * @param primaryData Sample of primary data to determine columns
  * @param comparisonData Sample of comparison data to determine columns
  * @returns SQL query
@@ -31,7 +33,7 @@ export function generateComparisonQuery(
       })),
       {
         name: 'periodKey',
-        expression: `date_add("metrics.period.day"::timestamp, ${comparisonOption.dateAdd})`,
+        expression: `date_add("${CompareTimeKey}"::timestamp, ${comparisonOption.dateAdd})`,
       },
     ],
   });
@@ -46,7 +48,7 @@ export function generateComparisonQuery(
       })),
       {
         name: 'periodKey',
-        expression: `"metrics.period.day"::timestamp`,
+        expression: `"${CompareTimeKey}"::timestamp`,
       },
     ],
   });

@@ -24,21 +24,7 @@ export function NonceTable() {
   const [selectedComparison, setSelectedComparison] = useState<ComparisonOption | null>(null);
 
   // Use our custom hook to fetch and transform data based on query state and comparison
-  const { primary, comparison, joined } = useCubeDataWithComparison(queryState, selectedComparison);
-  
-  // Destructure the primary data
-  const { data: nonceData, columns: primaryColumns, isLoading: isPrimaryLoading } = primary;
-  
-  // Destructure the comparison data
-  const { data: comparisonData } = comparison;
-  
-  // Destructure the joined data (combined primary and comparison)
-  const { data: joinedData, columns: joinedColumns, isLoading: isJoinedLoading } = joined;
-  
-  // Use joined data and columns when comparison is selected, otherwise use primary data
-  const displayData = nonceData;
-  const displayColumns = primaryColumns;
-  const isLoading = isPrimaryLoading;
+  const { data, columns, isLoading } = useCubeDataWithComparison(queryState, selectedComparison);
   
   // Column visibility state
   const [columnVisibility, setColumnVisibility] =
@@ -63,15 +49,15 @@ export function NonceTable() {
           )}
         >
           <Sidebar 
-            nonceData={nonceData} 
+            nonceData={data} 
             onQueryStateChange={setQueryState} 
             onComparisonChange={setSelectedComparison} 
           />
         </div>
         <div className="flex-1 w-[calc(100%-24rem)]">
           <AnalyticsTableCoreClient
-            columns={displayColumns || []}
-            data={displayData}
+            columns={columns || []}
+            data={data}
             pageSize={20}
             tableClassName="max-h-[calc(100vh-16rem)] overflow-y-scroll"
             defaultColumnFilters={[]}
