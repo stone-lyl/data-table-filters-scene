@@ -160,7 +160,7 @@ export default function CompareTable() {
           <AnalyticsTableCoreClient
             columns={generateColumns(currentYear)}
             data={currentYear}
-            pageSize={30}
+            pageSize={20}
             tableClassName="h-96 overflow-y-scroll"
             paginationSlot={<DataTablePagination />}
           />
@@ -170,7 +170,7 @@ export default function CompareTable() {
           <AnalyticsTableCoreClient
             columns={generateColumns(lastYear)}
             data={lastYear}
-            pageSize={30}
+            pageSize={20}
             tableClassName="h-96 overflow-y-scroll"
             paginationSlot={<DataTablePagination />}
           />
@@ -183,9 +183,6 @@ export default function CompareTable() {
           columns={columns}
           data={data}
           tableClassName="h-[calc(100vh-2rem)] overflow-y-scroll"
-          defaultColumnFilters={[]}
-          defaultGrouping={[]}
-          filterFields={[]}
           controlsSlot={customControls}
           columnVisibility={columnVisibility}
           setColumnVisibility={setColumnVisibility}
