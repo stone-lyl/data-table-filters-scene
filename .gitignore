@@ -37,7 +37,7 @@ next-env.d.ts
 .aider*
 .env
 .idea
-.env
+*.env
 .next
 
 node_modules
