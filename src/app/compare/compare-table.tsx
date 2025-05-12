@@ -148,7 +148,7 @@ export default function CompareTable() {
       <AnalyticsTableCoreClient
         columns={columns}
         data={data}
-        tableClassName="h-[calc(100vh-16rem)] overflow-y-scroll"
+        tableClassName="h-[calc(100vh-2rem)] overflow-y-scroll"
         defaultColumnFilters={[]}
         defaultGrouping={[]}
         filterFields={[]}

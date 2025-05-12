@@ -12,6 +12,7 @@ import { formatCurrency, formatBtcAmount, formatBigNumber } from "../util/format
 import { ProfitDisplay } from "../components/profit-display";
 import { AGGREGATION_ROW } from "./common";
 import { customSum } from "../util/customAggregationFn";
+import { decimalSortingFn } from "../util/sorting";
 
 export const columns: ColumnDef<ColumnSchema>[] = [
   // {
@@ -235,6 +236,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         </div>
       );
     },
+    sortingFn: decimalSortingFn,
     filterFn: (row, id, value) => {
       const rowValue = row.getValue(id) as number;
       if (typeof value === "number") return value === Number(rowValue);
@@ -279,6 +281,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       
       return <ProfitDisplay earning={earning} cost={cost} />;
     },
+    sortingFn: decimalSortingFn,
     filterFn: (row, id, value) => {
       const rowValue = row.getValue(id) as number;
       if (typeof value === "number") return value === Number(rowValue);
@@ -302,6 +305,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Big Number" />
     ),
+    sortingFn: decimalSortingFn,
     cell: ({ row }) => {
       const value = row.getValue("bigNumber");
 
