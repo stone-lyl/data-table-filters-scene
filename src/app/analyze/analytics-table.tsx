@@ -49,8 +49,7 @@ export function AnalyticsTable({
     rowEventHandlers
   } = rowEdit;
 
-  const columnTooltip = useColumnTooltip<ColumnSchema, unknown>();
-  const { headerRowEventHandlers } = columnTooltip;
+  const { headerRowEventHandlers } = useColumnTooltip<ColumnSchema, unknown>();
 
   const customSidebar = (
     <div
@@ -71,7 +70,7 @@ export function AnalyticsTable({
       <DataTableToolbar data-testid="data-table-toolbar" />
       <DataTableFooterButtons data-testid="data-table-footer-buttons" />
       <DataTableGroupButtons data-testid="data-table-group-buttons" />
-      <ColumnInfoTooltip data-testid="column-info-tooltip" columnTooltip={columnTooltip} />
+
       <RowEditModal data-testid="row-edit-modal" rowEdit={rowEdit} />
     </>
   );
