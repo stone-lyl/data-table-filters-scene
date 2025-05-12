@@ -1,25 +1,33 @@
 'use client';
 
 import { buildJoinQuery, buildQuery } from '@/app/analyze/compare/query-builder';
-import { AccessorColumnDef, ColumnDef } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { NonceRecord } from '../types';
 import { ComparisonOption } from '../components/time-comparison-selector';
+import { ExtendedQuery } from './cube-query-builder';
 
 export const ComparePrefix = 'Pre_'
 export const CompareTimeKey = 'metrics.period.day'
 /**
  * Generate a SQL query to join primary and comparison data
  * @param comparisonOption The type of comparison being made
- * 
- * @param primaryData Sample of primary data to determine columns
- * @param comparisonData Sample of comparison data to determine columns
+ * @param primaryColumns Sample of primary data to determine columns
+ * @param comparisonColumns Sample of comparison data to determine columns
  * @returns SQL query
  */
-export function generateComparisonQuery(
-  comparisonOption: ComparisonOption,
-  primaryColumns: ColumnDef<NonceRecord, unknown>[],
-  comparisonColumns: ColumnDef<NonceRecord, unknown>[]
-): string {
+interface GenerateComparisonQueryParams {
+  comparisonOption: ComparisonOption;
+  primaryColumns: ColumnDef<NonceRecord, unknown>[];
+  comparisonColumns: ColumnDef<NonceRecord, unknown>[];
+  queryState: ExtendedQuery;
+}
+
+export function generateComparisonQuery({
+  comparisonOption,
+  primaryColumns,
+  comparisonColumns,
+  queryState
+}: GenerateComparisonQueryParams): string {
   const comparisonQuery = buildQuery({
     dataset: 'comparisonData',
     groupDimensions: [],
@@ -64,7 +72,7 @@ export function generateComparisonQuery(
         columns: comparisonColumns.map(it => it.id!)
       }
     },
-    using: ['periodKey'], // Join on the date field
+    using: [...queryState?.dimensions ?? [], 'periodKey'], // Join on the date field
     mode: 'left'
   });
 

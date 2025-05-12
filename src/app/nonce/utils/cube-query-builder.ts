@@ -108,13 +108,10 @@ export const updateFilters = (
   operator: BinaryOperator, 
   values: string[]
 ): ExtendedQuery => {
-  // Create a copy of the current filters or an empty array
   const currentFilters = query.filters ? [...query.filters] : [];
   
-  // Remove existing filter for this member if it exists
   const updatedFilters = currentFilters.filter((filter: Filter) => (filter as BinaryFilter).member !== member);
   
-  // Add new filter if values are provided
   if (values.length > 0) {
     updatedFilters.push({ member, operator, values });
   }
@@ -163,7 +160,6 @@ export const createComparisonQuery = (
   originalQuery: ExtendedQuery, 
   comparisonType: string
 ): Query | null => {
-  // Check if we have a valid time dimension with date range
   if (!originalQuery.timeDimensions || 
       !originalQuery.timeDimensions[0] || 
       !originalQuery.timeDimensions[0].dateRange || 
@@ -171,14 +167,11 @@ export const createComparisonQuery = (
     return null;
   }
   
-  // Get the current date range
   const currentDateRange = originalQuery.timeDimensions[0].dateRange;
   
-  // Parse the current date range
   const currentFrom = new Date(currentDateRange[0]);
   const currentTo = new Date(currentDateRange[1]);
   
-  // Calculate the comparison date range based on the selected option
   let comparisonFrom: Date;
   let comparisonTo: Date;
   
@@ -199,13 +192,11 @@ export const createComparisonQuery = (
       return null;
   }
   
-  // Format the dates for the query
   const comparisonDateRange: [string, string] = [
     format(comparisonFrom, 'yyyy-MM-dd'),
     format(comparisonTo, 'yyyy-MM-dd')
   ];
 
-  // Create a new query with the same structure but different date range
   const comparisonQuery = {
     ...originalQuery,
     timeDimensions: [
@@ -216,6 +207,5 @@ export const createComparisonQuery = (
     ]
   };
   
-  // Convert to a standard Cube.js query
   return buildQuery(comparisonQuery);
 };

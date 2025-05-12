@@ -13,7 +13,6 @@ import { ComparePrefix } from './utils/generate-comparison-query';
  */
 export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceRecord, unknown>[] {
   const columns: ColumnDef<NonceRecord, unknown>[] = [];
-  console.log(columnStructs, 'columnStructs')
   columnStructs.forEach(colStruct => {
     const accessorKey = colStruct.dataIndex;
     const valueFormatter = createFormatter({

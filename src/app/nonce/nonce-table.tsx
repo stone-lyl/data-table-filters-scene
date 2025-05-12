@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { VisibilityState } from "@tanstack/react-table";
 import { AnalyticsTableCoreClient } from "../analyze/analytics-table-core";
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
-import { DataTableGroupButtons } from "@/components/data-table/data-table-group-buttons";
 import { DataTablePagination } from "@/components/data-table/data-table-pagination";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { NonceRecord } from "./types";
@@ -34,7 +33,6 @@ export function NonceTable() {
   // Create custom controls with DataTableViewOptions and DataTableGroupButtons
   const customControls = (
     <div className="flex items-center justify-between mb-4">
-      {/* <DataTableGroupButtons /> */}
       <DataTableViewOptions />
     </div>
   );
@@ -52,10 +50,7 @@ export function NonceTable() {
     />
   </div>)
 
-  const defaultGrouping = useMemo(() => {
-    return queryState?.dimensions?.length ? [CompareTimeKey] : [];
-  }, [queryState?.dimensions]);
-  console.log(defaultGrouping, 'defaultGrouping')
+
   return (
     <div className="p-4">
       <h3 className="mb-4 text-lg font-medium">Mining Performance Dashboard</h3>
@@ -67,7 +62,6 @@ export function NonceTable() {
             data={data}
             tableClassName="max-h-[calc(100vh-10rem)] overflow-y-scroll"
             defaultColumnFilters={[]}
-            defaultGrouping={defaultGrouping}
             filterFields={[]}
             controlsSlot={customControls}
             paginationSlot={<DataTablePagination />}

@@ -89,14 +89,14 @@ export function useCubeDataWithComparison(
     if (!isCompare) {
       return null;
     }
-    return generateComparisonQuery(
-      selectedComparison!,
-      primary.columns,
-      comparison.columns
-    );
-  }, [primary.columns, comparison.columns, selectedComparison, isCompare]);
+    return generateComparisonQuery({
+      comparisonOption: selectedComparison!,
+      primaryColumns: primary.columns,
+      comparisonColumns: comparison.columns,
+      queryState: queryState!
+    });
+  }, [primary.columns, comparison.columns, selectedComparison, isCompare, queryState]);
 
-  // Transform the data using SWR-based hook
   const datasets = {
     primaryData: primary.data,
     comparisonData: comparison.data

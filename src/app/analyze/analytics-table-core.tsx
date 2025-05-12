@@ -111,7 +111,6 @@ export function AnalyticsTableCore<TData, TValue>({
     }
   };
 
-  console.log(grouping, 'analytics-table-core: grouping');
   const table = useReactTable({
     data,
     columns,
