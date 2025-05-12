@@ -62,7 +62,7 @@ describe('query-builder', () => {
       expect(query).toMatchInlineSnapshot(`
         "SELECT "sales"."region" AS "region", "sales"."date" AS "date", SUM("sales"."amount") AS "total_sales", AVG("sales"."amount") AS "avg_sales"
         FROM "sales"
-        GROUP BY "sales"."region", "sales"."date"
+            GROUP BY "sales"."region", "sales"."date"
         ORDER BY "sales"."region", "sales"."date""
       `);
     });
@@ -86,7 +86,7 @@ describe('query-builder', () => {
       expect(query).toMatchInlineSnapshot(`
         "SELECT "sales"."region" AS "region", DATE_TRUNC('month', "sales"."date") AS "month", SUM("sales"."amount") AS "total_sales"
         FROM "sales"
-        GROUP BY "sales"."region", DATE_TRUNC('month', "sales"."date")
+            GROUP BY "sales"."region", DATE_TRUNC('month', "sales"."date")
         ORDER BY "sales"."region", DATE_TRUNC('month', "sales"."date")"
       `);
     });
