@@ -48,7 +48,6 @@ export function useRowEdit<TData>({ data, onDataChange }: UseRowEditOptions<TDat
   const rowEventHandlers: RowEventHandlersFn<TData> = (row, rowIndex) => {
     return {
       onDoubleClick: (e: React.MouseEvent) => {
-        console.log('row event onDoubleClick')
         setSelectedRow(row.original as TData);
         setIsModalOpen(true);
       },

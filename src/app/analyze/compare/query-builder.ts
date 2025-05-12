@@ -48,15 +48,17 @@ export function buildQuery(options: QueryOptions) {
     outputColumns.push(new OutputColumn(seg.expression, seg.name));
   });
 
-  options.measures.forEach((m) => {
+  options.fields.forEach((m) => {
     outputColumns.push(new OutputColumn(m.expression, m.name));
   });
 
   return dedent`
     SELECT ${outputColumns.map((c) => c.toString()).join(', ')}
     FROM "${options.dataset}"
-    GROUP BY ${groupByColumns.join(', ')}
-    ORDER BY ${groupByColumns.join(', ')}
+    ${groupByColumns.length > 0
+  ? `    GROUP BY ${groupByColumns.join(', ')}
+    ORDER BY ${groupByColumns.join(', ')}`
+  : ''}
   `;
 }
 

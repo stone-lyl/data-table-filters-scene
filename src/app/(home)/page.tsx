@@ -73,7 +73,25 @@ export default function Home() {
           </div>
           <div className="px-2 py-1.5">
             <p className="font-medium group-hover:underline">Compare Data</p>
-            <p className="text-xs text-muted-foreground">Side-by-side data comparison</p>
+            <p className="text-xs text-muted-foreground">Compare two datasets with visual diff</p>
+          </div>
+        </NextLink>
+
+        {/* Nonce Table */}
+        <NextLink href="/nonce" className="group flex flex-col gap-2.5">
+          <div className="flex aspect-video flex-col justify-center rounded-lg border border-border/70 bg-muted/40 p-4 transition-all duration-200 group-hover:border-border group-hover:bg-muted/50 group-hover:shadow-sm">
+            <div className="flex h-full flex-col">
+              <div className="flex-1 overflow-hidden rounded-md border border-border bg-card">
+                <div className="bg-muted/50 p-1 text-xs font-medium">Nonce</div>
+                <div className="grid grid-cols-1 gap-px bg-muted/30 p-2 text-center text-xs">
+                  <div className="rounded bg-card p-1">Mining Nonce</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="px-2 py-1.5">
+            <p className="font-medium group-hover:underline">Nonce Table</p>
+            <p className="text-xs text-muted-foreground">Mining nonce analytics and filtering</p>
           </div>
         </NextLink>
       </div>
@@ -419,6 +437,7 @@ function Examples() {
         <li><Link href="/infinite">Infinite Scroll Table</Link></li>
         <li><Link href="/analyze">Analytics Table</Link></li>
         <li><Link href="/compare">Compare Data</Link></li>
+        <li><Link href="/nonce">Nonce Table</Link></li>
       </ul>
     </div>
   );

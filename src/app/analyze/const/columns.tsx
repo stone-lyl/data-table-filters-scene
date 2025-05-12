@@ -4,26 +4,14 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { Badge } from "@/components/ui/badge";
 import { tagColor } from "@/constants/tag";
 import { isArrayOfDates, isArrayOfNumbers } from "@/lib/is-array";
-import type { ColumnDef, Row } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { format, isSameDay } from "date-fns";
 import { Check, Minus } from "lucide-react";
 import type { ColumnSchema } from "../types/types";
 import { formatCurrency, formatBtcAmount, formatBigNumber } from "../util/formatters";
 import { ProfitDisplay } from "../components/profit-display";
 import { AGGREGATION_ROW } from "./common";
-import Decimal from "decimal.js-light";
-
-const customSum = (columnId: string, leafRows: Row<ColumnSchema>[]) => {
-
-  if (leafRows.length === 0) return null;
-
-  const sum = leafRows.reduce((acc, row) => {
-    const value = String(row.getValue(columnId));
-    const decimalVal = new Decimal(value);
-    return acc.plus(decimalVal);
-  }, new Decimal(0));
-  return sum.toString();
-};
+import { customSum } from "../util/customAggregationFn";
 
 export const columns: ColumnDef<ColumnSchema>[] = [
   // {
@@ -265,7 +253,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     accessorKey: "earning",
     meta: {
       fieldType: 'measure',
-     
     },
     aggregationFn: customSum,
     header: ({ column }) => (

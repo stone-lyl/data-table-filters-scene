@@ -2,7 +2,6 @@
 
 import { DataTableProvider } from "@/components/data-table/data-table-provider";
 import type { DataTableFilterField } from "@/components/data-table/types";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { AggregationConfig } from "../../components/data-table/data-table-aggregations";
 import { TableRender } from "./table-render";
 import type {
@@ -14,9 +13,6 @@ import type {
   VisibilityState,
   GroupingState,
   ExpandedState,
-  Row,
-  Header,
-  Updater,
   OnChangeFn,
 } from "@tanstack/react-table";
 import {
@@ -31,12 +27,10 @@ import {
   getGroupedRowModel,
   getExpandedRowModel,
 } from "@tanstack/react-table";
-import { useQueryStates } from "nuqs";
 import * as React from "react";
-import { searchParamsParser } from "./const/search-params";
 import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "./types/event-handlers";
-import { cn } from "@/lib/utils";
 
+// todo prop add js doc
 export interface AnalyticsTableCoreProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -63,7 +57,20 @@ export interface AnalyticsTableCoreProps<TData, TValue> {
   setColumnVisibility?: OnChangeFn<VisibilityState>;
   // Search state setter (moved from internal state)
   setSearch?: OnChangeFn<Record<string, unknown>>;
+  // Loading state
+  isLoading?: boolean;
+  // Custom loading component
+  loadingComponent?: React.ReactNode;
 }
+const DefaultLoadingComponent = () => (
+  <div className="flex items-center justify-center w-full h-64">
+    <div className="flex flex-col items-center space-y-4">
+      <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+      <p className="text-gray-500">Loading data...</p>
+    </div>
+  </div>
+);
+
 
 export function AnalyticsTableCore<TData, TValue>({
   columns,
@@ -83,6 +90,8 @@ export function AnalyticsTableCore<TData, TValue>({
   columnVisibility = {},
   setColumnVisibility,
   setSearch,
+  isLoading = false,
+  loadingComponent,
 }: AnalyticsTableCoreProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
@@ -95,7 +104,7 @@ export function AnalyticsTableCore<TData, TValue>({
   });
   const [footerAggregations, setFooterAggregations] =
     React.useState<AggregationConfig<TData>[]>(defaultFooterAggregations || []);
-  
+
   const handleDataChange = (newData: TData[]) => {
     if (onDataChange) {
       onDataChange(newData);
@@ -163,6 +172,13 @@ export function AnalyticsTableCore<TData, TValue>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnFilters]);
 
+  const shouldShowLoading = React.useMemo(() => {
+    return isLoading || (columns.length === 0 && data.length === 0);
+  }, [isLoading, columns.length, data.length]);
+
+  const defaultLoadingComponent = <DefaultLoadingComponent />;
+
+
   return (
     <>
       <DataTableProvider
@@ -187,13 +203,20 @@ export function AnalyticsTableCore<TData, TValue>({
           <div data-testid="analytics-table-core-content" className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
             {controlsSlot}
 
+            {shouldShowLoading ? (
+              <div data-testid="analytics-table-loading" className="flex h-full w-full flex-col gap-3 sm:flex-row">
+                <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
+                  {loadingComponent || defaultLoadingComponent}
+                </div>
+              </div>
+            ) : (
               <TableRender<TData>
                 data-testid="table-render"
                 onRow={rowEventHandlers}
                 onHeaderRow={headerRowEventHandlers}
                 tableClassName={tableClassName}
               />
-
+            )}
             {paginationSlot}
           </div>
         </div>
@@ -206,7 +229,7 @@ export function AnalyticsTableCore<TData, TValue>({
 function ClientOnly({ children }: { children: React.ReactNode }) {
   const [hasMounted, setHasMounted] = React.useState(false);
 
-  React.useEffect(() => { 
+  React.useEffect(() => {
     setHasMounted(true);
   }, []);
 

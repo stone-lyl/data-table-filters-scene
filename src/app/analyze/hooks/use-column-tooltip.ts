@@ -21,7 +21,6 @@ export function useColumnTooltip<TData, TValue>(): UseColumnTooltipReturn<TData,
       onClick: (e: React.MouseEvent) => { },
       onContextMenu: (e: React.MouseEvent) => {
         e.preventDefault();
-        console.log('header row event onContextMenu');
         setTooltipPosition({ x: e.clientX - 10, y: e.clientY - 10 });
         setTooltipInfo({ columns: columns as unknown as ColumnDef<TData, TValue>[], colIndex: index });
         setIsTooltipOpen(true);

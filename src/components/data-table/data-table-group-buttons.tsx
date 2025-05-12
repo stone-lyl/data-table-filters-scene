@@ -12,7 +12,7 @@ export function DataTableGroupButtons() {
   const groupableColumns = React.useMemo(() => {
     return table.getAllColumns().filter(column => {
       const fieldType = column.columnDef.meta?.fieldType as FieldType | undefined;
-      return column.getCanGroup() && fieldType === 'dimension' && column.getIsVisible() && columnVisibility[column.id];
+      return column.getCanGroup() && fieldType === 'dimension' && column.getIsVisible();
     });
   }, [table.getAllColumns(), columnVisibility]);
 
