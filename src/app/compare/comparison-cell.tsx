@@ -234,7 +234,6 @@ export interface ComparisonInfo {
   previousDate?: string;
 }
 
-
 export function customComparisonFormatterFactory(formatter: FormatterFn, hidePercentage: boolean) {
   return (change: number, changePercentage: number) => (
     <div className="space-y-1">
