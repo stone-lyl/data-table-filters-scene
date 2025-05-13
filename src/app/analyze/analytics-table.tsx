@@ -82,7 +82,7 @@ export function AnalyticsTable({
     <div data-testid="analytics-table">
       <AnalyticsTableCoreClient<ColumnSchema, unknown>
         columns={columns}
-        tableClassName="overflow-auto max-h-[850px]"
+        tableClassName="max-h-[850px]"
         data={data}
         onDataChange={setData}
         filterFields={filterFields}
@@ -99,6 +99,7 @@ export function AnalyticsTable({
         sidebarSlot={customSidebar}
         controlsSlot={customControls}
         paginationSlot={customPagination}
+        // pageSize={30}
         rowEventHandlers={rowEventHandlers}
         headerRowEventHandlers={headerRowEventHandlers}
         columnVisibility={columnVisibility}

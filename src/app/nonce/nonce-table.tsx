@@ -60,7 +60,7 @@ export function NonceTable() {
           <AnalyticsTableCoreClient
             columns={columns || []}
             data={data}
-            tableClassName="max-h-[calc(100vh-10rem)] overflow-y-scroll"
+            tableClassName="max-h-[calc(100vh-10rem)] "
             defaultColumnFilters={[]}
             filterFields={[]}
             controlsSlot={customControls}

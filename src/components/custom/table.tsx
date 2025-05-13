@@ -2,19 +2,19 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
+interface TableProps extends React.HTMLAttributes<HTMLDivElement> {
   containerClassName?: string;
 }
 
-const Table = React.forwardRef<HTMLTableElement, TableProps>(
+const Table = React.forwardRef<HTMLDivElement, TableProps>(
   ({ className, containerClassName, onScroll, ...props }, ref) => (
     <div
       className={cn("w-full overflow-auto", containerClassName)}
       // REMINDER: we are not scrolling the table, but the container
       {...{ onScroll }}
+      ref={ref}
     >
       <table
-        ref={ref}
         className={cn("w-full caption-bottom text-sm", className)}
         {...props}
       />
