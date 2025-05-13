@@ -1,10 +1,9 @@
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import type { ColumnDef } from '@tanstack/react-table';
 import { customSum } from '../analyze/util/customAggregationFn';
-import { ComparisonCell, customComparisonFormatterFactory } from "../compare/comparison-cell";
 import { ColumnStruct, NonceRecord } from './types';
 import { createFormatter } from './utils/create-formatter';
-import { ComparePrefix } from './utils/generate-comparison-query';
+import { ComparisonCellRenderer } from './components/comparison-cell-renderer';
 
 /**
  * Generate columns based on columnsStruct
@@ -47,22 +46,14 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
       };
     } else if (colStruct.type === 'number') {
 
-      columnDef.cell = ({ cell, row, column }) => {
-        const value = cell.getValue();
-        const compareValue = row.original[`${ComparePrefix}${accessorKey}`];
-        if (compareValue != null && column.columnDef.meta?.fieldType === 'measure') {
-          return (
-            <ComparisonCell
-              currentValue={value as number}
-              previousValue={compareValue as number}
-              currentDate={row.original['metrics.period.day'] as string}
-              previousDate={row.original[`${ComparePrefix}metrics.period.day`] as string}
-              showDate={true}
-              customComparisonFormatter={customComparisonFormatterFactory(valueFormatter, true)}
-            />
-          );
-        }
-        return <div className='text-end'>{valueFormatter(value)}</div>;
+      columnDef.cell = (props) => {
+        return (
+          <ComparisonCellRenderer
+            {...props}
+            accessorKey={accessorKey}
+            valueFormatter={valueFormatter}
+          />
+        );
       };
     }
 

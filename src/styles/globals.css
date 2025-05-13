@@ -80,3 +80,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+table.virtualized-table {
+  thead {
+    th:last-child {
+      flex: 1 1 auto;
+    }
+  }
+  tbody {
+    td:last-child {
+      flex: 1 1 auto;
+    }
+  }
+  tfoot {
+    td:last-child {
+      flex: 1 1 auto;
+    }
+  }
+}

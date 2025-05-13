@@ -67,6 +67,7 @@ export function TableRender<TData>({
       ref={tableContainerRef}
       className={cn(
         tableClassName,
+        "virtualized-table",
         "relative grid w-full table-fixed border-separate border-spacing-0",
       )}
       containerClassName="rounded-md border"

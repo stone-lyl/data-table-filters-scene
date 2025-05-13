@@ -31,7 +31,7 @@ interface ComparisonCellProps {
 /**
  * A flexible comparison cell component for displaying current values with comparison to previous values
  */
-export const ComparisonCell: React.FC<ComparisonCellProps> = ({
+const ComparisonCellBase: React.FC<ComparisonCellProps> = ({
   currentValue,
   previousValue,
   formatType = "currency",
@@ -223,6 +223,11 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
     </TooltipProvider>
   );
 };
+
+/**
+ * Memoized version of the ComparisonCell component to prevent unnecessary re-renders
+ */
+export const ComparisonCell = React.memo(ComparisonCellBase);
 
 /**
  * A specialized comparison cell for comparing current and previous period amounts
