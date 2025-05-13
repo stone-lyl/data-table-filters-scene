@@ -82,6 +82,9 @@ export const VirtualizedTableBody = <TData,>({
               const cellStyle = {
                 width: `${virtualColumn.size}px`,
                 height: "100%",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
               };
 
               // Get cell content using the helper method

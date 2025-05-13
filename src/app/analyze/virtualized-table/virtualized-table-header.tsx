@@ -43,7 +43,7 @@ export const VirtualizedTableHeader = <TData,>({
               <TableHead
                 data-testid={`header-cell-${header.id}`}
                 key={header.id}
-                className="flex select-none items-center truncate border-b border-border bg-muted/50"
+                className="flex text-ellipsis whitespace-nowrap overflow-hidden select-none items-center truncate border-b border-border bg-muted/50"
                 style={{
                   width: `${virtualColumn.size}px`,
                 }}

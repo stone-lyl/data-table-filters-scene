@@ -12,7 +12,6 @@ import {
   RowEventHandlersFn,
 } from "../types/event-handlers";
 import { DataTableFooter } from "./virtualized-table-footer";
-import { Column, ColumnDefTemplate } from "@tanstack/react-table";
 
 interface TableRenderProps<TData> {
   onRow?: RowEventHandlersFn<TData>;
@@ -20,6 +19,8 @@ interface TableRenderProps<TData> {
   tableClassName?: string;
 }
 
+const MaxColumnWidth = 400;
+const FontSize = 8;
 export function TableRender<TData>({
   onRow,
   onHeaderRow,
@@ -35,12 +36,9 @@ export function TableRender<TData>({
     getScrollElement: () => tableContainerRef.current,
     estimateSize: (index) => {
       const column = visibleColumns[index];
-    const width = column.id.length * 8;
+      const width = column.id.length * FontSize;
       const size = Math.max(width, 150, column?.getSize());
-
-      console.log(width, 'width');
-      console.log(size, 'size')
-      return size;
+      return Math.min(size, MaxColumnWidth);
     },
     horizontal: true,
     overscan: 2,

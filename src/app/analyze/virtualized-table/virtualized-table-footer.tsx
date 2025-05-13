@@ -89,17 +89,17 @@ export function DataTableFooter<TData>({
               <TableCell
                 data-testid={`footer-cell-${aggregation.type}-${columnId}`}
                 key={`${aggregation.type}-${columnId}`}
-                className={cn("font-medium select-none truncate border-t border-border flex items-center")}
+                className={cn("font-medium select-none truncate border-t border-border text-muted-foreground flex items-center")}
                 style={{
                   width: `${virtualColumn.size}px`,
                   height: '100%'
                 }}
               >
-                <div className="flex flex-col gap-1">
-                  <div className="flex text-xs text-muted-foreground uppercase">
+                <div className="flex flex-col gap-1 w-full justify-between">
+                  <div className="flex text-xs uppercase self-start">
                     {isFirstColumn && aggregation.label}
                   </div>
-                  <div className="text-muted-foreground">
+                  <div className="overflow-hidden text-ellipsis whitespace-nowrap self-end">
                     {content}
                   </div>
                 </div>
