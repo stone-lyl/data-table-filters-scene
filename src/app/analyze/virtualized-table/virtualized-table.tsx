@@ -12,6 +12,7 @@ import {
   RowEventHandlersFn,
 } from "../types/event-handlers";
 import { DataTableFooter } from "./virtualized-table-footer";
+import { Column, ColumnDefTemplate } from "@tanstack/react-table";
 
 interface TableRenderProps<TData> {
   onRow?: RowEventHandlersFn<TData>;
@@ -25,28 +26,27 @@ export function TableRender<TData>({
   tableClassName,
 }: TableRenderProps<TData>) {
   const { table } = useDataTable();
-  const columns = table.getVisibleFlatColumns();
+  const visibleColumns = table.getVisibleLeafColumns();
 
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
 
   const columnVirtualizer = useVirtualizer({
-    count: columns.length,
+    count: visibleColumns.length,
     getScrollElement: () => tableContainerRef.current,
     estimateSize: (index) => {
-      return columns[index]?.getSize() || 150;
+      const column = visibleColumns[index];
+    const width = column.id.length * 8;
+      const size = Math.max(width, 150, column?.getSize());
+
+      console.log(width, 'width');
+      console.log(size, 'size')
+      return size;
     },
     horizontal: true,
     overscan: 2,
   });
 
   const virtualColumns = columnVirtualizer.getVirtualItems();
-
-  const calcTotalWidth = () => {
-    if (columnVirtualizer.getTotalSize() > 1200) {
-      return 1200;
-    }
-    return columnVirtualizer.getTotalSize();
-  };
 
   //different virtualization strategy for columns - instead of absolute and translateY, we add empty columns to the left and right
   const virtualPadding = React.useMemo(() => {
@@ -71,9 +71,6 @@ export function TableRender<TData>({
         tableClassName,
         "relative grid w-full table-fixed border-separate border-spacing-0",
       )}
-      // style={{
-      //   width: `${calcTotalWidth()}px`,
-      // }}
       containerClassName="rounded-md border"
     >
       <VirtualizedTableHeader

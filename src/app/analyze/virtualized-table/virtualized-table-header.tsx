@@ -37,13 +37,15 @@ export const VirtualizedTableHeader = <TData,>({
           {virtualColumns.map((virtualColumn) => {
             const header = headerGroup.headers[virtualColumn.index];
             if (!header) return null;
+            console.log('header size', header.getSize());
+            console.log('header id', virtualColumn.size);
             return (
               <TableHead
                 data-testid={`header-cell-${header.id}`}
                 key={header.id}
                 className="flex select-none items-center truncate border-b border-border bg-muted/50"
                 style={{
-                  width: `${header.getSize()}px`,
+                  width: `${virtualColumn.size}px`,
                 }}
                 {...(onHeaderRow
                   ? onHeaderRow(

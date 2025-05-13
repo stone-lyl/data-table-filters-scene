@@ -64,11 +64,7 @@ export const VirtualizedTableBody = <TData,>({
             data-testid={`table-row-${row.id}`}
             key={row.id}
             data-state={row.getIsSelected() && "selected"}
-            className={cn(
-              row.getIsSelected() ? "bg-muted" : "hover:bg-muted/50",
-              row.getIsExpanded() ? "bg-muted/50" : "",
-              "flex",
-            )}
+            className={cn("flex")}
             {...(onRow ? onRow(row as Row<TData>, row.index) : {})}
           >
             {virtualPadding.left ? (
@@ -83,7 +79,6 @@ export const VirtualizedTableBody = <TData,>({
               const cell = row.getVisibleCells()[virtualColumn.index];
               if (!cell) return null;
 
-              // Common cell style for all cell types
               const cellStyle = {
                 width: `${virtualColumn.size}px`,
                 height: "100%",
