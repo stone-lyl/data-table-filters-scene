@@ -161,7 +161,7 @@ export default function CompareTable() {
             columns={generateColumns(currentYear)}
             data={currentYear}
             pageSize={20}
-            tableClassName="h-96 overflow-y-scroll"
+            tableClassName="h-96"
             paginationSlot={<DataTablePagination />}
           />
         </div>
@@ -171,7 +171,7 @@ export default function CompareTable() {
             columns={generateColumns(lastYear)}
             data={lastYear}
             pageSize={20}
-            tableClassName="h-96 overflow-y-scroll"
+            tableClassName="h-96"
             paginationSlot={<DataTablePagination />}
           />
         </div>

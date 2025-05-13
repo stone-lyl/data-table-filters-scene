@@ -4,6 +4,8 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { formatCurrency } from '@/lib/format';
 import { ComparisonCell, customComparisonFormatterFactory } from "./comparison-cell";
+import Decimal from 'decimal.js-light';
+import { cn } from '@/lib/utils';
 
 export interface SalesRecord {
   transactionId: string;
@@ -101,34 +103,42 @@ export function generateSalesDataset(
 export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] {
   if (data.length === 0) return [];
 
-  const firstRow = data[0] as Record<string, unknown>;
-  const columns : ColumnDef<unknown, unknown>[] = Object.keys(firstRow).map((key) => {
+  const sampleRow = data[1] as Record<string, unknown>;
+  const columns: ColumnDef<unknown, unknown>[] = Object.keys(sampleRow).map((key) => {
+    // Add special cell formatting for specific data types
+    const value = sampleRow[key];
     // Determine the field type based on the key name
-    const fieldType: FieldType = key.toLowerCase().includes('date') ||
-      key.toLowerCase().includes('region') ||
-      key.toLowerCase().includes('method') ?
-      'dimension' : 'measure';
+    const fieldType: FieldType = Number(value) ? 'measure' : 'dimension';
+
 
     // Create column definition in TanStack Table format
     const column: ColumnDef<unknown, unknown> = {
       id: key,
       accessorKey: key,
-      header: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '),
+      header: ({ column }) => {
+        const { label, fieldType } = column.columnDef.meta as { label: string, fieldType: FieldType };
+        return (<div className={cn('flex w-full', fieldType === 'dimension' ? 'justify-start' : 'justify-end')}>
+          <span>{label}</span>
+        </div>)
+      },
       meta: {
         fieldType,
         label: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')
       }
     };
 
-    // Add special cell formatting for specific data types
-    const value = firstRow[key];
-    if (column.meta?.fieldType === 'measure' || value instanceof Number) {
+
+    if (column.meta?.fieldType === 'measure') {
       if (key.toLocaleLowerCase().includes('amount')) {
         return {
           ...column,
           cell: ({ getValue }) => {
             const value = getValue() as number;
-            return `$${formatCurrency(value)}`;
+            return (
+              <div className="flex justify-end">
+                ${formatCurrency(value)}
+              </div>
+            );
           },
         };
       } else if (key.toLowerCase().includes('percentage') ||
@@ -137,10 +147,28 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
           ...column,
           cell: ({ getValue }) => {
             const value = getValue() as number;
-            return `${value}%`;
+            return (
+              <div className="flex justify-end">
+                {value}%
+              </div>
+            );
+          },
+        };
+      } else {
+        return {
+          ...column,
+          cell: ({ getValue }) => {
+            const value = getValue();
+
+            return (
+              <div className="flex justify-end">
+                {value?.toString() || ''}
+              </div>
+            );
           },
         };
       }
+
     }
 
     return {
@@ -156,7 +184,7 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
   });
 
   // Add a special comparison column for totalAmount and c_totalAmount
-  if (firstRow.hasOwnProperty('totalAmount') && firstRow.hasOwnProperty('c_totalAmount')) {
+  if (sampleRow.hasOwnProperty('totalAmount') && sampleRow.hasOwnProperty('c_totalAmount')) {
     columns.push({
       id: 'amount_comparison',
       header: 'Amount Comparison',
@@ -168,23 +196,23 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
         // Safely get values with fallbacks to prevent errors
         const currentAmount = row.getValue('totalAmount') as number || 0;
         const previousAmount = row.getValue('c_totalAmount') as number || 0;
-        
+
         // Get date values if they exist
         let currentDate: string | undefined;
         let previousDate: string | undefined;
-        
+
         try {
           if (row.getValue('yearMonth')) {
             currentDate = format(new Date(row.getValue('yearMonth') as string), "LLL dd, yyyy");
           }
-          
+
           if (row.getValue('c_yearMonth')) {
             previousDate = format(new Date(row.getValue('c_yearMonth') as string), "LLL dd, yyyy");
           }
         } catch (error) {
           console.warn('Error formatting dates:', error);
         }
-        
+
         return (
           <ComparisonCell
             currentValue={currentAmount}
@@ -203,7 +231,7 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
   columns.sort((a, b) => {
     const aIndex = Object.keys(defaultColumnVisibility).indexOf(a.id as string);
     const bIndex = Object.keys(defaultColumnVisibility).indexOf(b.id as string);
-    
+
     return aIndex - bIndex;
   });
 

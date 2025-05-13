@@ -23,18 +23,13 @@ const EmptyCell = () => <Minus className="h-4 w-4 text-muted-foreground/50" />;
 
 function DefaultMeasureCell({ value }: { value: string }) {
   return (
-    <div className="flex items-end">
+    <div className="flex justify-end">
       <span> { value } </span>
     </div>
   );
 }
 
 export const columns: ColumnDef<ColumnSchema>[] = [
-  // {
-  //   accessorKey: "name",
-  //   header: "Name",
-  //   enableHiding: false,
-  // },
   {
     accessorKey: "firstName",
     meta: {
