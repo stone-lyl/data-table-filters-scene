@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { TableRender } from './table-render';
+import { TableRender } from './virtualized-table';
 import '@testing-library/jest-dom';
 import * as React from 'react';
-import { HeaderRowEventHandlersFn, RowEventHandlersFn } from './types/event-handlers';
 import * as DataTableProvider from '@/components/data-table/data-table-provider';
+import { HeaderRowEventHandlersFn, RowEventHandlersFn } from '../types/event-handlers';
 
 // Mock the DataTableFooter component
 vi.mock('./data-table-footer', () => ({

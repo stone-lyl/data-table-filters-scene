@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { DataTableFooter } from './data-table-footer';
+import { DataTableFooter } from './virtualized-table-footer';
 import '@testing-library/jest-dom';
 import * as React from 'react';
 import { AggregationType } from '@/components/data-table/data-table-aggregations';
@@ -101,8 +101,9 @@ describe('DataTableFooter', () => {
     });
   });
 
+  // todo: virtualColumns={[]} virtualPadding={{ left: 0, right: 0 }}
   it('renders the footer with sum and count aggregations', () => {
-    render(<DataTableFooter data-testid="data-table-footer" />);
+    render(<DataTableFooter data-testid="data-table-footer" virtualColumns={[]} virtualPadding={{ left: 0, right: 0 }} />);
     
     const footer = screen.getByTestId('table-footer');
     expect(footer).toBeInTheDocument();
@@ -133,7 +134,7 @@ describe('DataTableFooter', () => {
       }
     });
     
-    const { container } = render(<DataTableFooter data-testid="data-table-footer" />);
+    const { container } = render(<DataTableFooter data-testid="data-table-footer" virtualColumns={[]} virtualPadding={{ left: 0, right: 0 }} />);
     
     expect(screen.getByTestId('table-footer')).toBeInTheDocument();
     
@@ -142,7 +143,7 @@ describe('DataTableFooter', () => {
   });
 
   it('calculates aggregations correctly', () => {
-    const { container } = render(<DataTableFooter data-testid="data-table-footer" />);
+    const { container } = render(<DataTableFooter data-testid="data-table-footer" virtualColumns={[]} virtualPadding={{ left: 0, right: 0 }} />);
     
     expect(mockSumAggregation).toHaveBeenCalled();
     expect(mockCountAggregation).toHaveBeenCalled();
