@@ -7,12 +7,27 @@ import { isArrayOfDates, isArrayOfNumbers } from "@/lib/is-array";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format, isSameDay } from "date-fns";
 import { Check, Minus } from "lucide-react";
-import type { ColumnSchema } from "../types/types";
-import { formatCurrency, formatBtcAmount, formatBigNumber } from "../util/formatters";
 import { ProfitDisplay } from "../components/profit-display";
-import { AGGREGATION_ROW } from "./common";
+import type { ColumnSchema } from "../types/types";
 import { customSum } from "../util/customAggregationFn";
+import {
+  formatBigNumber,
+  formatBtcAmount,
+  formatCurrency,
+} from "@/lib/format";
 import { decimalSortingFn } from "../util/sorting";
+import { AGGREGATION_ROW } from "./common";
+
+// Reusable component for empty cells
+const EmptyCell = () => <Minus className="h-4 w-4 text-muted-foreground/50" />;
+
+function DefaultMeasureCell({ value }: { value: string }) {
+  return (
+    <div className="flex items-end">
+      <span> { value } </span>
+    </div>
+  );
+}
 
 export const columns: ColumnDef<ColumnSchema>[] = [
   // {
@@ -23,7 +38,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "firstName",
     meta: {
-      fieldType: 'dimension'
+      fieldType: "dimension",
     },
     header: "First Name",
     cell: ({ row }) => {
@@ -34,7 +49,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "lastName",
     meta: {
-      fieldType: 'dimension'
+      fieldType: "dimension",
     },
     header: "Last Name",
     cell: ({ row }) => {
@@ -45,7 +60,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "url",
     meta: {
-      fieldType: 'dimension'
+      fieldType: "dimension",
     },
     header: "URL",
     cell: ({ row }) => {
@@ -56,7 +71,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "regions",
     meta: {
-      fieldType: 'dimension'
+      fieldType: "dimension",
     },
     header: "Regions",
     cell: ({ row }) => {
@@ -77,7 +92,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "tags",
     meta: {
-      fieldType: 'dimension'
+      fieldType: "dimension",
     },
     header: "Tags",
     cell: ({ row }) => {
@@ -106,25 +121,21 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "p95",
     meta: {
-      fieldType: 'measure'
+      fieldType: "measure",
     },
-    aggregationFn: 'sum',
+    aggregationFn: "sum",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="P95" />
     ),
     cell: ({ row }) => {
       let value = row.getValue("p95");
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         value = parseFloat(value);
       }
       if (typeof value === "undefined" || typeof value !== "number") {
-        return <Minus className="h-4 w-4 text-muted-foreground/50" />;
+        return <EmptyCell />;
       }
-      return (
-        <div>
-          <span>{`${Math.round(value)}`}</span> ms
-        </div>
-      );
+      return <DefaultMeasureCell value={`${Math.round(value)} ms`} />;
     },
     filterFn: (row, id, value) => {
       const rowValue = row.getValue(id) as number;
@@ -143,13 +154,13 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "active",
     meta: {
-      fieldType: 'dimension'
+      fieldType: "dimension",
     },
     header: "Active",
     cell: ({ row }) => {
       const value = row.getValue("active");
       if (value) return <Check className="h-4 w-4" />;
-      return <Minus className="h-4 w-4 text-muted-foreground/50" />;
+      return <EmptyCell />;
     },
     filterFn: (row, id, value) => {
       const rowValue = row.getValue(id);
@@ -162,13 +173,13 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "public",
     meta: {
-      fieldType: 'dimension'
+      fieldType: "dimension",
     },
     header: "Public",
     cell: ({ row }) => {
       const value = row.getValue("public");
       if (value) return <Check className="h-4 w-4" />;
-      return <Minus className="h-4 w-4 text-muted-foreground/50" />;
+      return <EmptyCell />;
     },
     filterFn: (row, id, value) => {
       const rowValue = row.getValue(id);
@@ -181,7 +192,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "date",
     meta: {
-      fieldType: 'dimension'
+      fieldType: "dimension",
     },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
@@ -190,7 +201,10 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       const value = row.getValue("date");
 
       return (
-        <div className="text-xs text-muted-foreground min-w-16" suppressHydrationWarning>
+        <div
+          className="min-w-16 text-xs text-muted-foreground"
+          suppressHydrationWarning
+        >
           {format(new Date(`${value}`), "LLL dd, y HH:mm")}
         </div>
       );
@@ -215,7 +229,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "cost",
     meta: {
-      fieldType: 'measure'
+      fieldType: "measure",
     },
     aggregationFn: customSum,
     header: ({ column }) => (
@@ -225,16 +239,10 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       const value = row.getValue("cost");
 
       if (typeof value === "undefined") {
-        return <Minus className="h-4 w-4 text-muted-foreground/50" />;
+        return <EmptyCell />;
       }
 
-      return (
-        <div className="flex items-center">
-          <span>
-            $ {formatCurrency(value as number)}
-          </span>
-        </div>
-      );
+      return <DefaultMeasureCell value={`$ ${formatCurrency(value as number)}`} />;
     },
     sortingFn: decimalSortingFn,
     filterFn: (row, id, value) => {
@@ -254,7 +262,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "earning",
     meta: {
-      fieldType: 'measure',
+      fieldType: "measure",
     },
     aggregationFn: customSum,
     header: ({ column }) => (
@@ -264,21 +272,15 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       const earning = row.getValue("earning") as number;
       const cost = row.getValue("cost") as number;
       if (typeof earning === "undefined" || typeof cost === "undefined") {
-        return <Minus className="h-4 w-4 text-muted-foreground/50" />;
+        return <EmptyCell />;
       }
 
       const isAggregationRow = row.id.includes(AGGREGATION_ROW);
 
       if (isAggregationRow) {
-        return (
-          <div className="flex items-center">
-            <span>
-              $ {formatCurrency(earning)}
-            </span>
-          </div>
-        );
+        return <DefaultMeasureCell value={`{$ ${formatCurrency(earning)}}`} />;
       }
-      
+
       return <ProfitDisplay earning={earning} cost={cost} />;
     },
     sortingFn: decimalSortingFn,
@@ -299,7 +301,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "bigNumber",
     meta: {
-      fieldType: 'measure'
+      fieldType: "measure",
     },
     aggregationFn: customSum,
     header: ({ column }) => (
@@ -310,15 +312,11 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       const value = row.getValue("bigNumber");
 
       if (typeof value === "undefined") {
-        return <Minus className="h-4 w-4 text-muted-foreground/50" />;
+        return <EmptyCell />;
       }
 
       try {
-        return (
-          <div className="flex flex-col">
-            <span className="truncate">{formatBigNumber(value as string)}</span>
-          </div>
-        );
+        return <DefaultMeasureCell value={formatBigNumber(value as string)} />;
       } catch (error) {
         return <div className="text-destructive">Invalid number</div>;
       }
@@ -332,7 +330,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "btcAmount",
     meta: {
-      fieldType: 'measure'
+      fieldType: "measure",
     },
     aggregationFn: customSum,
     header: ({ column }) => (
@@ -341,19 +339,13 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     cell: ({ row }) => {
       const value = row.getValue("btcAmount");
       if (typeof value === "undefined") {
-        return <Minus className="h-4 w-4 text-muted-foreground/50" />;
+        return <EmptyCell />;
       }
 
       try {
         const formattedBtc = formatBtcAmount(value as string);
 
-        return (
-          <div className="flex flex-col">
-            <span>
-              ₿ {formattedBtc}
-            </span>
-          </div>
-        );
+        return <DefaultMeasureCell value={`₿ ${formattedBtc}`} />;
       } catch (error) {
         return <div className="text-destructive">Invalid BTC amount</div>;
       }

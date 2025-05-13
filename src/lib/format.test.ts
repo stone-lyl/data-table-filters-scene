@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { formatCurrency, formatBtcAmount, formatBigNumber } from './formatters';
+import { formatCurrency, formatBtcAmount, formatBigNumber } from './format';
 
 describe('formatCurrency', () => {
   test('formats numbers less than 1000', () => {

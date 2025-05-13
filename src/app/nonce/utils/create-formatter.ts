@@ -1,4 +1,4 @@
-import { formatCurrency, formatBtcAmount, formatBigNumber } from '@/app/analyze/util/formatters';
+import { formatCurrency, formatBtcAmount, formatBigNumber } from '@/lib/format';
 import { format as formatDate, parseISO } from 'date-fns';
 
 export type FormatterFn = (value: any) => string;

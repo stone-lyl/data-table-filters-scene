@@ -78,13 +78,9 @@ export const VirtualizedTableBody = <TData,>({
             {virtualColumns.map((virtualColumn) => {
               const cell = row.getVisibleCells()[virtualColumn.index];
               if (!cell) return null;
-
               const cellStyle = {
                 width: `${virtualColumn.size}px`,
                 height: "100%",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
               };
 
               // Get cell content using the helper method
@@ -95,6 +91,7 @@ export const VirtualizedTableBody = <TData,>({
 
               return (
                 <TableCell
+                  className="overflow-hidden text-ellipsis whitespace-nowrap"
                   data-testid={`table-cell-${cell.id}`}
                   key={cell.id}
                   style={cellStyle}

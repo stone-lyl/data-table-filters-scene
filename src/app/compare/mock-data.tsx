@@ -2,7 +2,7 @@ import type { FieldType } from '@/components/data-table/types';
 import { faker } from '@faker-js/faker';
 import type { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { formatCurrency } from '../analyze/util/formatters';
+import { formatCurrency } from '@/lib/format';
 import { ComparisonCell, customComparisonFormatterFactory } from "./comparison-cell";
 
 export interface SalesRecord {
