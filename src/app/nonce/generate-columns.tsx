@@ -1,7 +1,7 @@
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import type { ColumnDef } from '@tanstack/react-table';
 import { customSum } from '../analyze/util/customAggregationFn';
-import { AmountComparisonCell } from '../compare/comparison-cell';
+import { ComparisonCell, customComparisonFormatterFactory } from "../compare/comparison-cell";
 import { ColumnStruct, NonceRecord } from './types';
 import { createFormatter } from './utils/create-formatter';
 import { ComparePrefix } from './utils/generate-comparison-query';
@@ -52,14 +52,14 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
         const compareValue = row.original[`${ComparePrefix}${accessorKey}`];
         if (compareValue != null && column.columnDef.meta?.fieldType === 'measure') {
           return (
-            <AmountComparisonCell
-              formatter={valueFormatter}
-              currentAmount={value as number}
-              previousAmount={compareValue as number}
+            <ComparisonCell
+              currentValue={value as number}
+              previousValue={compareValue as number}
               currentDate={row.original['metrics.period.day'] as string}
               previousDate={row.original[`${ComparePrefix}metrics.period.day`] as string}
               showDate={true}
-              hidePercentage />
+              customComparisonFormatter={customComparisonFormatterFactory(valueFormatter, true)}
+            />
           );
         }
         return <div className='text-end'>{valueFormatter(value)}</div>;
