@@ -1,20 +1,25 @@
-'use client';
+"use client";
 
-import { util } from 'apache-arrow';
-import { useEffect, useState } from 'react';
-import * as duckdb from '@duckdb/duckdb-wasm';
-import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm';
-import duckdb_wasm_next from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm';
+import * as duckdb from "@duckdb/duckdb-wasm";
+import duckdb_wasm_next from "@duckdb/duckdb-wasm/dist/duckdb-eh.wasm";
+import duckdb_wasm from "@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm";
+import { util } from "apache-arrow";
 
 // Define the bundles manually to use local node_modules
 const MANUAL_BUNDLES: duckdb.DuckDBBundles = {
   mvp: {
     mainModule: duckdb_wasm, // Will be served from public directory
-    mainWorker: new URL('@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js', import.meta.url).toString(),
+    mainWorker: new URL(
+      "@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js",
+      import.meta.url,
+    ).toString(),
   },
   eh: {
     mainModule: duckdb_wasm_next, // Will be served from public directory
-    mainWorker: new URL('@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js', import.meta.url).toString(),
+    mainWorker: new URL(
+      "@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js",
+      import.meta.url,
+    ).toString(),
   },
 };
 
@@ -33,7 +38,7 @@ const importJsonArray = async (
   data: unknown[],
   db: duckdb.AsyncDuckDB,
   c: duckdb.AsyncDuckDBConnection,
-  tableName: string
+  tableName: string,
 ) => {
   const buffer = encoder.encode(JSON.stringify(data));
   await db.registerFileBuffer(tableName, buffer);
@@ -51,7 +56,7 @@ class DuckDBInstance {
   private worker: Worker | null = null;
   private connection: duckdb.AsyncDuckDBConnection | null = null;
 
-  private constructor() { }
+  private constructor() {}
 
   static getInstance(): DuckDBInstance {
     if (!DuckDBInstance.instance) {
@@ -71,7 +76,7 @@ class DuckDBInstance {
     this.connection = await this.db.connect();
 
     // 添加页面卸载时的清理
-    window.addEventListener('unload', () => {
+    window.addEventListener("unload", () => {
       this.cleanup();
     });
   }
@@ -98,7 +103,10 @@ class DuckDBInstance {
   }
 }
 
-export async function transformData(datasets: Record<string, unknown[]>, sql: string) {
+export async function transformData(
+  datasets: Record<string, unknown[]>,
+  sql: string,
+) {
   const instance = DuckDBInstance.getInstance();
   await instance.initialize();
 
@@ -106,7 +114,7 @@ export async function transformData(datasets: Record<string, unknown[]>, sql: st
   const connection = instance.getConnection();
 
   if (!db || !connection) {
-    throw new Error('DuckDB not properly initialized');
+    throw new Error("DuckDB not properly initialized");
   }
 
   const encoder = new globalThis.TextEncoder();
@@ -122,7 +130,7 @@ export async function transformData(datasets: Record<string, unknown[]>, sql: st
     const json = it.toJSON();
     for (const jsonKey in json) {
       const element = json[jsonKey];
-      if (typeof element === 'object' && element !== null) {
+      if (typeof element === "object" && element !== null) {
         if (util.isArrowBigNumSymbol in element) {
           json[jsonKey] = util.bigNumToNumber(element);
         }
@@ -132,19 +140,4 @@ export async function transformData(datasets: Record<string, unknown[]>, sql: st
   });
 
   return jsResult;
-}
-
-export function useTransform(
-  datasets: Record<string, unknown[]>,
-  query: string
-) {
-  const [result, setResult] = useState<unknown[]>([]);
-
-  useEffect(() => {
-    transformData(datasets, query).then((queryResult) => {
-      setResult(queryResult);
-    });
-  }, [datasets, query]);
-
-  return result;
 }

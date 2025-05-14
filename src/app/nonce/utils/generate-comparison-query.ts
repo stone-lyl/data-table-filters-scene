@@ -58,6 +58,10 @@ export function generateComparisonQuery({
     ],
   });
   
+  console.log(queryState.dimensions, 'queryState.dimensions')
+  // console.log('comparisonOption', comparisonOption)
+  console.log('comparisonColumns', comparisonColumns)
+  console.log('primaryColumns', primaryColumns)
   // Build the SQL query to join the datasets
   const joinQuery = buildJoinQuery({
     left: {

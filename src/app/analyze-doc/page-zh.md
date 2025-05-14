@@ -167,6 +167,88 @@ const columns = [
 ];
 ```
 
+## 示例页面展示
+
+`AnalyticsTableCoreClient` 组件在不同场景下的应用展示通过三个不同的演示页面实现，每个页面展示了该组件的不同功能和特性。
+
+### 1. 基础数据分析页面 (/analyze)
+
+`/analyze` 页面是一个全功能的数据分析平台演示，展示了 `AnalyticsTableCoreClient` 的核心功能：
+
+- **完整的表格功能**：包括排序、过滤、分组和分页
+- **侧边栏集成**：展示了侧边栏插槽的使用方式
+- **自定义控件**：包括过滤命令、工具栏、页脚按钮和分组按钮
+- **URL 同步**：演示了如何将过滤器状态与 URL 参数同步
+- **行编辑功能**：展示了行编辑模式的集成
+
+```tsx
+// 基础数据分析页面的实现
+export default async function Page({
+  searchParams,
+}) {
+  const search = searchParamsCache.parse(await searchParams);
+  
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <AnalyticsTable search={search} />
+    </Suspense>
+  );
+}
+```
+
+### 2. 数据比较页面 (/compare)
+
+`/compare` 页面专注于展示 `AnalyticsTableCoreClient` 的数据比较功能，允许用户直观地比较不同数据集：
+
+- **多表格布局**：同时显示多个相关数据表
+- **表连接功能**：展示如何连接不同数据源进行比较
+- **比较可视化**：使用特殊的单元格渲染器显示数据变化
+- **时间序列分析**：展示不同时间段的数据对比
+
+```tsx
+// 数据比较页面的实现
+export default function ComparePage() {
+  return (
+    <div className="container mx-auto py-6">
+      <h1 className="text-2xl font-bold mb-6">数据比较</h1>
+      <Suspense fallback={<div>加载比较数据中...</div>}>
+        <CompareTable />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+### 3. 数据分析仪表板 (/nonce)
+
+`/nonce` 页面展示了 `AnalyticsTableCoreClient` 与外部数据源（Cube.js）的集成，展示了如何将该组件用于实时数据分析场景：
+
+- **外部数据源集成**：与 Cube.js 数据分析平台的无缝集成
+- **实时数据分析**：展示了如何处理和分析实时数据
+- **自定义侧边栏**：包含特定于挖矿性能的过滤器和控件
+- **时间比较选择器**：允许用户选择不同的时间范围进行比较
+
+```tsx
+// 数据分析仪表板的实现
+export function CubeNonceTable(props) {
+  return (
+    <CubeProvider cubeApi={cubejsApi}>
+      <NonceTable {...props} />
+    </CubeProvider>
+  );
+}
+```
+
+### 各页面的优势和特点
+
+| 页面 | 主要功能 | 适用场景 |
+|---------|------------|------------|
+| /analyze | 全功能数据分析表格 | 通用数据分析、数据浏览和管理 |
+| /compare | 数据比较和连接 | 财务分析、销售比较、趋势分析 |
+| /nonce | 外部数据源集成 | 实时仪表板、性能监控、数据可视化 |
+
+这三个演示页面展示了 `AnalyticsTableCoreClient` 组件的灵活性和可定制性，说明它可以适应各种不同的数据分析需求和场景。
+
 ## 数据比较（Compare）
 
 数据比较功能允许用户比较不同时间段或不同条件下的数据，以便识别趋势、变化和异常。这是数据分析中的关键功能，特别适用于财务分析、性能监控和业务指标跟踪。

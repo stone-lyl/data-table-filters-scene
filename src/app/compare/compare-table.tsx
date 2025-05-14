@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from 'react';
 import { defaultColumnVisibility, generateColumns, generateSalesDataset } from './mock-data-columns';
-import { useTransform } from '@/app/analyze-doc/compare/use-transform';
 import { AnalyticsTableCoreClient } from '../analyze-doc/analytics-table-core';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
 import { DataTableGroupButtons } from '@/components/data-table/data-table-group-buttons';
@@ -15,6 +14,8 @@ import {
   windowFunctions,
 } from '@/app/analyze-doc/compare/query-builder';
 import { DataTablePagination } from '@/components/data-table/data-table-pagination';
+
+import { useTransform } from "@/app/analyze-doc/compare/use-transformed-data";
 
 export default function CompareTable() {
   const [currentYear] = useState(() =>

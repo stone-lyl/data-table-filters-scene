@@ -40,6 +40,7 @@ export function useCubeData(
   const columns = useMemo(() => {
     if (!resultSet || isLoading || error) return [];
     const columnStructs = resultSet.tableColumns();
+    console.log(columnStructs, 'columnStructs')
     return generateColumns(columnStructs as unknown as ColumnStruct[]) as unknown as ColumnDef<NonceRecord, unknown>[];
   }, [resultSet, isLoading, error]);
 
@@ -83,6 +84,7 @@ export function useCubeDataWithComparison(
 
   const primary = useCubeData(query);
   
+  console.log('comparisonQuery', comparisonQuery)
   const comparison = useCubeData(comparisonQuery);
 
   const joinQuery = useMemo(() => {
