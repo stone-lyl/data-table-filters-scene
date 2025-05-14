@@ -7,9 +7,9 @@ import { generateColumns } from '../components/generate-columns';
 import { buildQuery, createComparisonQuery, ExtendedQuery } from '../utils/cube-query-builder';
 import { generateComparisonQuery } from '../utils/generate-comparison-query';
 import { ComparisonOption } from '../components/time-comparison-selector';
-import { useTransformedData } from './use-transformed-data';
+import { useTransformedData } from '../../analyze-doc/compare/use-transformed-data';
 
-interface UseCubeDataResult {
+export interface UseCubeDataResult {
   data: NonceRecord[];
   columns: ColumnDef<NonceRecord, unknown>[];
   isLoading: boolean;
@@ -40,11 +40,13 @@ export function useCubeData(
   const columns = useMemo(() => {
     if (!resultSet || isLoading || error) return [];
     const columnStructs = resultSet.tableColumns();
+
+    // const validColumnStructs = columnStructs.filter(it => it.key !== 'measure');
+    console.log(JSON.stringify(columnStructs), 'columnStructs')
     return generateColumns(columnStructs as unknown as ColumnStruct[]) as unknown as ColumnDef<NonceRecord, unknown>[];
   }, [resultSet, isLoading, error]);
 
   if (error) {
-    // TODO: Handle error
     console.error(error);
   }
 
@@ -97,11 +99,8 @@ export function useCubeDataWithComparison(
     });
   }, [primary.columns, comparison.columns, selectedComparison, isCompare, queryState]);
 
-  const datasets = {
-    primaryData: primary.data,
-    comparisonData: comparison.data
-  };
-  const { data: transformedData, isLoading: isTransformedLoading } = useTransformedData({ datasets, joinQuery });
+
+  const { data: transformedData, isLoading: isTransformedLoading } = useTransformedData({ datasets: { primary, comparison }, joinQuery });
   
   const comparisonLoading = (() => {
     if(isCompare) {
@@ -111,7 +110,7 @@ export function useCubeDataWithComparison(
   })();
 
   return {
-    data: isCompare ? transformedData : primary.data,
+    data: isCompare && transformedData.length ? transformedData : primary.data,
     columns: primary.columns,
     isLoading: primary.isLoading || comparisonLoading,
   };

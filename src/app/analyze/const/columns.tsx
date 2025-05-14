@@ -8,15 +8,15 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { format, isSameDay } from "date-fns";
 import { Check, Minus } from "lucide-react";
 import { CustomComparisonCell } from "../components/custom-comparison-cell";
-import type { ColumnSchema } from "../types/types";
+import type { ColumnSchema } from "@/app/analyze-doc/types/types";
 import {
   formatBigNumber,
   formatBtcAmount,
   formatCurrency,
 } from "@/lib/format";
-import { decimalSortingFn } from "../util/sorting";
+import { decimalSortingFn } from "@/lib/sorting";
 import { AGGREGATION_ROW } from "./common";
-import { customSum } from "../util/customAggregationFn";
+import { customSumAggregation } from "@/lib/decimal-aggregation";
 
 // Reusable component for empty cells
 const EmptyCell = () => <Minus className="h-4 w-4 text-muted-foreground/50" />;
@@ -226,7 +226,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     meta: {
       fieldType: "measure",
     },
-    aggregationFn: customSum,
+    aggregationFn: customSumAggregation,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cost (USD)" />
     ),
@@ -259,7 +259,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     meta: {
       fieldType: "measure",
     },
-    aggregationFn: customSum,
+    aggregationFn: customSumAggregation,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Earning" />
     ),
@@ -298,7 +298,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     meta: {
       fieldType: "measure",
     },
-    aggregationFn: customSum,
+    aggregationFn: customSumAggregation,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Big Number" />
     ),
@@ -327,7 +327,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     meta: {
       fieldType: "measure",
     },
-    aggregationFn: customSum,
+    aggregationFn: customSumAggregation,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="BTC Amount" />
     ),

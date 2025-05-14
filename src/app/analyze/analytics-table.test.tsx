@@ -3,7 +3,7 @@ import { AnalyticsTable } from './analytics-table';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
 import '@testing-library/jest-dom';
 import * as React from 'react';
-import { ColumnSchema } from './types/types';
+import { ColumnSchema } from '@/app/analyze-doc/types/types';
 import { REGIONS } from '@/constants/region';
 import { TAGS } from '@/constants/tag';
 import { data } from './const/data';
@@ -18,7 +18,7 @@ vi.mock('nuqs', () => ({
 
 vi.mock('./hooks/use-row-edit', () => ({
   useRowEdit: vi.fn(() => ({
-    rowEventHandlers: {},
+    rowEventHandlers: vi.fn(() => ({})),
   })),
 }));
 
@@ -29,7 +29,7 @@ vi.mock('./hooks/use-header-toast', () => ({
 }));
 
 // Mock child components to simplify testing
-vi.mock('./analytics-table-core', () => ({
+vi.mock('../analyze-doc/analytics-table-core', () => ({
   AnalyticsTableCoreClient: vi.fn(({ 'data-testid': dataTestId, sidebarSlot, controlsSlot, paginationSlot }) => (
     <div data-testid={dataTestId}>
       AnalyticsTableCore Mock

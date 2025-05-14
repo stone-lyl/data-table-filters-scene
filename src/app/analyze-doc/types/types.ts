@@ -18,12 +18,13 @@ export type ColumnSchema = {
   bigNumber: string;
   btcAmount: string;
 };
+
 export interface ColumnReference {
   tableName: string;
   columnName: string;
 }
 
-export interface GenericColumnDefinition {
+interface GenericColumnDefinition {
   name: string;
   expression: string;
 }

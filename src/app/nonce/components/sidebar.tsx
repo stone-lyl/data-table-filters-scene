@@ -84,13 +84,14 @@ export function Sidebar({ nonceData, onQueryStateChange, onComparisonChange }: S
 
   // Handle breakdown selection
   const handleBreakdownChange = (selectedIds: string[]) => {
-    setQueryState(updateDimensions(queryState, selectedIds));
+    let newQueryState = updateDimensions(queryState, selectedIds);
     if (selectedIds.length === 0) {
-      setQueryState(removeFilter(queryState, FarmNameInfo.name));
+      newQueryState = removeFilter(newQueryState, FarmNameInfo.name);
       table.setGrouping([]);
     } else {
       table.setGrouping([CompareTimeKey]);
     }
+    setQueryState(newQueryState);
   };
 
   // Handle farm filter selection

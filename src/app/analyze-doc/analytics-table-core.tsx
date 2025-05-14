@@ -2,7 +2,7 @@
 
 import { DataTableProvider } from "@/components/data-table/data-table-provider";
 import type { DataTableFilterField } from "@/components/data-table/types";
-import { AggregationConfig } from "../../components/data-table/data-table-aggregations";
+import { AggregationConfig } from "@/components/data-table/data-table-aggregations";
 import { TableRender } from "./virtualized-table/virtualized-table";
 import type {
   ColumnDef,

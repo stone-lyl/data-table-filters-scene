@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ColumnDef } from "@tanstack/react-table";
-import { HeaderRowEventHandlersFn } from "../types/event-handlers";
+import { HeaderRowEventHandlersFn } from "@/app/analyze-doc/types/event-handlers";
 import { toast } from "sonner";
 export interface UseColumnTooltipReturn<TData, TValue> {
   headerRowEventHandlers: HeaderRowEventHandlersFn<TData>;

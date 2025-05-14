@@ -1,6 +1,6 @@
 import { CellContext } from "@tanstack/react-table";
-import { ComparisonCell, customComparisonFormatterFactory } from "../../analyze/compare/comparison-cell";
-import { ComparePrefix } from "../utils/generate-comparison-query";
+import { ComparisonCell, customComparisonFormatterFactory } from "@/app/analyze-doc/compare/comparison-cell";
+import { ComparePrefix, CompareTimeKey } from "../utils/generate-comparison-query";
 import { useMemo } from "react";
 import { NonceRecord } from "../types";
 
@@ -28,8 +28,8 @@ export const ComparisonCellRenderer = ({
     () => ({
       currentValue: value as number,
       previousValue: compareValue as number,
-      currentDate: row.original['metrics.period.day'] as string,
-      previousDate: row.original[`${ComparePrefix}metrics.period.day`] as string,
+      currentDate: row.original[CompareTimeKey] as string,
+      previousDate: row.original[`${ComparePrefix}${CompareTimeKey}`] as string,
     }),
     [value, compareValue, row.original]
   );

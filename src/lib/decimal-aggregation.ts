@@ -2,7 +2,7 @@ import type { Row } from "@tanstack/react-table";
 import Decimal from "decimal.js-light";
 
 
-export const customSum = <T>(columnId: string, leafRows: Row<T>[]) => {
+export const customSumAggregation = <T>(columnId: string, leafRows: Row<T>[]) => {
 
   if (leafRows.length === 0) return null;
 

@@ -1,8 +1,8 @@
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import type { ColumnDef } from '@tanstack/react-table';
-import { customSum } from '../../analyze/util/customAggregationFn';
+import { customSumAggregation } from "@/lib/decimal-aggregation";
 import { ColumnStruct, NonceRecord } from '../types';
-import { createFormatter } from '../../analyze/compare/create-formatter';
+import { createFormatter } from '@/app/analyze-doc/compare/create-formatter';
 import { ComparisonCellRenderer } from './comparison-cell-renderer';
 
 /**
@@ -31,7 +31,7 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
         }
         return colStruct.shortTitle || colStruct.title;
       },
-      aggregationFn: customSum,
+      aggregationFn: customSumAggregation,
       meta: {
         fieldType: colStruct.type === 'number' ? 'measure' : 'dimension',
         format: colStruct.meta?.format,

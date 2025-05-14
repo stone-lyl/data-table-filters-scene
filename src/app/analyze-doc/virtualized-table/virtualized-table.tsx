@@ -1,7 +1,7 @@
 "use client";
 
-import { VirtualizedTableBody } from "@/app/analyze/virtualized-table/virtualized-table-body";
-import { VirtualizedTableHeader } from "@/app/analyze/virtualized-table/virtualized-table-header";
+import { VirtualizedTableBody } from "./virtualized-table-body";
+import { VirtualizedTableHeader } from "./virtualized-table-header";
 import { TableContainer } from "@/components/custom/table";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 import { cn } from "@/lib/utils";
