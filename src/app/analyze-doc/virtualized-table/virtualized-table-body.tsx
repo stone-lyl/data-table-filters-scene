@@ -1,5 +1,5 @@
-import { RowEventHandlersFn } from "@/app/analyze/types/event-handlers";
-import { DataTableFooterProps } from "@/app/analyze/virtualized-table/virtualized-table-footer";
+import { RowEventHandlersFn } from "@/app/analyze-doc/types/event-handlers";
+import { DataTableFooterProps } from "@/app/analyze-doc/virtualized-table/virtualized-table-footer";
 import { TableBody, TableCell, TableRow } from "@/components/custom/table";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 import { Button } from "@/components/ui/button";

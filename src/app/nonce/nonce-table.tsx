@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { AnalyticsTableCoreClient } from "../analyze/analytics-table-core";
+import { AnalyticsTableCoreClient } from "../analyze-doc/analytics-table-core";
 import { DataTablePagination } from "@/components/data-table/data-table-pagination";
 import { NonceRecord } from "./types";
 import { Sidebar } from "./components/sidebar";

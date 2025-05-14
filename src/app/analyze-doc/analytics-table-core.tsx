@@ -3,7 +3,7 @@
 import { DataTableProvider } from "@/components/data-table/data-table-provider";
 import type { DataTableFilterField } from "@/components/data-table/types";
 import { AggregationConfig } from "../../components/data-table/data-table-aggregations";
-import { TableRender } from "./virtualized-table/virtualized-table";
+import { TableRender } from "@/app/analyze-doc/virtualized-table/virtualized-table";
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -28,7 +28,7 @@ import {
   getExpandedRowModel,
 } from "@tanstack/react-table";
 import * as React from "react";
-import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "./types/event-handlers";
+import { RowEventHandlersFn, HeaderRowEventHandlersFn } from "@/app/analyze-doc/types/event-handlers";
 
 // todo prop add js doc
 export interface AnalyticsTableCoreProps<TData, TValue> {

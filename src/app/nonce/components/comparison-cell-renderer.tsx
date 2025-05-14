@@ -1,5 +1,5 @@
 import { CellContext } from "@tanstack/react-table";
-import { ComparisonCell, customComparisonFormatterFactory } from "../../analyze/compare/comparison-cell";
+import { ComparisonCell, customComparisonFormatterFactory } from "@/app/analyze-doc/compare/comparison-cell";
 import { ComparePrefix } from "../utils/generate-comparison-query";
 import { useMemo } from "react";
 import { NonceRecord } from "../types";

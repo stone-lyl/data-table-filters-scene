@@ -3,7 +3,7 @@ import { AnalyticsTable } from './analytics-table';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
 import '@testing-library/jest-dom';
 import * as React from 'react';
-import { ColumnSchema } from './types/types';
+import { ColumnSchema } from '@/app/analyze-doc/types/types';
 import { REGIONS } from '@/constants/region';
 import { TAGS } from '@/constants/tag';
 import { data } from './const/data';

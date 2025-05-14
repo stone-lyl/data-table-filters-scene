@@ -1,8 +1,8 @@
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import type { ColumnDef } from '@tanstack/react-table';
-import { customSum } from '../../analyze/util/customAggregationFn';
+import { customSum } from "@/lib/customAggregationFn";
 import { ColumnStruct, NonceRecord } from '../types';
-import { createFormatter } from '../../analyze/compare/create-formatter';
+import { createFormatter } from '@/app/analyze-doc/compare/create-formatter';
 import { ComparisonCellRenderer } from './comparison-cell-renderer';
 
 /**

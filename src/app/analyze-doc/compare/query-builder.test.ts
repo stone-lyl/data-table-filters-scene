@@ -8,7 +8,7 @@ import {
 import {
   type ColumnReference,
   type QueryOptions
-} from '../types/types';
+} from '@/app/analyze-doc/types/types';
 
 describe('query-builder', () => {
   describe('toColumnNames', () => {

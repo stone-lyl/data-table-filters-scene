@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { ColumnSchema } from "../types/types";
-import { RowEventHandlersFn } from "../types/event-handlers";
+import { ColumnSchema } from "@/app/analyze-doc/types/types";
+import { RowEventHandlersFn } from "@/app/analyze-doc/types/event-handlers";
 
 export interface UseRowEditOptions<TData> {
   data: TData[];

@@ -1,5 +1,5 @@
 import { subDays, subHours, subMinutes } from "date-fns";
-import { ColumnSchema } from "../types/types";
+import { ColumnSchema } from "@/app/analyze-doc/types/types";
 
 export const data: ColumnSchema[] = [
   {

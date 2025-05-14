@@ -1,6 +1,6 @@
 'use client';
 
-import { buildJoinQuery, buildQuery } from '@/app/analyze/compare/query-builder';
+import { buildJoinQuery, buildQuery } from '@/app/analyze-doc/compare/query-builder';
 import { ColumnDef } from '@tanstack/react-table';
 import { NonceRecord } from '../types';
 import { ComparisonOption } from '../components/time-comparison-selector';

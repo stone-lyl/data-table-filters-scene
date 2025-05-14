@@ -7,7 +7,6 @@ import {
   SLIDER_DELIMITER,
 } from "@/lib/delimiters";
 import {
-  createParser,
   createSearchParamsCache,
   parseAsArrayOf,
   parseAsBoolean,
@@ -16,22 +15,9 @@ import {
   parseAsStringLiteral,
   parseAsTimestamp,
 } from "nuqs/server";
-
-export const parseAsSort = createParser({
-  parse(queryValue) {
-    const [id, desc] = queryValue.split(".");
-    if (!id && !desc) return null;
-    return { id, desc: desc === "desc" };
-  },
-  serialize(value) {
-    return `${value.id}.${value.desc ? "desc" : "asc"}`;
-  },
-});
-
 export const searchParamsParser = {
   // FILTERS
   url: parseAsString,
-  // TODO: limit to two array entries
   p95: parseAsArrayOf(parseAsInteger, SLIDER_DELIMITER),
   public: parseAsArrayOf(parseAsBoolean, ARRAY_DELIMITER),
   active: parseAsArrayOf(parseAsBoolean, ARRAY_DELIMITER),

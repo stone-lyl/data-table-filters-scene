@@ -1,5 +1,5 @@
 import dedent from 'dedent';
-import { ColumnReference, QueryOptions, OutputableColumn } from '../types/types';
+import { ColumnReference, QueryOptions, OutputableColumn } from '@/app/analyze-doc/types/types';
 
 export const Aggregations = {
   sum: (column: ColumnReference) => `SUM(${toColumnNames(column)})`,

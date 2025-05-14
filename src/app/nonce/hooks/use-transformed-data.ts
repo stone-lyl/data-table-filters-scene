@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { transformData } from '@/app/analyze/compare/use-transform';
+import { transformData } from '@/app/analyze-doc/compare/use-transform';
 import { UseCubeDataResult } from './use-cube-data';
 
 interface UseTransformedDataOptions {
