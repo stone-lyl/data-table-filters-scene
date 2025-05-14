@@ -45,42 +45,6 @@ const importJsonArray = async (
   return c;
 };
 
-export async function transformData1(datasets: Record<string, unknown[]>, sql: string) {
-  // Get the bundle using our initializeDuckDB helper
-  const bundle = await initializeDuckDB();
-  // Instantiate the asynchronous version of DuckDB-wasm
-  const worker = new Worker(bundle.mainWorker!);
-  const logger = new duckdb.ConsoleLogger();
-  const db = new duckdb.AsyncDuckDB(logger, worker);
-  await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
-  const c = await db.connect();
-
-  const encoder = new globalThis.TextEncoder();
-  for (const datasetsKey in datasets) {
-    const data = datasets[datasetsKey];
-    await importJsonArray(encoder, data, db, c, datasetsKey);
-  }
-
-  const result = await c.query(sql);
-  // convert arrow types to js types
-  const jsResult = result.toArray().map((it) => {
-    const json = it.toJSON();
-    for (const jsonKey in json) {
-      const element = json[jsonKey];
-      if (typeof element === 'object' && element !== null) {
-        if (util.isArrowBigNumSymbol in element) {
-          json[jsonKey] = util.bigNumToNumber(element);
-        }
-      }
-    }
-    return json;
-  });
-
-  // Close the connection to release memory
-  await c.close();
-  worker.terminate();
-  return jsResult;
-}
 class DuckDBInstance {
   private static instance: DuckDBInstance | null = null;
   private db: duckdb.AsyncDuckDB | null = null;
@@ -169,6 +133,7 @@ export async function transformData(datasets: Record<string, unknown[]>, sql: st
 
   return jsResult;
 }
+
 export function useTransform(
   datasets: Record<string, unknown[]>,
   query: string
