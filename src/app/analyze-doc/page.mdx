@@ -6,14 +6,17 @@
 
 ## Key Features
 
+- **Virtualized Table**: Efficiently handle large datasets by only rendering rows and columns in the visible area
 - **Sticky Headers & Footers**: Keep important information visible while scrolling through large datasets
-- **Aggregations**: Calculate sums, counts, averages, and other metrics across your data
-- **Grouping**: Group related data for hierarchical analysis
-- **Advanced Filtering**: Filter data using complex criteria
+- **Aggregations**: Calculate high-precision data aggregations using Decimal.js, such as sums, counts, averages
+- **Row Grouping**: Support multi-level grouping for hierarchical analysis of related data
+- **Data Comparison**: Compare data across different time periods or conditions, showing current values, changes, and rates
+- **Advanced Filtering**: Filter data using complex criteria across multiple data types
 - **Column Customization**: Show/hide columns and resize as needed
-- **Persistent State**: Maintains column visibility in local storage
-- **URL Synchronization**: Syncs filter state with URL parameters
+- **Persistent State**: Maintains column visibility and filter state in local storage
+- **URL Synchronization**: Syncs filter state with URL parameters for easy sharing and view restoration
 - **Extensible**: Supports custom event handlers for rows and headers
+- **Loading States**: Built-in loading states and custom loading component support
 
 ## Overview
 
@@ -70,6 +73,73 @@ The Analytics Table is built with several key components:
 - **Column Visibility**: Controls which columns are visible (persisted in localStorage)
 - **Footer Aggregations**: Manages aggregation calculations in the table footer
 
+## Row Grouping
+
+`AnalyticsTableCore` provides powerful row grouping functionality that allows users to group data by one or more columns for better analysis and understanding of data relationships.
+
+### Key Features
+
+- **Multi-level Grouping**: Support for nested grouping by multiple columns, creating hierarchical views
+- **Expandable/Collapsible**: Users can expand or collapse groups to focus on specific data sets
+- **Group Aggregations**: Automatic calculation of aggregate values for each group (sums, averages, counts, etc.)
+- **Group Persistence**: Grouping state can be saved in application state for consistency between sessions
+- **Smart Column Filtering**: Automatically identifies dimension columns that can be grouped, showing only meaningful grouping options
+
+### Implementation
+
+Grouping is implemented using TanStack Table's `getGroupedRowModel` and `getExpandedRowModel`:
+
+```tsx
+const table = useReactTable({
+  // Other configuration...
+  state: { grouping, expanded, /* other states... */ },
+  onGroupingChange: setGrouping,
+  onExpandedChange: setExpanded,
+  getGroupedRowModel: getGroupedRowModel(),
+  getExpandedRowModel: getExpandedRowModel(),
+});
+```
+
+### Group Buttons Component
+
+The `DataTableGroupButtons` component provides an intuitive user interface for quickly toggling different grouping dimensions:
+
+```tsx
+<DataTableGroupButtons />
+```
+
+### Usage Example
+
+```tsx
+<AnalyticsTableCoreClient
+  columns={columns}
+  data={data}
+  defaultGrouping={["region", "paymentMethod"]} // Default grouping by region and payment method
+  controlsSlot={<DataTableGroupButtons />} // Add grouping buttons to controls area
+  // Other configuration...
+/>
+```
+
+### Column Definition for Grouping
+
+In column definitions, you can configure grouping-related properties:
+
+```tsx
+const columns = [
+  {
+    id: "region",
+    header: "Region",
+    accessorKey: "region",
+    enableGrouping: true, // Enable grouping
+    meta: {
+      fieldType: "dimension" // Mark as dimension column to show in grouping buttons
+    },
+    aggregationFn: customSum, // Custom aggregation function for row grouping
+  },
+  // Other columns...
+];
+```
+
 ## URL Synchronization
 
 The component automatically synchronizes column filters with URL search parameters, enabling:
@@ -77,6 +147,207 @@ The component automatically synchronizes column filters with URL search paramete
 - Shareable filtered views
 - Browser history navigation between different filter states
 - Persistent filters across page refreshes
+
+## Horizontal Virtualization
+
+`AnalyticsTableCore` implements efficient horizontal virtualization, allowing it to handle tables with a large number of columns while maintaining excellent performance.
+
+### Core Features
+
+- **Dynamic Column Rendering**: Only renders columns currently visible in the viewport, significantly reducing DOM node count
+- **Smart Column Width Calculation**: Automatically calculates optimal column widths based on content, with minimum and maximum width constraints
+- **Virtual Padding**: Uses virtual left and right padding elements to maintain correct scroll position and layout
+- **Performance Optimization**: Preloads additional columns through the `overscan` parameter to ensure smooth scrolling experience
+
+### Technical Implementation
+
+Horizontal virtualization is implemented using the `@tanstack/react-virtual` library:
+
+```tsx
+const columnVirtualizer = useVirtualizer({
+  count: visibleColumns.length,
+  getScrollElement: () => tableContainerRef.current,
+  estimateSize: (index) => {
+    const column = visibleColumns[index];
+    const width = column.id.length * FontSize;
+    const size = Math.max(width, 150, column?.getSize());
+    return Math.min(size, MaxColumnWidth);
+  },
+  horizontal: true,
+  overscan: 2,
+});
+```
+
+Unlike vertical virtualization, horizontal virtualization uses a special padding strategy that adds virtual elements to the left and right sides of the table, rather than using absolute positioning:
+
+```tsx
+const virtualPadding = React.useMemo(() => {
+  let left: number | null = null;
+  let right: number | null = null;
+
+  if (columnVirtualizer && virtualColumns?.length) {
+    left = virtualColumns[0]?.start ?? null;
+    right =
+      columnVirtualizer.getTotalSize() -
+      (virtualColumns[virtualColumns.length - 1]?.end ?? null);
+  }
+
+  return { left, right };
+}, [columnVirtualizer, virtualColumns]);
+```
+
+## Row Pinning and Sticky Footer
+
+`AnalyticsTableCore` provides row pinning and sticky footer functionality, which are particularly useful when working with large datasets.
+
+### Row Pinning
+
+Row pinning allows users to pin important rows to the top or bottom of the table, keeping them visible even when scrolling through large amounts of data. This is useful when comparing key data or needing to keep focus on specific rows.
+
+```tsx
+// Enable row pinning in the table configuration
+const table = useReactTable({
+  // Other configuration...
+  enableRowPinning: true,
+  enablePinning: true,
+});
+```
+
+### Sticky Footer
+
+The sticky footer functionality keeps the aggregation rows fixed at the bottom of the viewport, ensuring summary data remains visible even when scrolling through large datasets. This is particularly useful for users who need to constantly reference summary data.
+
+```tsx
+// Implement sticky effect in the footer component
+<TableFooter 
+  data-testid="table-footer" 
+  className={cn("bg-background sticky bottom-0 z-20 grid")} 
+>
+  {/* Footer content */}
+</TableFooter>
+```
+
+### Use Cases
+
+- **Data Comparison Analysis**: Pin key rows for easy comparison between different data points
+- **Financial Reports**: Keep total rows visible for quick reference
+- **Large Datasets**: Maintain visibility of key information when browsing large amounts of data
+- **Interactive Dashboards**: Always show summary metrics as users browse and filter data
+
+## Data Comparison
+
+The data comparison functionality allows users to compare data across different time periods or conditions to identify trends, changes, and anomalies. This is a key feature for data analysis, particularly useful for financial analysis, performance monitoring, and business metrics tracking.
+
+### Key Features
+
+- **Time Comparison**: Compare data across different time periods (e.g., year-over-year, month-over-month)
+- **Visual Differentiation**: Visualize changes through color coding and arrows showing direction and magnitude
+- **Percentage and Absolute Comparison**: Display both absolute changes and percentage changes
+- **Custom Formatting**: Support for various formatting options including currency, percentage, and numeric formats
+- **Detailed Tooltips**: Show detailed comparison information on hover
+
+### Core Components
+
+#### 1. ComparisonCell Component
+
+The `ComparisonCell` is a flexible component for displaying differences between current and comparison values:
+
+```tsx
+<ComparisonCell 
+  data={{
+    currentValue: 100,
+    previousValue: 80,
+    currentDate: "2024-05-01",
+    previousDate: "2024-04-01"
+  }}
+  formatInfo={{ type: "currency", unit: "$" }}
+  comparisonType="both" // "absolute", "percentage", or "both"
+  showDate={true}
+/>
+```
+
+#### 2. Query Building Tools
+
+The comparison functionality relies on powerful query building tools that support:
+
+- **Table Joins**: Connect current and historical data tables using the `buildJoinQuery` function
+- **Aggregation Functions**: Use the `Aggregations` object for data aggregation (sum, count, avg, etc.)
+- **Window Functions**: Use `windowFunctions` for time series analysis (e.g., lag functions)
+
+```tsx
+// Build current year query
+const currentYearQuery = buildQuery({
+  dataset: currentYearTableName,
+  groupDimensions: groupDims(currentYearTableName),
+  segments: [{ name: 'yearMonth', expression: `datetrunc('month', "date"::timestamp)` }],
+  fields: [
+    totalAmount(currentYearTableName),
+    { name: 'periodKey', expression: `"yearMonth"` }
+  ],
+});
+
+// Build previous year query
+const lastYearQuery = buildQuery({
+  dataset: lastYearTableName,
+  groupDimensions: groupDims(lastYearTableName),
+  segments: [{ name: 'yearMonth', expression: `datetrunc('month', "date"::timestamp)` }],
+  fields: [
+    totalAmount(lastYearTableName),
+    { name: 'periodKey', expression: 'date_add("yearMonth", INTERVAL 1 YEAR)' }
+  ],
+});
+
+// Join the two queries
+const query = buildJoinQuery({
+  left: { name: 'currentYearResult', query: currentYearQuery },
+  right: {
+    name: 'lastYearResult',
+    query: lastYearQuery,
+    pick: { prefix: 'c_', columns: ['totalAmount'] }
+  },
+  using: ['region', 'paymentMethod', 'periodKey'],
+  mode: 'left'
+});
+```
+
+#### 3. Data Transformation
+
+The `useTransformedData` hook is used to process and transform comparison data:
+
+```tsx
+const data = useTransformedData({
+  datasets: {
+    primary: currentYearData,
+    comparison: lastYearData
+  },
+  joinQuery: query
+});
+```
+
+### Practical Applications
+
+The comparison functionality is particularly useful in these scenarios:
+
+- **Financial Dashboards**: Compare revenue, expenses, and profits across different periods
+- **Sales Analysis**: Compare sales performance across regions, products, or time periods
+- **Performance Monitoring**: Compare system or application performance metrics under different conditions
+- **Trend Analysis**: Identify trends and patterns in data over time
+
+### Custom Comparison Formatters
+
+You can create custom comparison formatters using the `customComparisonFormatterFactory`:
+
+```tsx
+const customFormatter = customComparisonFormatterFactory(
+  (value) => `${value.toFixed(2)} units`,  // Value formatting function
+  false  // Whether to hide percentage
+);
+
+<ComparisonCell 
+  data={data}
+  customComparisonFormatter={customFormatter}
+/>
+```
 
 ## Aggregation Configuration
 
