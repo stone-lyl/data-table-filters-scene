@@ -5,9 +5,24 @@ import '@testing-library/jest-dom';
 import * as React from 'react';
 import * as DataTableProvider from '@/components/data-table/data-table-provider';
 import { HeaderRowEventHandlersFn, RowEventHandlersFn } from '../types/event-handlers';
+import { VirtualizedTableHeader } from './virtualized-table-header';
+import { VirtualizedTableBody } from './virtualized-table-body';
+import { ColumnDef } from '@tanstack/react-table';
 
-// Mock the DataTableFooter component
-vi.mock('./data-table-footer', () => ({
+// Mock the virtualized table components
+vi.mock('./virtualized-table-header', () => ({
+  VirtualizedTableHeader: vi.fn(() => <div data-testid="virtualized-table-header"></div>),
+}));
+
+vi.mock('./virtualized-table-body', () => ({
+  VirtualizedTableBody: vi.fn(() => <div data-testid="virtualized-table-body"></div>),
+}));
+
+// Mock the imported components so we can access them in tests
+vi.mocked(VirtualizedTableHeader);
+vi.mocked(VirtualizedTableBody);
+
+vi.mock('./virtualized-table-footer', () => ({
   DataTableFooter: vi.fn(() => <div data-testid="data-table-footer"></div>),
 }));
 
@@ -44,6 +59,26 @@ vi.mock('@/components/data-table/data-table-provider', () => ({
               getContext: () => ({}),
             }
           ]
+        }
+      ],
+      getVisibleLeafColumns: () => [
+        { 
+          id: 'col1', 
+          getSize: () => 150,
+          columnDef: {},
+          columns: [],
+          depth: 0,
+          getFlatColumns: () => [],
+          getLeafColumns: () => [] 
+        },
+        { 
+          id: 'col2', 
+          getSize: () => 150,
+          columnDef: {},
+          columns: [],
+          depth: 0,
+          getFlatColumns: () => [],
+          getLeafColumns: () => [] 
         }
       ],
       getRowModel: () => ({
@@ -91,7 +126,7 @@ vi.mock('@tanstack/react-table', () => ({
   flexRender: vi.fn((content) => content)
 }));
 
-describe('TableRender', () => {
+describe('VirtualizedTable', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -102,17 +137,9 @@ describe('TableRender', () => {
     // Check if the main table is rendered
     expect(screen.getByTestId('analytics-table-main')).toBeInTheDocument();
 
-    // Check if the header is rendered
-    expect(screen.getByTestId('table-header')).toBeInTheDocument();
-    expect(screen.getByTestId('header-row-headerGroup1')).toBeInTheDocument();
-    expect(screen.getByTestId('header-cell-header1')).toBeInTheDocument();
-    expect(screen.getByTestId('header-cell-header2')).toBeInTheDocument();
-
-    // Check if the body is rendered
-    expect(screen.getByTestId('table-body')).toBeInTheDocument();
-    expect(screen.getByTestId('table-row-row1')).toBeInTheDocument();
-    expect(screen.getByTestId('table-cell-cell1')).toBeInTheDocument();
-    expect(screen.getByTestId('table-cell-cell2')).toBeInTheDocument();
+    // Check if the virtualized components are rendered
+    expect(screen.getByTestId('virtualized-table-header')).toBeInTheDocument();
+    expect(screen.getByTestId('virtualized-table-body')).toBeInTheDocument();
 
     // Check if the footer is rendered
     expect(screen.getByTestId('data-table-footer')).toBeInTheDocument();
@@ -124,7 +151,9 @@ describe('TableRender', () => {
     render(<TableRender onRow={mockRowHandler} />);
 
     expect(screen.getByTestId('analytics-table-main')).toBeInTheDocument();
-    expect(mockRowHandler).toHaveBeenCalled();
+    
+    // The VirtualizedTableBody component should have been called with the onRow prop
+    expect(vi.mocked(VirtualizedTableBody).mock.calls[0][0].onRow).toBe(mockRowHandler);
   });
 
   it('renders with header row event handlers', () => {
@@ -133,25 +162,50 @@ describe('TableRender', () => {
     render(<TableRender onHeaderRow={mockHeaderRowHandler} />);
 
     expect(screen.getByTestId('analytics-table-main')).toBeInTheDocument();
-    expect(mockHeaderRowHandler).toHaveBeenCalled();
+    
+    // The VirtualizedTableHeader component should have been called with the onHeaderRow prop
+    expect(vi.mocked(VirtualizedTableHeader).mock.calls[0][0].onHeaderRow).toBe(mockHeaderRowHandler);
   });
 
   it('renders empty table when no rows', () => {
     vi.mocked(DataTableProvider.useDataTable).mockReturnValue({
       table: {
-        // @ts-ignore
-        getAllColumns: () => [{ id: 'col1' }, { id: 'col2' }],
+        getVisibleLeafColumns: () => [
+          { 
+            id: 'col1', 
+            getSize: () => 150,
+            // @ts-ignore
+            columnDef: {},
+            columns: [],
+            depth: 0,
+            getFlatColumns: () => [],
+            getLeafColumns: () => [] 
+          },
+          { 
+            id: 'col2', 
+            getSize: () => 150,
+            // @ts-ignore
+            columnDef: {},
+            columns: [],
+            depth: 0,
+            getFlatColumns: () => [],
+            getLeafColumns: () => [] 
+          }
+        ],
         getHeaderGroups: () => [],
-        // @ts-ignore
-        getRowModel: () => ({ rows: [] })
+        getRowModel: () => ({ 
+          rows: [],
+          flatRows: [],
+          rowsById: {}
+        })
       }
     });
 
     render(<TableRender />);
 
     expect(screen.getByTestId('analytics-table-main')).toBeInTheDocument();
-    // Check if the row is empty
-    expect(screen.getByTestId('table-body')).toBeInTheDocument();
-    expect(screen.getByTestId('empty-row')).toBeInTheDocument();
+    // Check if the virtualized components are rendered
+    expect(screen.getByTestId('virtualized-table-header')).toBeInTheDocument();
+    expect(screen.getByTestId('virtualized-table-body')).toBeInTheDocument();
   });
 });

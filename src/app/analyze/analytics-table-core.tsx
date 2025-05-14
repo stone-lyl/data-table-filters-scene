@@ -211,7 +211,6 @@ export function AnalyticsTableCore<TData, TValue>({
               </div>
             ) : (
               <TableRender<TData>
-                data-testid="table-render"
                 onRow={rowEventHandlers}
                 onHeaderRow={headerRowEventHandlers}
                 tableClassName={tableClassName}

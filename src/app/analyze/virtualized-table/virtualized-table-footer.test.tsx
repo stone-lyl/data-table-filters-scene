@@ -94,16 +94,24 @@ describe('DataTableFooter', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    // Setup the mock implementation for each test
     mockUseDataTable.mockReturnValue({
       footerAggregations: mockFooterAggregations,
       table: mockTable
     });
   });
 
-  // todo: virtualColumns={[]} virtualPadding={{ left: 0, right: 0 }}
   it('renders the footer with sum and count aggregations', () => {
-    render(<DataTableFooter data-testid="data-table-footer" virtualColumns={[]} virtualPadding={{ left: 0, right: 0 }} />);
+    render(
+      <DataTableFooter 
+        data-testid="data-table-footer" 
+        virtualColumns={[
+          { index: 0, start: 0, size: 100, end: 100, lane: 0, key: 0 },
+          { index: 1, start: 100, size: 100, end: 200, lane: 0, key: 1 },
+          { index: 2, start: 200, size: 100, end: 300, lane: 0, key: 2 }
+        ]} 
+        virtualPadding={{ left: 0, right: 0 }} 
+      />
+    );
     
     const footer = screen.getByTestId('table-footer');
     expect(footer).toBeInTheDocument();
@@ -134,7 +142,13 @@ describe('DataTableFooter', () => {
       }
     });
     
-    const { container } = render(<DataTableFooter data-testid="data-table-footer" virtualColumns={[]} virtualPadding={{ left: 0, right: 0 }} />);
+    const { container } = render(
+      <DataTableFooter 
+        data-testid="data-table-footer" 
+        virtualColumns={[]} 
+        virtualPadding={{ left: 0, right: 0 }} 
+      />
+    );
     
     expect(screen.getByTestId('table-footer')).toBeInTheDocument();
     
@@ -143,7 +157,17 @@ describe('DataTableFooter', () => {
   });
 
   it('calculates aggregations correctly', () => {
-    const { container } = render(<DataTableFooter data-testid="data-table-footer" virtualColumns={[]} virtualPadding={{ left: 0, right: 0 }} />);
+    const { container } = render(
+      <DataTableFooter 
+        data-testid="data-table-footer" 
+        virtualColumns={[
+          { index: 0, start: 0, size: 100, end: 100, lane: 0, key: 0 },
+          { index: 1, start: 100, size: 100, end: 200, lane: 0, key: 1 },
+          { index: 2, start: 200, size: 100, end: 300, lane: 0, key: 2 }
+        ]}
+        virtualPadding={{ left: 0, right: 0 }} 
+      />
+    );
     
     expect(mockSumAggregation).toHaveBeenCalled();
     expect(mockCountAggregation).toHaveBeenCalled();

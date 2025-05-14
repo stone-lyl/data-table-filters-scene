@@ -68,14 +68,13 @@ describe('AnalyticsTableCore', () => {
   it('renders the table with data', () => {
     render(
       <AnalyticsTableCore<TestData, unknown>
-        data-testid="analytics-table-core"
         columns={testColumns}
         data={testData}
         footerAggregations={defaultAggregations as unknown as AggregationConfig<TestData>[]}
       />
     );
 
-    expect(screen.getByTestId('table-render')).toBeInTheDocument();
+    expect(screen.getByTestId('analytics-table-main')).toBeInTheDocument();
     
     expect(screen.getByTestId('analytics-table-core-container')).toBeInTheDocument();
     expect(screen.getByTestId('analytics-table-core-content')).toBeInTheDocument();
@@ -95,7 +94,7 @@ describe('AnalyticsTableCore', () => {
       />
     );
 
-    expect(screen.getByTestId('table-render')).toBeInTheDocument();
+    expect(screen.getByTestId('analytics-table-main')).toBeInTheDocument();
     expect(screen.getByTestId('analytics-table-core-container')).toBeInTheDocument();
   });
   

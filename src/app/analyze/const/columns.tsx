@@ -9,7 +9,6 @@ import { format, isSameDay } from "date-fns";
 import { Check, Minus } from "lucide-react";
 import { CustomComparisonCell } from "../components/custom-comparison-cell";
 import type { ColumnSchema } from "../types/types";
-import { customSum } from "../util/customAggregationFn";
 import {
   formatBigNumber,
   formatBtcAmount,
@@ -17,6 +16,7 @@ import {
 } from "@/lib/format";
 import { decimalSortingFn } from "../util/sorting";
 import { AGGREGATION_ROW } from "./common";
+import { customSum } from "../util/customAggregationFn";
 
 // Reusable component for empty cells
 const EmptyCell = () => <Minus className="h-4 w-4 text-muted-foreground/50" />;

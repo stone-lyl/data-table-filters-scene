@@ -95,14 +95,14 @@ export function DataTableFooter<TData>({
                   height: '100%'
                 }}
               >
-                <div className="flex flex-col gap-1 w-full justify-between">
-                  <div className="flex text-xs uppercase self-start">
+                <span className="flex flex-col gap-1 w-full justify-between">
+                  <span className="flex text-xs uppercase self-start">
                     {isFirstColumn && aggregation.label}
-                  </div>
-                  <div className="overflow-hidden text-ellipsis whitespace-nowrap self-end">
+                  </span>
+                  <span className="overflow-hidden inline-block text-ellipsis whitespace-nowrap self-end">
                     {content}
-                  </div>
-                </div>
+                  </span>
+                </span>
               </TableCell>
             );
           })}
