@@ -23,15 +23,21 @@ export const ComparisonCellRenderer = ({
     [valueFormatter]
   );
   
+  // Memoize the data object to prevent unnecessary re-creation
+  const comparisonData = useMemo(
+    () => ({
+      currentValue: value as number,
+      previousValue: compareValue as number,
+      currentDate: row.original['metrics.period.day'] as string,
+      previousDate: row.original[`${ComparePrefix}metrics.period.day`] as string,
+    }),
+    [value, compareValue, row.original]
+  );
+  
   if (compareValue != null && column.columnDef.meta?.fieldType === 'measure') {
     return (
       <ComparisonCell
-        data={{
-          currentValue: value as number,
-          previousValue: compareValue as number,
-          currentDate: row.original['metrics.period.day'] as string,
-          previousDate: row.original[`${ComparePrefix}metrics.period.day`] as string,
-        }}
+        data={comparisonData}
         showDate={true}
         customFormatter={valueFormatter}
         customComparisonFormatter={customComparisonFormatter}

@@ -234,7 +234,8 @@ export interface ComparisonInfo {
 }
 
 export function customComparisonFormatterFactory(formatter: FormatterFn, hidePercentage: boolean) {
-  return (change: number, changePercentage: number) => (
+  // Create a named function component to satisfy the display-name rule
+  const ComparisonFormatter = (change: number, changePercentage: number) => (
     <div className="space-y-1">
       <div>
         <span className={change > 0 ? "text-positive" : "text-negative"}>
@@ -248,4 +249,9 @@ export function customComparisonFormatterFactory(formatter: FormatterFn, hidePer
       </div>
     </div>
   );
+  
+  // Set display name
+  ComparisonFormatter.displayName = 'ComparisonFormatter';
+  
+  return ComparisonFormatter;
 }
