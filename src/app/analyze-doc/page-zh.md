@@ -1,8 +1,7 @@
 # 数据分析表格文档
 
-<span className="text-muted-foreground font-medium">更新日期: {new Date().toLocaleDateString("zh-CN", { month: "long", day: "numeric", year: "numeric" })}</span>
 
-`AnalyticsTableCore` 是一个强大而灵活的核心组件，用于在 React 应用程序中构建数据分析表格。它为创建功能丰富、交互式的数据表格提供了基础，支持过滤、排序、分组、分页和虚拟化等高级功能。
+`AnalyticsTableCore` 是一个强大而灵活的核心组件，用于在 React 应用程序中构建数据分析表格。它为创建功能丰富、交互式的数据表格提供了基础，支持分组、聚合计算、数据对比、分页、过滤、排序、和横向虚拟滚动等高级功能。
 
 ## 主要特性
 
@@ -10,6 +9,7 @@
 - **固定表头和表尾**：在滚动浏览大型数据集时保持重要信息可见
 - **聚合计算**：使用 Decimal.js 进行高精度的数据聚合，如求和、计数、平均值等
 - **数据分组**：支持多级分组，对相关数据进行层次分析
+- **数据对比**：支持数据对比，显示当前值、变化量和变化率
 - **高级过滤**：使用复杂条件过滤数据，支持多种数据类型
 - **列自定义**：显示/隐藏列并根据需要调整大小
 - **状态持久化**：在本地存储中维护列可见性和过滤器状态
@@ -50,7 +50,7 @@ AnalyticsTableCore
   columns={columns}
   data={data}
   footerAggregations={aggregations}
-  tableClassName="overflow-auto max-h-[850px] rounded-md border"
+  tableClassName="max-h-[850px] rounded-md border"
 />
 
 // 带固定表头和表尾的表格渲染
@@ -68,9 +68,8 @@ AnalyticsTableCore
 `AnalyticsTableCore` 管理多个状态：
 
 - **列过滤器**：控制数据行的过滤
-- **排序**：管理列排序顺序
-- **分组**：处理按列分组的行
-- **展开**：跟踪哪些分组行已展开
+- **排序**：管理列排序顺序，可以进行自定义排序
+- **分组**：处理按列分组的行，支持多级分组
 - **分页**：管理当前页面和页面大小
 - **列可见性**：控制哪些列可见（在 localStorage 中持久化）
 - **表尾聚合**：管理表尾中的聚合计算
@@ -86,6 +85,12 @@ AnalyticsTableCore
 ## 行分组（Row Grouping）
 
 `AnalyticsTableCore` 提供了强大的行分组功能，允许用户按照一个或多个列对数据进行分组，以便更好地分析和理解数据关系。
+
+<video width="320" height="240" controls>
+  <source src="https://github.com/user-attachments/assets/7ae11d0a-901a-4867-9f41-a9b633ebdd26" type="video/mp4">
+  您的浏览器不支持视频标签
+</video>
+
 
 ### 主要特性
 
@@ -118,24 +123,6 @@ const table = useReactTable({
 <DataTableGroupButtons />
 ```
 
-该组件的工作原理：
-
-1. **智能过滤**：自动识别并仅显示具有 `fieldType: 'dimension'` 的可分组列
-2. **状态反馈**：当列被选为分组时，按钮会高亮显示
-3. **一键切换**：点击按钮即可切换该列的分组状态
-4. **多列分组**：支持同时选择多个列进行组合分组
-
-```tsx
-// DataTableGroupButtons 的实现核心
-// 过滤出可分组的维度列
-const groupableColumns = React.useMemo(() => {
-  return table.getAllColumns().filter(column => {
-    const fieldType = column.columnDef.meta?.fieldType as FieldType | undefined;
-    return column.getCanGroup() && fieldType === 'dimension' && column.getIsVisible();
-  });
-}, [table.getAllColumns(), columnVisibility]);
-```
-
 ### 使用示例
 
 ```tsx
@@ -161,93 +148,12 @@ const columns = [
     enableGrouping: true, // 启用分组
     meta: {
       fieldType: "dimension" // 标记为维度列，使其显示在分组按钮中
-    }
+    },
+    aggregationFn: customSum, // 自定义聚合函数在 row grouping 时
   },
   // 其他列...
 ];
 ```
-
-## 示例页面展示
-
-`AnalyticsTableCoreClient` 组件在不同场景下的应用展示通过三个不同的演示页面实现，每个页面展示了该组件的不同功能和特性。
-
-### 1. 基础数据分析页面 (/analyze)
-
-`/analyze` 页面是一个全功能的数据分析平台演示，展示了 `AnalyticsTableCoreClient` 的核心功能：
-
-- **完整的表格功能**：包括排序、过滤、分组和分页
-- **侧边栏集成**：展示了侧边栏插槽的使用方式
-- **自定义控件**：包括过滤命令、工具栏、页脚按钮和分组按钮
-- **URL 同步**：演示了如何将过滤器状态与 URL 参数同步
-- **行编辑功能**：展示了行编辑模式的集成
-
-```tsx
-// 基础数据分析页面的实现
-export default async function Page({
-  searchParams,
-}) {
-  const search = searchParamsCache.parse(await searchParams);
-  
-  return (
-    <Suspense fallback={<Skeleton />}>
-      <AnalyticsTable search={search} />
-    </Suspense>
-  );
-}
-```
-
-### 2. 数据比较页面 (/compare)
-
-`/compare` 页面专注于展示 `AnalyticsTableCoreClient` 的数据比较功能，允许用户直观地比较不同数据集：
-
-- **多表格布局**：同时显示多个相关数据表
-- **表连接功能**：展示如何连接不同数据源进行比较
-- **比较可视化**：使用特殊的单元格渲染器显示数据变化
-- **时间序列分析**：展示不同时间段的数据对比
-
-```tsx
-// 数据比较页面的实现
-export default function ComparePage() {
-  return (
-    <div className="container mx-auto py-6">
-      <h1 className="text-2xl font-bold mb-6">数据比较</h1>
-      <Suspense fallback={<div>加载比较数据中...</div>}>
-        <CompareTable />
-      </Suspense>
-    </div>
-  );
-}
-```
-
-### 3. 数据分析仪表板 (/nonce)
-
-`/nonce` 页面展示了 `AnalyticsTableCoreClient` 与外部数据源（Cube.js）的集成，展示了如何将该组件用于实时数据分析场景：
-
-- **外部数据源集成**：与 Cube.js 数据分析平台的无缝集成
-- **实时数据分析**：展示了如何处理和分析实时数据
-- **自定义侧边栏**：包含特定于挖矿性能的过滤器和控件
-- **时间比较选择器**：允许用户选择不同的时间范围进行比较
-
-```tsx
-// 数据分析仪表板的实现
-export function CubeNonceTable(props) {
-  return (
-    <CubeProvider cubeApi={cubejsApi}>
-      <NonceTable {...props} />
-    </CubeProvider>
-  );
-}
-```
-
-### 各页面的优势和特点
-
-| 页面 | 主要功能 | 适用场景 |
-|---------|------------|------------|
-| /analyze | 全功能数据分析表格 | 通用数据分析、数据浏览和管理 |
-| /compare | 数据比较和连接 | 财务分析、销售比较、趋势分析 |
-| /nonce | 外部数据源集成 | 实时仪表板、性能监控、数据可视化 |
-
-这三个演示页面展示了 `AnalyticsTableCoreClient` 组件的灵活性和可定制性，说明它可以适应各种不同的数据分析需求和场景。
 
 ## 数据比较（Compare）
 
@@ -365,8 +271,22 @@ const customFormatter = customComparisonFormatterFactory(
 ```
 
 
+  /**
+   * 通过 `footerAggregations` 属性配置聚合
+   *
+   * `footerAggregations` 是一个数组，每个元素是一个对象，包含以下三个属性：
+   *
+   * - `type`: 聚合类型，例如 "sum"、"count" 等
+   * - `label`: 聚合的标签，例如 "总和"、"计数" 等
+   * - `aggregationMethod`: 聚合逻辑，例如求和、计数等
+   */
+
 ## 聚合配置
 
+<video width="320" height="240" controls>
+  <source src="https://github.com/user-attachments/assets/d23fc822-a612-4325-9531-63d4a953ca9f" type="video/mp4">
+  您的浏览器不支持视频标签
+</video>
 通过 `footerAggregations` 属性配置聚合：
 
 ```tsx
@@ -407,6 +327,67 @@ const defaultAggregations = [
     const amount = row.getValue("amount") as number;
     return formatCurrency(amount);
   }
+}
+```
+
+## Row & HeaderRow 事件处理
+
+```tsx
+export interface RowEventHandlers {
+  onDoubleClick: (e: React.MouseEvent) => void;
+  onClick: (e: React.MouseEvent) => void;
+  onContextMenu: (e: React.MouseEvent) => void;
+  onMouseEnter: (e: React.MouseEvent) => void;
+  onMouseLeave: (e: React.MouseEvent) => void;
+}
+
+/**
+ * Type for a function that generates row event handlers
+ */
+export type RowEventHandlersFn<TData> = (row: Row<TData>, rowIndex: number) => RowEventHandlers;
+
+/**
+ * Type definition for header row event handlers
+ */
+export interface HeaderRowEventHandlers {
+  onClick?: (event: React.MouseEvent) => void;
+  onContextMenu?: (event: React.MouseEvent) => void;
+}
+
+/**
+ * Type for a function that generates header row event handlers
+ */
+export type HeaderRowEventHandlersFn<TData> = (columns: Header<TData, unknown>[], index: number) => HeaderRowEventHandlers;
+
+```
+
+### 使用示例
+您可以为行和表头行添加自定义事件处理程序：
+
+```tsx
+export function AnalyticsTableWithEvents() {
+  // 行点击处理程序
+  const rowEventHandlers = (row) => ({
+    onClick: () => {
+      console.log("行被点击:", row.original);
+    },
+  });
+  
+  // 表头点击处理程序
+  const headerRowEventHandlers = (headers, index) => ({
+    onClick: () => {
+      console.log("表头被点击:", headers[index].id);
+    },
+  });
+  
+  return (
+    <AnalyticsTableCore
+      columns={columns}
+      data={data}
+      rowEventHandlers={rowEventHandlers}
+      headerRowEventHandlers={headerRowEventHandlers}
+    />
+  );
 }
 ```
 
@@ -480,36 +461,91 @@ export function AnalyticsTable() {
 }
 ```
 
-## 高级用法：自定义事件处理程序
 
-您可以为行和表头行添加自定义事件处理程序：
+
+
+## 示例页面展示
+
+`AnalyticsTableCoreClient` 组件在不同场景下的应用展示通过三个不同的演示页面实现，每个页面展示了该组件的不同功能和特性。
+
+### 1. 基础数据分析页面 (/analyze)
+
+`/analyze` 页面是一个全功能的数据分析平台演示，展示了 `AnalyticsTableCoreClient` 的核心功能：
+
+- **完整的表格功能**：包括排序、过滤、分组和分页
+- **侧边栏集成**：展示了侧边栏插槽的使用方式
+- **自定义控件**：包括过滤命令、工具栏、页脚按钮和分组按钮
+- **URL 同步**：演示了如何将过滤器状态与 URL 参数同步
+- **行编辑功能**：展示了行编辑模式的集成
 
 ```tsx
-export function AnalyticsTableWithEvents() {
-  // 行点击处理程序
-  const rowEventHandlers = (row) => ({
-    onClick: () => {
-      console.log("行被点击:", row.original);
-    },
-  });
-  
-  // 表头点击处理程序
-  const headerRowEventHandlers = (headers, index) => ({
-    onClick: () => {
-      console.log("表头被点击:", headers[index].id);
-    },
-  });
+// 基础数据分析页面的实现
+export default async function Page({
+  searchParams,
+}) {
+  const search = searchParamsCache.parse(await searchParams);
   
   return (
-    <AnalyticsTableCore
-      columns={columns}
-      data={data}
-      rowEventHandlers={rowEventHandlers}
-      headerRowEventHandlers={headerRowEventHandlers}
-    />
+    <Suspense fallback={<Skeleton />}>
+      <AnalyticsTable search={search} />
+    </Suspense>
   );
 }
 ```
+
+### 2. 数据比较页面 (/compare)
+
+`/compare` 页面专注于展示 `AnalyticsTableCoreClient` 的数据比较功能，允许用户直观地比较不同数据集：
+
+- **多表格布局**：同时显示多个相关数据表
+- **表连接功能**：展示如何连接不同数据源进行比较
+- **比较可视化**：使用特殊的单元格渲染器显示数据变化
+- **时间序列分析**：展示不同时间段的数据对比
+
+```tsx
+// 数据比较页面的实现
+export default function ComparePage() {
+  return (
+    <div className="container mx-auto py-6">
+      <h1 className="text-2xl font-bold mb-6">数据比较</h1>
+      <Suspense fallback={<div>加载比较数据中...</div>}>
+        <CompareTable />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+### 3. 数据分析仪表板 (/nonce)
+
+`/nonce` 页面展示了 `AnalyticsTableCoreClient` 与外部数据源（Cube.js）的集成，展示了如何将该组件用于实时数据分析场景：
+
+- **外部数据源集成**：与 Cube.js 数据分析平台的无缝集成
+- **实时数据分析**：展示了如何处理和分析实时数据
+- **自定义侧边栏**：包含特定于挖矿性能的过滤器和控件
+- **时间比较选择器**：允许用户选择不同的时间范围进行比较
+
+```tsx
+// 数据分析仪表板的实现
+export function CubeNonceTable(props) {
+  return (
+    <CubeProvider cubeApi={cubejsApi}>
+      <NonceTable {...props} />
+    </CubeProvider>
+  );
+}
+```
+
+### 各页面的优势和特点
+
+| 页面 | 主要功能 | 适用场景 |
+|---------|------------|------------|
+| /analyze | 全功能数据分析表格 | 通用数据分析、数据浏览和管理 |
+| /compare | 数据比较和连接 | 财务分析、销售比较、趋势分析 |
+| /nonce | 外部数据源集成 | 实时仪表板、性能监控、数据可视化 |
+
+这三个演示页面展示了 `AnalyticsTableCoreClient` 组件的灵活性和可定制性，说明它可以适应各种不同的数据分析需求和场景。
+
 
 ## 最佳实践
 
