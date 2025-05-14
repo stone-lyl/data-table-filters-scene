@@ -5,7 +5,7 @@ import Decimal from "decimal.js-light";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { createFormatter, FormatterFn } from "../nonce/utils/create-formatter";
+import { createFormatter, DefaultDecimal, FormatterFn } from "./create-formatter";
 
 export type FormatType = "currency" | "percentage" | "number" | "custom";
 
@@ -30,8 +30,6 @@ interface ComparisonCellProps {
   customComparisonFormatter?: (change: number, changePercentage: number) => React.ReactNode;
   tooltipClassName?: string;
 }
-
-const DefaultDecimal = 2;
   
 /**
  * A flexible comparison cell component for displaying current values with comparison to previous values

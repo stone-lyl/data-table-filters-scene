@@ -7,7 +7,7 @@ import { isArrayOfDates, isArrayOfNumbers } from "@/lib/is-array";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format, isSameDay } from "date-fns";
 import { Check, Minus } from "lucide-react";
-import { ProfitDisplay } from "../components/profit-display";
+import { CustomComparisonCell } from "../components/custom-comparison-cell";
 import type { ColumnSchema } from "../types/types";
 import { customSum } from "../util/customAggregationFn";
 import {
@@ -276,7 +276,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         return <DefaultMeasureCell value={`{$ ${formatCurrency(earning)}}`} />;
       }
 
-      return <ProfitDisplay earning={earning} cost={cost} />;
+      return <CustomComparisonCell earning={earning} cost={cost} />;
     },
     sortingFn: decimalSortingFn,
     filterFn: (row, id, value) => {

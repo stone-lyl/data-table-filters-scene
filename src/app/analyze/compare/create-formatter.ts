@@ -2,6 +2,7 @@ import { formatCurrency, formatBtcAmount, formatBigNumber } from '@/lib/format';
 import { format as formatDate, parseISO } from 'date-fns';
 
 export type FormatterFn = (value: any) => string;
+export const DefaultDecimal = 2;
 
 /**
  * Creates a formatter function based on format type and accessor key
@@ -61,7 +62,7 @@ export const percentageHandler: FormatterHandler = (ctx, next) => {
   const { value, format } = ctx;
   if (format.type === 'percentage') {
     const numValue = typeof value === 'string' ? parseFloat(value) : value as number;
-    return `${(numValue * 100).toFixed(2)}%`;
+    return `${(numValue * 100).toFixed(DefaultDecimal)}%`;
   }
   return next(ctx, defaultHandler);
 };

@@ -3,8 +3,7 @@ import { faker } from '@faker-js/faker';
 import type { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { formatCurrency } from '@/lib/format';
-import { ComparisonCell, customComparisonFormatterFactory } from "./comparison-cell";
-import Decimal from 'decimal.js-light';
+import { ComparisonCell, customComparisonFormatterFactory } from "../analyze/compare/comparison-cell";
 import { cn } from '@/lib/utils';
 
 export interface SalesRecord {
@@ -215,10 +214,12 @@ export function generateColumns(data: unknown[]): ColumnDef<unknown, unknown>[] 
 
         return (
           <ComparisonCell
-            currentValue={currentAmount}
-            previousValue={previousAmount}
-            currentDate={currentDate}
-            previousDate={previousDate}
+            data={{
+              currentValue: currentAmount,
+              previousValue: previousAmount,
+              currentDate,
+              previousDate,
+            }}
             showDate={true}
             customComparisonFormatter={customComparisonFormatterFactory(formatCurrency, false)}
           />
