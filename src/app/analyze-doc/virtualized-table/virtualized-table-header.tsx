@@ -1,5 +1,5 @@
-import { HeaderRowEventHandlersFn } from "@/app/analyze-doc/types/event-handlers";
-import { DataTableFooterProps } from "@/app/analyze-doc/virtualized-table/virtualized-table-footer";
+import { HeaderRowEventHandlersFn } from "../types/event-handlers";
+import { DataTableFooterProps } from "./virtualized-table-footer";
 import { TableHead, TableHeader, TableRow } from "@/components/custom/table";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 import { cn } from "@/lib/utils";

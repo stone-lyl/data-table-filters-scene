@@ -4,10 +4,9 @@ import { TableRender } from './virtualized-table';
 import '@testing-library/jest-dom';
 import * as React from 'react';
 import * as DataTableProvider from '@/components/data-table/data-table-provider';
-import { HeaderRowEventHandlersFn, RowEventHandlersFn } from '@/app/analyze-doc/types/event-handlers';
+import { HeaderRowEventHandlersFn, RowEventHandlersFn } from '../types/event-handlers';
 import { VirtualizedTableHeader } from './virtualized-table-header';
 import { VirtualizedTableBody } from './virtualized-table-body';
-import { ColumnDef } from '@tanstack/react-table';
 
 // Mock the virtualized table components
 vi.mock('./virtualized-table-header', () => ({

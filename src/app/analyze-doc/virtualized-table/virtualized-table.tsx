@@ -1,7 +1,7 @@
 "use client";
 
-import { VirtualizedTableBody } from "@/app/analyze-doc/virtualized-table/virtualized-table-body";
-import { VirtualizedTableHeader } from "@/app/analyze-doc/virtualized-table/virtualized-table-header";
+import { VirtualizedTableBody } from "./virtualized-table-body";
+import { VirtualizedTableHeader } from "./virtualized-table-header";
 import { TableContainer } from "@/components/custom/table";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 import { cn } from "@/lib/utils";
@@ -10,7 +10,7 @@ import * as React from "react";
 import {
   HeaderRowEventHandlersFn,
   RowEventHandlersFn,
-} from "@/app/analyze-doc/types/event-handlers";
+} from "../types/event-handlers";
 import { DataTableFooter } from "./virtualized-table-footer";
 
 interface TableRenderProps<TData> {
