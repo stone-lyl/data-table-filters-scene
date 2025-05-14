@@ -16,7 +16,7 @@ export function useTransformedData({
   const primaryData = datasets.primary.data;
   const comparisonData = datasets.comparison.data;
   const isLoading = datasets.primary.isLoading || datasets.comparison.isLoading;
-  const shouldFetch = joinQuery && primaryData.length && !isLoading;
+  const shouldFetch = joinQuery && primaryData.length && comparisonData.length && !isLoading;
 
   const { data, error, isValidating } = useSWR(
     shouldFetch ? [joinQuery!, primaryData, comparisonData] : null,

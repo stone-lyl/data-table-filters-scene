@@ -40,12 +40,13 @@ export function useCubeData(
   const columns = useMemo(() => {
     if (!resultSet || isLoading || error) return [];
     const columnStructs = resultSet.tableColumns();
-    console.log(columnStructs, 'columnStructs')
+
+    // const validColumnStructs = columnStructs.filter(it => it.key !== 'measure');
+    console.log(JSON.stringify(columnStructs), 'columnStructs')
     return generateColumns(columnStructs as unknown as ColumnStruct[]) as unknown as ColumnDef<NonceRecord, unknown>[];
   }, [resultSet, isLoading, error]);
 
   if (error) {
-    // TODO: Handle error
     console.error(error);
   }
 
@@ -84,7 +85,6 @@ export function useCubeDataWithComparison(
 
   const primary = useCubeData(query);
   
-  console.log('comparisonQuery', comparisonQuery)
   const comparison = useCubeData(comparisonQuery);
 
   const joinQuery = useMemo(() => {
@@ -110,7 +110,7 @@ export function useCubeDataWithComparison(
   })();
 
   return {
-    data: isCompare ? transformedData : primary.data,
+    data: isCompare && transformedData.length ? transformedData : primary.data,
     columns: primary.columns,
     isLoading: primary.isLoading || comparisonLoading,
   };
