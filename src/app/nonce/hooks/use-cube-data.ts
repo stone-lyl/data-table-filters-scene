@@ -7,7 +7,7 @@ import { generateColumns } from '../components/generate-columns';
 import { buildQuery, createComparisonQuery, ExtendedQuery } from '../utils/cube-query-builder';
 import { generateComparisonQuery } from '../utils/generate-comparison-query';
 import { ComparisonOption } from '../components/time-comparison-selector';
-import { useTransformedData } from './use-transformed-data';
+import { useTransformedData } from '../../analyze-doc/compare/use-transformed-data';
 
 export interface UseCubeDataResult {
   data: NonceRecord[];

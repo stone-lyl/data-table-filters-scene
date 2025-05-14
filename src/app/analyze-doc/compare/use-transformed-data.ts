@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { transformData } from '@/app/analyze-doc/compare/use-transform';
-import { UseCubeDataResult } from './use-cube-data';
+import { UseCubeDataResult } from '../../nonce/hooks/use-cube-data';
 
 interface UseTransformedDataOptions {
   datasets: Record<string, UseCubeDataResult>;
