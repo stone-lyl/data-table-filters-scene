@@ -9,7 +9,7 @@ import { generateComparisonQuery } from '../utils/generate-comparison-query';
 import { ComparisonOption } from '../components/time-comparison-selector';
 import { useTransformedData } from './use-transformed-data';
 
-interface UseCubeDataResult {
+export interface UseCubeDataResult {
   data: NonceRecord[];
   columns: ColumnDef<NonceRecord, unknown>[];
   isLoading: boolean;
@@ -97,11 +97,8 @@ export function useCubeDataWithComparison(
     });
   }, [primary.columns, comparison.columns, selectedComparison, isCompare, queryState]);
 
-  const datasets = {
-    primaryData: primary.data,
-    comparisonData: comparison.data
-  };
-  const { data: transformedData, isLoading: isTransformedLoading } = useTransformedData({ datasets, joinQuery });
+
+  const { data: transformedData, isLoading: isTransformedLoading } = useTransformedData({ datasets: { primary, comparison }, joinQuery });
   
   const comparisonLoading = (() => {
     if(isCompare) {

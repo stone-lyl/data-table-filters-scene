@@ -1,18 +1,25 @@
 import useSWR from 'swr';
 import { transformData } from '@/app/analyze/compare/use-transform';
+import { UseCubeDataResult } from './use-cube-data';
 
 interface UseTransformedDataOptions {
-  datasets: Record<string, unknown[]>;
+  datasets: Record<string, UseCubeDataResult>;
   joinQuery?: string | null;
 }
 
 export function useTransformedData({ datasets, joinQuery }: UseTransformedDataOptions) {
-  const shouldFetch = joinQuery && datasets.primaryData?.length;
+  const primaryData = datasets.primary.data;
+  const comparisonData = datasets.comparison.data;
+  const isLoading = datasets.primary.isLoading || datasets.comparison.isLoading;
+  const shouldFetch = joinQuery && primaryData.length && !isLoading;
   
   const { data, error, isValidating } = useSWR(
-    shouldFetch ? [joinQuery!, datasets.primaryData, datasets.comparisonData] : null,
+    shouldFetch ? [joinQuery!, primaryData, comparisonData] : null,
     async () => {
-      return await transformData(datasets, joinQuery!);
+      return await transformData({
+        primaryData,
+        comparisonData
+      }, joinQuery!);
     },
     {
       revalidateOnFocus: false,

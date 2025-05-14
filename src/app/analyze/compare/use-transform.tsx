@@ -37,14 +37,15 @@ const importJsonArray = async (
 ) => {
   const buffer = encoder.encode(JSON.stringify(data));
   await db.registerFileBuffer(tableName, buffer);
-  await c.insertJSONFromPath(tableName, {
-    schema: 'main',
-    name: tableName,
-  });
+
+  await c.query(`
+      CREATE OR REPLACE TABLE ${tableName} AS 
+      SELECT * FROM read_json_auto('${tableName}');
+    `);
   return c;
 };
 
-export async function transformData(datasets: Record<string, unknown[]>, sql: string) {
+export async function transformData1(datasets: Record<string, unknown[]>, sql: string) {
   // Get the bundle using our initializeDuckDB helper
   const bundle = await initializeDuckDB();
   // Instantiate the asynchronous version of DuckDB-wasm
@@ -53,7 +54,7 @@ export async function transformData(datasets: Record<string, unknown[]>, sql: st
   const db = new duckdb.AsyncDuckDB(logger, worker);
   await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
   const c = await db.connect();
-  
+
   const encoder = new globalThis.TextEncoder();
   for (const datasetsKey in datasets) {
     const data = datasets[datasetsKey];
@@ -80,7 +81,94 @@ export async function transformData(datasets: Record<string, unknown[]>, sql: st
   worker.terminate();
   return jsResult;
 }
+class DuckDBInstance {
+  private static instance: DuckDBInstance | null = null;
+  private db: duckdb.AsyncDuckDB | null = null;
+  private worker: Worker | null = null;
+  private connection: duckdb.AsyncDuckDBConnection | null = null;
 
+  private constructor() { }
+
+  static getInstance(): DuckDBInstance {
+    if (!DuckDBInstance.instance) {
+      DuckDBInstance.instance = new DuckDBInstance();
+    }
+    return DuckDBInstance.instance;
+  }
+
+  async initialize() {
+    if (this.db) return;
+
+    const bundle = await initializeDuckDB();
+    this.worker = new Worker(bundle.mainWorker!);
+    const logger = new duckdb.ConsoleLogger();
+    this.db = new duckdb.AsyncDuckDB(logger, this.worker);
+    await this.db.instantiate(bundle.mainModule, bundle.pthreadWorker);
+    this.connection = await this.db.connect();
+
+    // 添加页面卸载时的清理
+    window.addEventListener('unload', () => {
+      this.cleanup();
+    });
+  }
+
+  async cleanup() {
+    if (this.connection) {
+      await this.connection.close();
+      this.connection = null;
+    }
+    if (this.worker) {
+      this.worker.terminate();
+      this.worker = null;
+    }
+    this.db = null;
+    DuckDBInstance.instance = null;
+  }
+
+  getConnection() {
+    return this.connection;
+  }
+
+  getDB() {
+    return this.db;
+  }
+}
+
+export async function transformData(datasets: Record<string, unknown[]>, sql: string) {
+  const instance = DuckDBInstance.getInstance();
+  await instance.initialize();
+
+  const db = instance.getDB();
+  const connection = instance.getConnection();
+
+  if (!db || !connection) {
+    throw new Error('DuckDB not properly initialized');
+  }
+
+  const encoder = new globalThis.TextEncoder();
+
+  for await (const datasetsKey of Object.keys(datasets)) {
+    const data = datasets[datasetsKey];
+    await importJsonArray(encoder, data, db, connection, datasetsKey);
+  }
+
+  const result = await connection.query(sql);
+  // convert arrow types to js types
+  const jsResult = result.toArray().map((it) => {
+    const json = it.toJSON();
+    for (const jsonKey in json) {
+      const element = json[jsonKey];
+      if (typeof element === 'object' && element !== null) {
+        if (util.isArrowBigNumSymbol in element) {
+          json[jsonKey] = util.bigNumToNumber(element);
+        }
+      }
+    }
+    return json;
+  });
+
+  return jsResult;
+}
 export function useTransform(
   datasets: Record<string, unknown[]>,
   query: string
