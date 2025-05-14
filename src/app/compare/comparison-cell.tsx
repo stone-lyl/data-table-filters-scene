@@ -2,49 +2,50 @@
 
 import React from "react";
 import Decimal from "decimal.js-light";
-import { formatCurrency, formatBigNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { createFormatter, FormatterFn } from "../nonce/utils/create-formatter";
 
 export type FormatType = "currency" | "percentage" | "number" | "custom";
+
+export interface FormatInfo {
+  type: FormatType;
+  unit: string | null;
+}
 export type ComparisonType = "absolute" | "percentage" | "both";
 
 interface ComparisonCellProps {
-  currentValue: number;
-  previousValue?: number;
-  formatType?: FormatType;
+  data: {
+    currentValue: number;
+    previousValue?: number;
+    currentDate?: string;
+    previousDate?: string;
+  }
+  formatInfo?: FormatInfo;
   comparisonType?: ComparisonType;
-  prefix?: string;
-  suffix?: string;
   decimals?: number;
-  showArrows?: boolean;
   showDate?: boolean;
-  currentDate?: string;
-  previousDate?: string;
   customFormatter?: (value: number) => string;
   customComparisonFormatter?: (change: number, changePercentage: number) => React.ReactNode;
-  className?: string;
+  tooltipClassName?: string;
 }
 
+const DefaultDecimal = 2;
+  
 /**
  * A flexible comparison cell component for displaying current values with comparison to previous values
  */
 const ComparisonCellBase: React.FC<ComparisonCellProps> = ({
-  currentValue,
-  previousValue,
-  formatType = "currency",
+  data,
+  formatInfo = { type: "currency", unit: null },
   comparisonType = "both",
-  decimals = 2,
-  showArrows = true,
   showDate = false,
-  currentDate,
-  previousDate,
   customFormatter,
   customComparisonFormatter,
-  className,
+  tooltipClassName,
 }) => {
+  const { currentValue, previousValue, currentDate, previousDate } = data;
   // Convert values to Decimal for precise calculations
   const current = new Decimal(currentValue);
   const previous = previousValue !== undefined ? new Decimal(previousValue) : null;
@@ -54,12 +55,18 @@ const ComparisonCellBase: React.FC<ComparisonCellProps> = ({
   const percentageFormatter = createFormatter({
     format: { type: 'percentage' },
   });
+  const valueFormatter = createFormatter({
+    format: {
+      type: formatInfo.type,
+      unit: formatInfo.unit || undefined,
+    },
+  });
   
   // Calculate change and change percentage
   const change = previous ? current.minus(previous) : null;
   const changePercentage = previous && !previous.isZero() 
     ? change!.dividedBy(previous)
-    : null;
+    : new Decimal(0);
   
   // Determine if the change is positive, negative, or neutral
   const isPositive = change ? change.greaterThan(0) : false;
@@ -71,29 +78,18 @@ const ComparisonCellBase: React.FC<ComparisonCellProps> = ({
       ? `text-positive`
       : `text-negative`;
 
-  // Format the current value based on the format type
+  // Format the current value based on the format info
   const formatValue = (value: Decimal): string => {
     if (customFormatter) {
       return customFormatter(value.toNumber());
     }
     
-    switch (formatType) {
-      case "currency":
-        return formatCurrency(value.toNumber());
-      case "percentage":
-        return percentageFormatter(value.toNumber());
-      case "number":
-      default:
-        return value.toFixed(decimals);
-    }
+    return valueFormatter(value.toNumber());
   };
 
   // Format the change value
   const formatChange = (value: Decimal): string => {
-    if (formatType === "currency") {
-      return formatCurrency(value.toNumber());
-    }
-    return value.toFixed(decimals);
+    return valueFormatter(value.toNumber());
   };
 
   // Format the change percentage
@@ -101,9 +97,9 @@ const ComparisonCellBase: React.FC<ComparisonCellProps> = ({
     return percentageFormatter(value.toNumber());
   };
 
+  const formatChangePercentageStr = formatChangePercentage(changePercentage!.abs());
   // Get the appropriate arrow symbol
   const getArrow = () => {
-    if (!showArrows) return null;
     return isPositive ? "↑" : isNeutral ? "→" : "↓";
   };
 
@@ -130,7 +126,7 @@ const ComparisonCellBase: React.FC<ComparisonCellProps> = ({
       case "percentage":
         return (
           <div className={`flex items-center gap-1  ${textColor}`}>
-            {getArrow()} {getSign()}{formatChangePercentage(changePercentage!.abs())}
+            {getArrow()} {getSign()}{formatChangePercentageStr}
           </div>
         );
       case "both":
@@ -141,7 +137,7 @@ const ComparisonCellBase: React.FC<ComparisonCellProps> = ({
               {getArrow()} {getSign()}{formatChange(change.abs())}
             </div>
             <div className={`flex items-center gap-1 ${textColor}`}>
-              {getSign()}{formatChangePercentage(changePercentage!.abs())}
+              {getSign()}{formatChangePercentageStr}
             </div>
           </>
         );
@@ -163,7 +159,7 @@ const ComparisonCellBase: React.FC<ComparisonCellProps> = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className={cn("flex flex-col text-xs tabular-nums text-end", className)}>
+          <div className={cn("flex flex-col text-xs tabular-nums text-end", tooltipClassName)}>
             <div className="font-medium">
               {formatValue(current)}
             </div>
@@ -201,7 +197,7 @@ const ComparisonCellBase: React.FC<ComparisonCellProps> = ({
               <div className="flex justify-between">
                 <span className="font-medium">% Change:</span>
                 <span className={textColor}>
-                  {isPositive ? "+" : "-"}{formatBigNumber(changePercentage.abs().toFixed(decimals).toString())}%
+                  {isPositive ? "+" : "-"}{formatChangePercentageStr}
                 </span>
               </div>
             )}
@@ -248,7 +244,7 @@ export function customComparisonFormatterFactory(formatter: FormatterFn, hidePer
         </span>
         {!hidePercentage && (
           <span className={changePercentage > 0 ? "text-positive" : "text-negative"}>  
-            ({changePercentage > 0 ? "+" : "-"}{Math.abs(changePercentage).toFixed(2)}%)
+            ({changePercentage > 0 ? "+" : "-"}{Math.abs(changePercentage).toFixed(DefaultDecimal)}%)
           </span>
         )}
       </div>

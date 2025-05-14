@@ -26,10 +26,13 @@ export const ComparisonCellRenderer = ({
   if (compareValue != null && column.columnDef.meta?.fieldType === 'measure') {
     return (
       <ComparisonCell
-        currentValue={value as number}
-        previousValue={compareValue as number}
-        currentDate={row.original['metrics.period.day'] as string}
-        previousDate={row.original[`${ComparePrefix}metrics.period.day`] as string}
+        // formatInfo={column.columnDef.meta?.format}
+        data={{
+          currentValue: value as number,
+          previousValue: compareValue as number,
+          currentDate: row.original['metrics.period.day'] as string,
+          previousDate: row.original[`${ComparePrefix}metrics.period.day`] as string,
+        }}
         showDate={true}
         customComparisonFormatter={customComparisonFormatter}
       />

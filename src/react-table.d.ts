@@ -11,6 +11,7 @@ declare module "@tanstack/react-table" {
     cellClassName?: string;
     label?: string;
     fieldType?: 'dimension' | 'measure';
+    format?: FormatInfo;
   }
 
   interface FilterFns {

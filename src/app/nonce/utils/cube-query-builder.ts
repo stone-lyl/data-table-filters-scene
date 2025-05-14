@@ -8,7 +8,14 @@ export interface ExtendedQuery extends Query {
 }
 
 const defaultQuery: ExtendedQuery = {
-  measures: ['metrics.cost_usd'],
+  measures: [
+    "metrics.cost_usd",
+    "metrics.earning_btc",
+    "metrics.margin",
+    "metrics.hashrate",
+    "metrics.online_efficiency",
+    "metrics.online_miners"
+  ],
   dimensions: [],
   filters: [{ member: 'metrics.workspace_name', operator: 'equals', values: ['hashing'] }],
   // breakdowns: [],
@@ -67,7 +74,6 @@ export const getFolderForMeasure = (measureName: string) => {
   return null;
 };
 
-// todo: 这些 query 相关的内容，需要收敛到一起
 // Build a Cube.js query from the extended query
 export const buildQuery = (extendedQuery: ExtendedQuery): Query => {
   const query: Query = {

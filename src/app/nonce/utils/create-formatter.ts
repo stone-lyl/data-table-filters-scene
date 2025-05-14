@@ -38,12 +38,13 @@ export const currencyHandler: FormatterHandler = (ctx, next) => {
   const { value, format } = ctx;
   if (format.type === 'currency') {
     const numValue = typeof value === 'string' ? parseFloat(value) : value as number;
-    const unit = format.unit || 'USD';
+    const unit = format.unit;
     if (unit === 'BTC') {
-      return `${formatBtcAmount(numValue.toString())} BTC`;
-    } else {
-      return `$${formatCurrency(numValue)}`;
+      return `${formatBtcAmount(numValue.toString())} ${unit}`;
+    } else if (unit) {
+      return `${formatCurrency(numValue)} ${unit}`;
     }
+    return formatCurrency(numValue);
   }
   return next(ctx, defaultHandler);
 };
