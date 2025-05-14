@@ -1,10 +1,9 @@
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import type { ColumnDef } from '@tanstack/react-table';
-import { customSum } from '../analyze/util/customAggregationFn';
-import { AmountComparisonCell } from '../compare/comparison-cell';
-import { ColumnStruct, NonceRecord } from './types';
-import { createFormatter } from './utils/create-formatter';
-import { ComparePrefix } from './utils/generate-comparison-query';
+import { customSum } from '../../analyze/util/customAggregationFn';
+import { ColumnStruct, NonceRecord } from '../types';
+import { createFormatter } from '../../analyze/compare/create-formatter';
+import { ComparisonCellRenderer } from './comparison-cell-renderer';
 
 /**
  * Generate columns based on columnsStruct
@@ -35,6 +34,7 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
       aggregationFn: customSum,
       meta: {
         fieldType: colStruct.type === 'number' ? 'measure' : 'dimension',
+        format: colStruct.meta?.format,
       },
     };
 
@@ -47,22 +47,14 @@ export function generateColumns(columnStructs: ColumnStruct[]): ColumnDef<NonceR
       };
     } else if (colStruct.type === 'number') {
 
-      columnDef.cell = ({ cell, row, column }) => {
-        const value = cell.getValue();
-        const compareValue = row.original[`${ComparePrefix}${accessorKey}`];
-        if (compareValue != null && column.columnDef.meta?.fieldType === 'measure') {
-          return (
-            <AmountComparisonCell
-              formatter={valueFormatter}
-              currentAmount={value as number}
-              previousAmount={compareValue as number}
-              currentDate={row.original['metrics.period.day'] as string}
-              previousDate={row.original[`${ComparePrefix}metrics.period.day`] as string}
-              showDate={true}
-              hidePercentage />
-          );
-        }
-        return <div className='text-end'>{valueFormatter(value)}</div>;
+      columnDef.cell = (props) => {
+        return (
+          <ComparisonCellRenderer
+            {...props}
+            accessorKey={accessorKey}
+            valueFormatter={valueFormatter}
+          />
+        );
       };
     }
 

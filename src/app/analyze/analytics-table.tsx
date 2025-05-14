@@ -19,10 +19,9 @@ import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { DataTableFooterButtons } from "@/components/data-table/data-table-footer-buttons";
 import { DataTableGroupButtons } from "@/components/data-table/data-table-group-buttons";
 import { DataTablePagination } from "@/components/data-table/data-table-pagination";
-import { ColumnInfoTooltip } from "./components/column-info-tooltip";
 import { RowEditModal } from "./components/row-edit-modal";
 import { useRowEdit } from "./hooks/use-row-edit";
-import { useColumnTooltip } from "./hooks/use-column-tooltip";
+import { useHeaderToast } from "./hooks/use-header-toast";
 import { ColumnFiltersState } from "@tanstack/react-table";
 
 interface AnalyticsTableProps {
@@ -49,8 +48,7 @@ export function AnalyticsTable({
     rowEventHandlers
   } = rowEdit;
 
-  const columnTooltip = useColumnTooltip<ColumnSchema, unknown>();
-  const { headerRowEventHandlers } = columnTooltip;
+  const { headerRowEventHandlers } = useHeaderToast<ColumnSchema, unknown>();
 
   const customSidebar = (
     <div
@@ -71,7 +69,7 @@ export function AnalyticsTable({
       <DataTableToolbar data-testid="data-table-toolbar" />
       <DataTableFooterButtons data-testid="data-table-footer-buttons" />
       <DataTableGroupButtons data-testid="data-table-group-buttons" />
-      <ColumnInfoTooltip data-testid="column-info-tooltip" columnTooltip={columnTooltip} />
+
       <RowEditModal data-testid="row-edit-modal" rowEdit={rowEdit} />
     </>
   );
@@ -83,7 +81,7 @@ export function AnalyticsTable({
     <div data-testid="analytics-table">
       <AnalyticsTableCoreClient<ColumnSchema, unknown>
         columns={columns}
-        tableClassName="overflow-auto max-h-[850px]"
+        tableClassName="max-h-[850px]"
         data={data}
         onDataChange={setData}
         filterFields={filterFields}
@@ -100,6 +98,7 @@ export function AnalyticsTable({
         sidebarSlot={customSidebar}
         controlsSlot={customControls}
         paginationSlot={customPagination}
+        // pageSize={30}
         rowEventHandlers={rowEventHandlers}
         headerRowEventHandlers={headerRowEventHandlers}
         columnVisibility={columnVisibility}

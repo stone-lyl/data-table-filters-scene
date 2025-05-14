@@ -2,6 +2,27 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+interface TableContainerProps extends React.HTMLAttributes<HTMLDivElement> {
+  containerClassName?: string;
+}
+
+const TableContainer = React.forwardRef<HTMLDivElement, TableContainerProps>(
+  ({ className, containerClassName, onScroll, ...props }, ref) => (
+    <div
+      className={cn("w-full overflow-auto", containerClassName)}
+      // REMINDER: we are not scrolling the table, but the container
+      {...{ onScroll }}
+      ref={ref}
+    >
+      <table
+        className={cn("w-full caption-bottom text-sm", className)}
+        {...props}
+      />
+    </div>
+  )
+);
+TableContainer.displayName = "TableContainer";
+
 interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
   containerClassName?: string;
 }
@@ -113,6 +134,7 @@ const TableCaption = React.forwardRef<
 TableCaption.displayName = "TableCaption";
 
 export {
+  TableContainer,
   Table,
   TableHeader,
   TableBody,

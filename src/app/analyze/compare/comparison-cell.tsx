@@ -2,55 +2,48 @@
 
 import React from "react";
 import Decimal from "decimal.js-light";
-import { formatCurrency, formatBigNumber } from "../analyze/util/formatters";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { createFormatter, FormatterFn } from "../nonce/utils/create-formatter";
+import { createFormatter, DefaultDecimal, FormatterFn } from "./create-formatter";
 
 export type FormatType = "currency" | "percentage" | "number" | "custom";
+
+export interface FormatInfo {
+  type: FormatType;
+  unit: string | null;
+}
 export type ComparisonType = "absolute" | "percentage" | "both";
 
 interface ComparisonCellProps {
-  currentValue: number;
-  previousValue?: number;
-  formatType?: FormatType;
+  data: {
+    currentValue: number;
+    previousValue?: number;
+    currentDate?: string;
+    previousDate?: string;
+  }
+  formatInfo?: FormatInfo;
   comparisonType?: ComparisonType;
-  prefix?: string;
-  suffix?: string;
   decimals?: number;
-  showArrows?: boolean;
-  positiveColor?: string;
-  negativeColor?: string;
-  neutralColor?: string;
   showDate?: boolean;
-  currentDate?: string;
-  previousDate?: string;
   customFormatter?: (value: number) => string;
   customComparisonFormatter?: (change: number, changePercentage: number) => React.ReactNode;
-  className?: string;
+  tooltipClassName?: string;
 }
-
+  
 /**
  * A flexible comparison cell component for displaying current values with comparison to previous values
  */
-export const ComparisonCell: React.FC<ComparisonCellProps> = ({
-  currentValue,
-  previousValue,
-  formatType = "currency",
+const ComparisonCellBase: React.FC<ComparisonCellProps> = ({
+  data,
+  formatInfo = { type: "currency", unit: null },
   comparisonType = "both",
-  decimals = 2,
-  showArrows = true,
-  positiveColor = "text-[#ec4899]", // Pink
-  negativeColor = "text-[#10b981]", // Green
-  neutralColor = "text-gray-500",
   showDate = false,
-  currentDate,
-  previousDate,
   customFormatter,
   customComparisonFormatter,
-  className,
+  tooltipClassName,
 }) => {
+  const { currentValue, previousValue, currentDate, previousDate } = data;
   // Convert values to Decimal for precise calculations
   const current = new Decimal(currentValue);
   const previous = previousValue !== undefined ? new Decimal(previousValue) : null;
@@ -60,47 +53,41 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
   const percentageFormatter = createFormatter({
     format: { type: 'percentage' },
   });
+  const valueFormatter = createFormatter({
+    format: {
+      type: formatInfo.type,
+      unit: formatInfo.unit || undefined,
+    },
+  });
   
   // Calculate change and change percentage
   const change = previous ? current.minus(previous) : null;
   const changePercentage = previous && !previous.isZero() 
     ? change!.dividedBy(previous)
-    : null;
+    : new Decimal(0);
   
   // Determine if the change is positive, negative, or neutral
   const isPositive = change ? change.greaterThan(0) : false;
   const isNeutral = change ? change.isZero() : true;
   
-  // Set color based on change direction
-  const textColor = isNeutral 
-    ? neutralColor 
-    : isPositive 
-      ? positiveColor 
-      : negativeColor;
+  const textColor = isNeutral
+    ? `text-neutral`
+    : isPositive
+      ? `text-positive`
+      : `text-negative`;
 
-  // Format the current value based on the format type
+  // Format the current value based on the format info
   const formatValue = (value: Decimal): string => {
     if (customFormatter) {
       return customFormatter(value.toNumber());
     }
     
-    switch (formatType) {
-      case "currency":
-        return formatCurrency(value.toNumber());
-      case "percentage":
-        return percentageFormatter(value.toNumber());
-      case "number":
-      default:
-        return value.toFixed(decimals);
-    }
+    return valueFormatter(value.toNumber());
   };
 
   // Format the change value
   const formatChange = (value: Decimal): string => {
-    if (formatType === "currency") {
-      return formatCurrency(value.toNumber());
-    }
-    return value.toFixed(decimals);
+    return valueFormatter(value.toNumber());
   };
 
   // Format the change percentage
@@ -108,9 +95,9 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
     return percentageFormatter(value.toNumber());
   };
 
+  const formatChangePercentageStr = formatChangePercentage(changePercentage!.abs());
   // Get the appropriate arrow symbol
   const getArrow = () => {
-    if (!showArrows) return null;
     return isPositive ? "↑" : isNeutral ? "→" : "↓";
   };
 
@@ -136,8 +123,8 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
         );
       case "percentage":
         return (
-          <div className={`flex items-center gap-1 ${textColor}`}>
-            {getArrow()} {getSign()}{formatChangePercentage(changePercentage!.abs())}
+          <div className={`flex items-center gap-1  ${textColor}`}>
+            {getArrow()} {getSign()}{formatChangePercentageStr}
           </div>
         );
       case "both":
@@ -148,7 +135,7 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
               {getArrow()} {getSign()}{formatChange(change.abs())}
             </div>
             <div className={`flex items-center gap-1 ${textColor}`}>
-              {getSign()}{formatChangePercentage(changePercentage!.abs())}
+              {getSign()}{formatChangePercentageStr}
             </div>
           </>
         );
@@ -170,7 +157,7 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className={cn("flex flex-col text-xs tabular-nums text-end", className)}>
+          <div className={cn("flex flex-col text-xs tabular-nums text-end", tooltipClassName)}>
             <div className="font-medium">
               {formatValue(current)}
             </div>
@@ -184,9 +171,8 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
             {renderDates()}
           </div>
         </TooltipTrigger>
-        <TooltipContent side="right" className="max-w-md">
-          <div className="space-y-2">
-
+        <TooltipContent side="bottom" className="max-w-md">
+          <div className="space-y-2 text-sm">
             {previous && (
               <div className="flex justify-between">
                 <span className="font-medium">Previous:</span>
@@ -209,7 +195,7 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
               <div className="flex justify-between">
                 <span className="font-medium">% Change:</span>
                 <span className={textColor}>
-                  {isPositive ? "+" : "-"}{formatBigNumber(changePercentage.abs().toFixed(decimals).toString())}%
+                  {isPositive ? "+" : "-"}{formatChangePercentageStr}
                 </span>
               </div>
             )}
@@ -233,61 +219,39 @@ export const ComparisonCell: React.FC<ComparisonCellProps> = ({
 };
 
 /**
+ * Memoized version of the ComparisonCell component to prevent unnecessary re-renders
+ */
+export const ComparisonCell = React.memo(ComparisonCellBase);
+
+/**
  * A specialized comparison cell for comparing current and previous period amounts
  */
-export const AmountComparisonCell: React.FC<{
-  currentAmount: number;
-  previousAmount?: number;
+export interface ComparisonInfo {
+  currentValue: number;
+  previousValue?: number;
   currentDate?: string;
   previousDate?: string;
-  showDate?: boolean;
-  className?: string;
-  showTooltip?: boolean;
-  hidePercentage?: boolean;
-  formatter?: FormatterFn;
-}> = ({
-  currentAmount,
-  previousAmount,
-  currentDate,
-  previousDate,
-  showDate = false,
-  className,
-  showTooltip = true,
-  hidePercentage = false,
-  formatter = formatCurrency,
-}) => {
-  
-  // Create a custom comparison formatter that shows the period label if provided
-  const customComparisonFormatter = (change: number, changePercentage: number) => {
-    return (
-      <div className="space-y-1">
-        <div>
-          <span className={change > 0 ? "text-[#ec4899]" : "text-[#10b981]"}>
-            {change > 0 ? "+" : "-"}{formatter(Math.abs(change))}
+}
+
+export function customComparisonFormatterFactory(formatter: FormatterFn, hidePercentage: boolean) {
+  // Create a named function component to satisfy the display-name rule
+  const ComparisonFormatter = (change: number, changePercentage: number) => (
+    <div className="space-y-1">
+      <div>
+        <span className={change > 0 ? "text-positive" : "text-negative"}>
+          {change > 0 ? "+" : "-"}{formatter(Math.abs(change))}
+        </span>
+        {!hidePercentage && (
+          <span className={changePercentage > 0 ? "text-positive" : "text-negative"}>  
+            ({changePercentage > 0 ? "+" : "-"}{Math.abs(changePercentage).toFixed(DefaultDecimal)}%)
           </span>
-          {!hidePercentage && (
-            <span className={changePercentage > 0 ? "text-[#ec4899]" : "text-[#10b981]"}>  
-              ({changePercentage > 0 ? "+" : "-"}{Math.abs(changePercentage).toFixed(2)}%)
-            </span>
-          )}
-        </div>
+        )}
       </div>
-    );
-  };
-  
-  return (
-    <ComparisonCell
-      currentValue={currentAmount}
-      previousValue={previousAmount}
-      formatType="custom"
-      customFormatter={formatter}
-      comparisonType="both"
-      showArrows={true}
-      showDate={showDate}
-      currentDate={currentDate}
-      previousDate={previousDate}
-      className={className}
-      customComparisonFormatter={customComparisonFormatter}
-    />
+    </div>
   );
-};
+  
+  // Set display name
+  ComparisonFormatter.displayName = 'ComparisonFormatter';
+  
+  return ComparisonFormatter;
+}

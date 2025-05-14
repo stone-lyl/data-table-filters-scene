@@ -61,6 +61,9 @@ const config = {
         warning: "hsl(var(--warning))",
         error: "hsl(var(--error))",
         info: "hsl(var(--info))",
+        positive: "hsl(var(--positive))",
+        negative: "hsl(var(--negative))",
+        neutral: "hsl(var(--neutral))",
       },
       borderRadius: {
         lg: "var(--radius)",

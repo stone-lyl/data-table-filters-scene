@@ -22,8 +22,8 @@ vi.mock('./hooks/use-row-edit', () => ({
   })),
 }));
 
-vi.mock('./hooks/use-column-tooltip', () => ({
-  useColumnTooltip: vi.fn(() => ({
+vi.mock('./hooks/use-header-toast', () => ({
+  useHeaderToast: vi.fn(() => ({
     headerRowEventHandlers: {},
   })),
 }));
@@ -76,11 +76,6 @@ vi.mock('@/components/data-table/data-table-pagination', () => ({
   )),
 }));
 
-vi.mock('./components/column-info-tooltip', () => ({
-  ColumnInfoTooltip: vi.fn(({ 'data-testid': dataTestId }) => (
-    <div data-testid={dataTestId}>ColumnInfoTooltip Mock</div>
-  )),
-}));
 
 vi.mock('./components/row-edit-modal', () => ({
   RowEditModal: vi.fn(({ 'data-testid': dataTestId }) => (
@@ -110,7 +105,6 @@ describe('AnalyticsTable', () => {
     expect(screen.getByTestId('data-table-toolbar')).toBeInTheDocument();
     expect(screen.getByTestId('data-table-footer-buttons')).toBeInTheDocument();
     expect(screen.getByTestId('data-table-group-buttons')).toBeInTheDocument();
-    expect(screen.getByTestId('column-info-tooltip')).toBeInTheDocument();
     expect(screen.getByTestId('row-edit-modal')).toBeInTheDocument();
 
     // Check if the pagination is rendered

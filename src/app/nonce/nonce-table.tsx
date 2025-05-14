@@ -26,17 +26,6 @@ export function NonceTable() {
   // Use our custom hook to fetch and transform data based on query state and comparison
   const { data, columns, isLoading } = useCubeDataWithComparison(queryState, selectedComparison);
 
-  // Column visibility state
-  const [columnVisibility, setColumnVisibility] =
-    useLocalStorage<VisibilityState>("nonce-table-visibility", {});
-
-  // Create custom controls with DataTableViewOptions and DataTableGroupButtons
-  const customControls = (
-    <div className="flex items-center justify-between mb-4">
-      <DataTableViewOptions />
-    </div>
-  );
-
   const sidebarSlot = (<div
     data-testid="analytics-table-sidebar"
     className={cn(
@@ -60,14 +49,9 @@ export function NonceTable() {
           <AnalyticsTableCoreClient
             columns={columns || []}
             data={data}
-            tableClassName="max-h-[calc(100vh-10rem)] overflow-y-scroll"
-            defaultColumnFilters={[]}
-            filterFields={[]}
-            controlsSlot={customControls}
+            tableClassName="max-h-[calc(100vh-10rem)] "
             paginationSlot={<DataTablePagination />}
             footerAggregations={defaultAggregations.slice(1, 3) as unknown as AggregationConfig<NonceRecord>[]}
-            columnVisibility={columnVisibility}
-            setColumnVisibility={setColumnVisibility}
             isLoading={isLoading}
             sidebarSlot={sidebarSlot}
           />

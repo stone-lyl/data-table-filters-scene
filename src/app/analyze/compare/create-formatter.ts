@@ -1,7 +1,8 @@
-import { formatCurrency, formatBtcAmount, formatBigNumber } from '@/app/analyze/util/formatters';
+import { formatCurrency, formatBtcAmount, formatBigNumber } from '@/lib/format';
 import { format as formatDate, parseISO } from 'date-fns';
 
 export type FormatterFn = (value: any) => string;
+export const DefaultDecimal = 2;
 
 /**
  * Creates a formatter function based on format type and accessor key
@@ -38,12 +39,13 @@ export const currencyHandler: FormatterHandler = (ctx, next) => {
   const { value, format } = ctx;
   if (format.type === 'currency') {
     const numValue = typeof value === 'string' ? parseFloat(value) : value as number;
-    const unit = format.unit || 'USD';
+    const unit = format.unit;
     if (unit === 'BTC') {
-      return `${formatBtcAmount(numValue.toString())} BTC`;
-    } else {
-      return `$${formatCurrency(numValue)}`;
+      return `${formatBtcAmount(numValue.toString())} ${unit}`;
+    } else if (unit) {
+      return `${formatCurrency(numValue)} ${unit}`;
     }
+    return formatCurrency(numValue);
   }
   return next(ctx, defaultHandler);
 };
@@ -60,7 +62,7 @@ export const percentageHandler: FormatterHandler = (ctx, next) => {
   const { value, format } = ctx;
   if (format.type === 'percentage') {
     const numValue = typeof value === 'string' ? parseFloat(value) : value as number;
-    return `${(numValue * 100).toFixed(2)}%`;
+    return `${(numValue * 100).toFixed(DefaultDecimal)}%`;
   }
   return next(ctx, defaultHandler);
 };

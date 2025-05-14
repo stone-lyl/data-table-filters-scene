@@ -19,8 +19,8 @@ import { useDataTable } from "@/components/data-table/data-table-provider";
 import { useMemo } from "react";
 
 export function DataTablePagination() {
-  const { table, pagination, columnFilters } = useDataTable();
-  const pageCount = useMemo(() => table.getPageCount(), [columnFilters]);
+  const { table, pagination, columnFilters, data } = useDataTable();
+  const pageCount = useMemo(() => table.getPageCount(), [columnFilters, data]);
 
   return (
     <div className="flex items-center justify-end space-x-4 md:space-x-6 lg:space-x-8">
