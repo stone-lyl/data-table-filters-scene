@@ -19,10 +19,9 @@ import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { DataTableFooterButtons } from "@/components/data-table/data-table-footer-buttons";
 import { DataTableGroupButtons } from "@/components/data-table/data-table-group-buttons";
 import { DataTablePagination } from "@/components/data-table/data-table-pagination";
-import { ColumnInfoTooltip } from "./components/column-info-tooltip";
 import { RowEditModal } from "./components/row-edit-modal";
 import { useRowEdit } from "./hooks/use-row-edit";
-import { useColumnTooltip } from "./hooks/use-column-tooltip";
+import { useHeaderToast } from "./hooks/use-header-toast";
 import { ColumnFiltersState } from "@tanstack/react-table";
 
 interface AnalyticsTableProps {
@@ -49,7 +48,7 @@ export function AnalyticsTable({
     rowEventHandlers
   } = rowEdit;
 
-  const { headerRowEventHandlers } = useColumnTooltip<ColumnSchema, unknown>();
+  const { headerRowEventHandlers } = useHeaderToast<ColumnSchema, unknown>();
 
   const customSidebar = (
     <div

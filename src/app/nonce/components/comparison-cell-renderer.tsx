@@ -33,6 +33,7 @@ export const ComparisonCellRenderer = ({
           previousDate: row.original[`${ComparePrefix}metrics.period.day`] as string,
         }}
         showDate={true}
+        customFormatter={valueFormatter}
         customComparisonFormatter={customComparisonFormatter}
       />
     );

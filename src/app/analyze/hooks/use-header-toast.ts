@@ -7,7 +7,7 @@ export interface UseColumnTooltipReturn<TData, TValue> {
 }
 
 
-export function useColumnTooltip<TData, TValue>(): UseColumnTooltipReturn<TData, TValue> {
+export function useHeaderToast<TData, TValue>(): UseColumnTooltipReturn<TData, TValue> {
   const [tooltipInfo, setTooltipInfo] = useState<{ columns: ColumnDef<TData, TValue>[]; colIndex: number } | null>(null);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
