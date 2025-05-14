@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { defaultColumnVisibility, generateColumns, generateSalesDataset } from './mock-data';
+import { defaultColumnVisibility, generateColumns, generateSalesDataset } from './mock-data-columns';
 import { useTransform } from '@/app/analyze-doc/compare/use-transform';
 import { AnalyticsTableCoreClient } from '../analyze-doc/analytics-table-core';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
