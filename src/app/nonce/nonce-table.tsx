@@ -1,11 +1,8 @@
 'use client';
 
-import { useMemo, useState } from "react";
-import { VisibilityState } from "@tanstack/react-table";
+import { useState } from "react";
 import { AnalyticsTableCoreClient } from "../analyze/analytics-table-core";
-import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
 import { DataTablePagination } from "@/components/data-table/data-table-pagination";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { NonceRecord } from "./types";
 import { Sidebar } from "./components/sidebar";
 import { useCubeDataWithComparison } from "./hooks/use-cube-data";
@@ -13,7 +10,6 @@ import { AggregationConfig, defaultAggregations } from "@/components/data-table/
 import { cn } from "@/lib/utils";
 import { ExtendedQuery } from "./utils/cube-query-builder";
 import { ComparisonOption } from "./components/time-comparison-selector";
-import { CompareTimeKey } from "./utils/generate-comparison-query";
 
 export interface NonceTableProps {
 }
