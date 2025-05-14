@@ -21,6 +21,7 @@
 
 `AnalyticsTableCore` 组件作为数据表格的基础层，处理状态管理、表格配置和布局。它底层使用 TanStack Table 库和 TanStack Virtual 库，提供了全面的 API 来构建高性能、可定制的数据表格。
 
+
 ## 架构
 
 该组件遵循基于插槽的架构，允许灵活组合：
@@ -157,6 +158,8 @@ const columns = [
 
 ## 数据比较（Compare）
 
+![compare](https://github.com/user-attachments/assets/37c2d1b3-2ae7-4226-99e2-cf315c65c86e)
+
 数据比较功能允许用户比较不同时间段或不同条件下的数据，以便识别趋势、变化和异常。这是数据分析中的关键功能，特别适用于财务分析、性能监控和业务指标跟踪。
 
 ### 主要特性
@@ -268,18 +271,9 @@ const customFormatter = customComparisonFormatterFactory(
   data={data}
   customComparisonFormatter={customFormatter}
 />
+
 ```
 
-
-  /**
-   * 通过 `footerAggregations` 属性配置聚合
-   *
-   * `footerAggregations` 是一个数组，每个元素是一个对象，包含以下三个属性：
-   *
-   * - `type`: 聚合类型，例如 "sum"、"count" 等
-   * - `label`: 聚合的标签，例如 "总和"、"计数" 等
-   * - `aggregationMethod`: 聚合逻辑，例如求和、计数等
-   */
 
 ## 聚合配置
 
@@ -287,6 +281,17 @@ const customFormatter = customComparisonFormatterFactory(
   <source src="https://github.com/user-attachments/assets/d23fc822-a612-4325-9531-63d4a953ca9f" type="video/mp4">
   您的浏览器不支持视频标签
 </video>
+
+```ts
+export interface AggregationConfig<TData> {
+  type: AggregationType; // 聚合类型, 如 sum, count 等
+  label: string; // 聚合标签，如 "总和", "计数" 等
+  icon: React.ReactElement; // 聚合图标
+  aggregationMethod?: (columnId: string, values: any[], table: Table<TData>) => React.ReactNode; // 聚合逻辑，例如求和、计数等
+  isTotal?: boolean; // 是否使用所有行（true）或仅使用分页的叶子行（false）
+}
+```
+
 通过 `footerAggregations` 属性配置聚合：
 
 ```tsx
@@ -304,30 +309,29 @@ const defaultAggregations = [
     label: "计数",
     aggregationMethod: (columnId, values, table) => {
       return values.length;
-    }
+  }
   }
 ];
 ```
 
-## 列配置
+## 粘性表尾
 
-可以为分析配置具有特殊属性的列：
+<video width="320" height="240" controls>
+  <source src="https://github.com/user-attachments/assets/4f745b0e-1677-47ec-91e2-9844cbe5d8b7" type="video/mp4">
+  您的浏览器不支持视频标签
+</video>
+`AnalyticsTableCore` 提供了粘性表尾（Sticky Footer）功能，这些功能在处理大型数据集时特别有用。
+
+### 粘性表尾
 
 ```tsx
-{
-  accessorKey: "amount",
-  meta: {
-    fieldType: 'measure',
-  },
-  aggregationFn: customSum,
-  header: ({ column }) => (
-    <DataTableColumnHeader column={column} title="金额" />
-  ),
-  cell: ({ row }) => {
-    const amount = row.getValue("amount") as number;
-    return formatCurrency(amount);
-  }
-}
+// 在表尾组件中实现粘性效果
+<TableFooter 
+  data-testid="table-footer" 
+  className={cn("bg-background sticky bottom-0 z-20 grid")} 
+>
+  {/* 表尾内容 */}
+</TableFooter>
 ```
 
 ## Row & HeaderRow 事件处理
@@ -390,6 +394,35 @@ export function AnalyticsTableWithEvents() {
   );
 }
 ```
+
+## 横向虚拟滚动(性能优化)
+
+`AnalyticsTableCore` 实现了高效的横向虚拟滚动，使其能够处理大量列的数据表格，同时保持出色的性能。
+
+### 核心特性
+
+**动态列渲染**：只渲染当前可见视口中的列，显著减少 DOM 节点数量
+
+### 技术实现
+
+与垂直虚拟滚动不同，横向虚拟滚动使用特殊的填充策略，在表格左右两侧添加虚拟元素，而非使用绝对定位：
+
+```tsx
+const virtualPadding = React.useMemo(() => {
+  let left: number | null = null;
+  let right: number | null = null;
+
+  if (columnVirtualizer && virtualColumns?.length) {
+    left = virtualColumns[0]?.start ?? null;
+    right =
+      columnVirtualizer.getTotalSize() -
+      (virtualColumns[virtualColumns.length - 1]?.end ?? null);
+  }
+
+  return { left, right };
+}, [columnVirtualizer, virtualColumns]);
+```
+
 
 ## 属性
 
